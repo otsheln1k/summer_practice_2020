@@ -8,17 +8,14 @@ public class DividerSpanningTreeEdgeGenerator implements GraphEdgeGenerator {
 	private final Random rng = new Random();
 
 	private void generateList(Graph g, List<Graph.Node> s) {
-		switch (s.size()) {
-		case 2:
-			g.addEdge(s.get(0), s.get(1));
-			// fall through
-		case 1:
-		case 0:
+		if (s.size() < 2) {
 			return;
 		}
 		
 		List<Graph.Node> left =  new ArrayList<>();
+		left.add(s.remove(s.size() - 1));
 		List<Graph.Node> right = new ArrayList<>();
+		right.add(s.remove(s.size() - 1));
 
 		for (Graph.Node n : s) {
 			List<Graph.Node> dest = rng.nextBoolean() ? left : right;
