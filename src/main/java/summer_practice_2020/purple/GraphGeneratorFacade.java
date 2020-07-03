@@ -19,12 +19,12 @@ public class GraphGeneratorFacade {
 	}
 
 	public void generateGraph(Graph g, int nodesCount, boolean connected) {
-		GraphEdgeGenerator edgeGen = connected
-				? makeConnectedGenerator() : makeUnconnectedGenerator();
-				GraphGenerator gen = new GraphGenerator(
-						nodesCount, edgeGen,
-						() -> rng.nextDouble() * 24 + 1,
-						new AlphabetNodeNameGenerator());
-				gen.generateGraph(g);
+		GraphEdgeGenerator edgeGen = connected ? makeConnectedGenerator()
+				: makeUnconnectedGenerator();
+		GraphGenerator gen = new GraphGenerator(
+				nodesCount, edgeGen,
+				() -> rng.nextDouble() * 24 + 1,
+				new AlphabetNodeNameGenerator());
+		gen.generateGraph(g);
 	}
 }
