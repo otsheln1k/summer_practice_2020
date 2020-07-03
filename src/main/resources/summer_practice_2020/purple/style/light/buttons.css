@@ -1,0 +1,30 @@
+.button {
+    -fx-font-size: 16px;
+    -fx-background-color:  #18a0d6;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-border-color: #03678f;
+    -fx-border-width: 0px;
+    -fx-text-fill: #fff;
+}
+
+.button#back {
+    -fx-border-radius: 5px 0px 0px 5px;
+    -fx-background-radius: 5px 0px 0px 5px;
+    -fx-border-width: 0 1px 0 0;
+    -fx-pref-width: 60px;
+}
+
+.button#play-pause {
+    -fx-border-radius: 0px;
+    -fx-background-radius: 0px;
+    -fx-border-width: 0;
+    -fx-pref-width: 60px;
+}
+
+.button#next {
+    -fx-border-radius: 0px 5px 5px 0px;
+    -fx-background-radius: 0px 5px 5px 0px;
+    -fx-border-width: 0 0 0 1px;
+    -fx-pref-width: 60px;
+}

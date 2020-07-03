@@ -17,18 +17,24 @@ import javafx.scene.control.Button;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.FXML;
 
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 
 public class App extends Application {
     @Override
     public void start(Stage s) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("ui.fxml"));
-
-        Button btn = (Button) root.lookup("#button1");
-        btn.setOnAction(ev -> System.out.println("Hello world!"));
-
-        Scene sc = new Scene(root, 640, 480);
+        Scene sc = new Scene(root);
+        URL css_path = this.getClass().getResource("style/light/main.css");
+        if (css_path == null) {
+            System.err.println("Критическая ошибка: CSS файл не найден! Программа будет завершена.");
+            return;
+        } else {
+            sc.getStylesheets().add(css_path.toString());
+        }
 
         s.setTitle("Hello, World!");
         s.setScene(sc);
