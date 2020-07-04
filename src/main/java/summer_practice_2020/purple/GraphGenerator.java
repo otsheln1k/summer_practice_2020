@@ -16,20 +16,20 @@ public class GraphGenerator {
 		this.nameGen = nameGen;
 	}
 
-	private void genNodes(Graph g) {
+	private void genNodes(IGraph g) {
 		for (int i = 0; i < nodesCount; i++) {
-			Graph.Node n = g.addNode();
+			IGraph.Node n = g.addNode();
 			n.setTitle(nameGen.generateName());
 		}
 	}
 
-	private void genWeights(Graph g) {
-		for (Graph.Edge e : g.getEdges()) {
+	private void genWeights(IGraph g) {
+		for (IGraph.Edge e : g.getEdges()) {
 			e.setWeight(weightGen.generateWeight());
 		}
 	}
 
-	public void generateGraph(Graph g) {
+	public void generateGraph(IGraph g) {
 		genNodes(g);
 		edgeGen.generateEdges(g);
 		genWeights(g);

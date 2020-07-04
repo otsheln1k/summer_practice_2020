@@ -15,8 +15,8 @@ class GraphGenerationTest {
 	void testDividerSpanningTree() {
 		final int count = 25;
 
-		Graph g = new SimpleGraph();
-		Graph.Node n = g.addNode();
+		IGraph g = new SimpleGraph();
+		IGraph.Node n = g.addNode();
 		for (int i = 0; i < count-1; i++) {
 			g.addNode();
 		}
@@ -27,13 +27,13 @@ class GraphGenerationTest {
 		assertEquals(count, g.nodesCount());
 		assertEquals(count - 1, g.edgesCount());
 
-		Set<Graph.Node> s = new HashSet<>();
-		Queue<Graph.Node> q = new ArrayDeque<>();
+		Set<IGraph.Node> s = new HashSet<>();
+		Queue<IGraph.Node> q = new ArrayDeque<>();
 		q.add(n);
 		while (!q.isEmpty()) {
-			Graph.Node i = q.remove();
-			for (Graph.Edge e : g.getEdgesFrom(i)) {
-				Graph.Node o =
+			IGraph.Node i = q.remove();
+			for (IGraph.Edge e : g.getEdgesFrom(i)) {
+				IGraph.Node o =
 						(e.firstNode() == i) ? e.secondNode() : e.firstNode();
 				if (s.add(o)) {
 					q.add(o);

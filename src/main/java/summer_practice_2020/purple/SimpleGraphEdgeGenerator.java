@@ -12,9 +12,9 @@ public class SimpleGraphEdgeGenerator implements GraphEdgeGenerator {
 	}
 
 	@Override
-	public void generateEdges(Graph g) {
-		for (Graph.Node i : g.getNodes()) {
-			for (Graph.Node j : g.getNodes()) {
+	public void generateEdges(IGraph g) {
+		for (IGraph.Node i : g.getNodes()) {
+			for (IGraph.Node j : g.getNodes()) {
 				if (i == j || g.getEdgeBetween(i, j) != null) {
 					continue;
 				}

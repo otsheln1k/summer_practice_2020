@@ -5,9 +5,9 @@ import java.util.Set;
 
 import summer_practice_2020.purple.util.FilteredIterator;
 
-public class SimpleGraph implements Graph {
+public class SimpleGraph implements IGraph {
 	
-	private static class SimpleNode implements Graph.Node {
+	private static class SimpleNode implements IGraph.Node {
 		private String title = "";
 
 		@Override
@@ -22,7 +22,7 @@ public class SimpleGraph implements Graph {
 		
 	}
 	
-	private static class SimpleEdge implements Graph.Edge {
+	private static class SimpleEdge implements IGraph.Edge {
 		private double weight = 0.0;
 		private final Node a;
 		private final Node b;

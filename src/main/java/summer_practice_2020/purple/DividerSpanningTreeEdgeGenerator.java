@@ -7,18 +7,18 @@ import java.util.Random;
 public class DividerSpanningTreeEdgeGenerator implements GraphEdgeGenerator {
 	private final Random rng = new Random();
 
-	private void generateList(Graph g, List<Graph.Node> s) {
+	private void generateList(IGraph g, List<Graph.Node> s) {
 		if (s.size() < 2) {
 			return;
 		}
 		
-		List<Graph.Node> left =  new ArrayList<>();
+		List<IGraph.Node> left =  new ArrayList<>();
 		left.add(s.remove(s.size() - 1));
-		List<Graph.Node> right = new ArrayList<>();
+		List<IGraph.Node> right = new ArrayList<>();
 		right.add(s.remove(s.size() - 1));
 
-		for (Graph.Node n : s) {
-			List<Graph.Node> dest = rng.nextBoolean() ? left : right;
+		for (IGraph.Node n : s) {
+			List<IGraph.Node> dest = rng.nextBoolean() ? left : right;
 			dest.add(n);
 		}
 
@@ -31,8 +31,8 @@ public class DividerSpanningTreeEdgeGenerator implements GraphEdgeGenerator {
 	}
 
 	@Override
-	public void generateEdges(Graph g) {
-		List<Graph.Node> list = new ArrayList<>();
+	public void generateEdges(IGraph g) {
+		List<IGraph.Node> list = new ArrayList<>();
 		g.getNodes().forEach(list::add);
 		generateList(g, list);
 	}
