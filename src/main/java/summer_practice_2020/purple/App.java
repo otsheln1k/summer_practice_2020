@@ -36,7 +36,7 @@ public class App extends Application {
             sc.getStylesheets().add(css_path.toString());
         }
 
-        s.setTitle("Hello, World!");
+        s.setTitle("Визуализация работы алгоритма Борувки");
         s.setScene(sc);
         s.show();
     }

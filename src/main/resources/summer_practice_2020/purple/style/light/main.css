@@ -1,4 +1,4 @@
-@import url("buttons.css");
+@import url("controls.css");
 
 *{
     -fx-font-family: Calibri;
@@ -23,4 +23,5 @@
     -fx-background-color: #d1d1d1;
     -fx-pref-width: 200px;
     -fx-min-width: 200px;
+    -fx-max-width: 200px;
 }
