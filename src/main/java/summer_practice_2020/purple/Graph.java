@@ -2,36 +2,114 @@ package summer_practice_2020.purple;
 
 import java.util.*;
 
-public class Graph {
+public class Graph implements IGraph {
 
-    private HashMap<String, Map<String, Integer>> vertexMap = new HashMap<String, Map<String, Integer>>();
 
-    public void addVertex(String vertexName) {
-        if (!hasVertex(vertexName)) {
-            vertexMap.put(vertexName, new HashMap<String, Integer>());
+    private final HashMap<Node, Map<Node, Integer>> vertexMap = new HashMap<Node, Map<Node, Integer>>();
+    private final Set<Edge> edges = new HashSet<>();
+
+    private static class DNode implements IGraph.Node {
+        private String title = "";
+
+        @Override
+        public String getTitle() {
+            return title;
+        }
+
+        @Override
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+    }
+
+    private static class DEdge implements IGraph.Edge {
+        private double weight = 0.0;
+        private final Node a;
+        private final Node b;
+
+        public DEdge(Node a, Node b) {
+            this.a = a;
+            this.b = b;
+        }
+
+        @Override
+        public void setWeight(double w) {
+            weight = w;
+        }
+
+        @Override
+        public double getWeight() {
+            return weight;
+        }
+
+        @Override
+        public Node firstNode() {
+            return a;
+        }
+
+        @Override
+        public Node secondNode() {
+            return b;
         }
     }
 
-    public boolean hasVertex(String vertexName) {
-        return vertexMap.containsKey(vertexName);
+
+    @Override
+    public Node addNode() {
+        Node n = new DNode();
+        vertexMap.put(n, new HashMap<Node, Integer>());
+        return n;
     }
 
-    public boolean hasEdge(String vertexName1, String vertexName2) {
-        if (!hasVertex(vertexName1)) return false;
-        Map<String, Integer> edges = vertexMap.get(vertexName1);
-        return edges.containsKey(vertexName2);
+    @Override
+    public void removeNode(Node node) {
+
     }
 
-    public void addEdge(String vertexName1, String vertexName2, Integer cost) {
-        if (!hasVertex(vertexName1)) addVertex(vertexName1);
-        if (!hasVertex(vertexName2)) addVertex(vertexName2);
-        Map<String, Integer> edges1= vertexMap.get(vertexName1);
-        Map<String, Integer> edges2= vertexMap.get(vertexName2);
-        edges1.put(vertexName2, cost);
-        edges2.put(vertexName1, cost);
+    @Override
+    public Iterable<Node> getNodes() {
+        return (new ArrayList(vertexMap.keySet()));
     }
 
-    public Map<String, Map<String, Integer>> getVertexMap() {
+    @Override
+    public int nodesCount() {
+        return vertexMap.size();
+    }
+
+    @Override
+    public Edge addEdge(Node a, Node b) {
+        Edge e = new DEdge(a, b);
+        vertexMap.get(a).put(b, 0); ///!!!!!?????
+        edges.add(e);
+        return e;
+    }
+
+    @Override
+    public void removeEdge(Edge edge) {
+    }
+
+    @Override
+    public Edge getEdgeBetween(Node a, Node b) {
+        return null;
+    }
+
+    @Override
+    public Iterable<Edge> getEdgesFrom(Node node) {
+        return null;
+    }
+
+    @Override
+    public Iterable<Edge> getEdges() {
+        return edges;
+    }
+
+    @Override
+    public int edgesCount() {
+        return edges.size();
+    }
+
+    public Map<Node, Map<Node, Integer>> getVertexMap() {
         return vertexMap;
     }
 
