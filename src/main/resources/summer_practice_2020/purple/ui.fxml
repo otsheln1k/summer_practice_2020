@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane id="MainWindow" xmlns="http://javafx.com/javafx/10.0.2">
@@ -13,12 +14,14 @@
             <AnchorPane id="Canva" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="375.0" prefWidth="424.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="176.0" AnchorPane.topAnchor="0.0">
                   <Canvas height="200.0" layoutX="101.0" layoutY="37.0" width="200.0" />
             </AnchorPane>
-            <AnchorPane id="Control_block" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" prefHeight="375.0" prefWidth="178.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                  <Button id="visualize" layoutX="39.0" layoutY="19.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="114.0" text="Визуализировать" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0"/>
-                  <ListView id="list" layoutX="21.0" layoutY="54.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="124.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0" />
-                  <Button id="next" layoutX="106.0" layoutY="337.0" mnemonicParsing="false" text="⏵" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="10.0"/>
-                  <Button id="play-pause" layoutX="64.0" layoutY="329.0" mnemonicParsing="false" text="⏯" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="70.0"/>
-                  <Button id="back" layoutX="39.0" layoutY="337.0" mnemonicParsing="false" text="⏴" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0"/>
+            <AnchorPane id="Control_block" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <Button id="visualize" mnemonicParsing="false" prefHeight="25.0" prefWidth="114.0" text="Визуализировать" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0" />
+                  <ListView id="list" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="124.0" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0" />
+                  <Button id="back" mnemonicParsing="false" text="⏴" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" />
+                  <Button id="play-pause" mnemonicParsing="false" text="⏯" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="55.0" />
+                  <Button id="stop" mnemonicParsing="false" text="⏹" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="100.0" />
+                  <Button id="next" mnemonicParsing="false" text="⏵" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="145.0" />
+                  <Slider id="speed-control" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
             </AnchorPane>
       </AnchorPane>
       <MenuBar layoutY="2.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

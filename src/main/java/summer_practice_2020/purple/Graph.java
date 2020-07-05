@@ -64,7 +64,15 @@ public class Graph implements IGraph {
 
     @Override
     public void removeNode(Node node) {
-
+        vertexMap.remove(node, vertexMap.get(node));
+        Iterator<Edge> i = edges.iterator();
+        Edge e;
+        while (i.hasNext()) {
+            e = i.next();
+            if(e.firstNode().equals(node)){
+                edges.remove(e);
+            }
+        }
     }
 
     @Override
@@ -80,23 +88,48 @@ public class Graph implements IGraph {
     @Override
     public Edge addEdge(Node a, Node b) {
         Edge e = new DEdge(a, b);
-        vertexMap.get(a).put(b, 0); ///!!!!!?????
+        vertexMap.get(a).put(b, 0);///???
         edges.add(e);
         return e;
     }
 
     @Override
     public void removeEdge(Edge edge) {
+        edges.remove(edge);
+        Node now_first_node = edge.firstNode();
+        Node now_second_node = edge.secondNode();
+        vertexMap.get(now_first_node).remove(now_second_node, vertexMap.get(now_first_node).get(now_second_node));
     }
 
     @Override
     public Edge getEdgeBetween(Node a, Node b) {
-        return null;
+        Iterator<Edge> i = edges.iterator();
+        Edge e;
+        while (i.hasNext()){
+            e = i.next();
+            if(e.firstNode().equals(a)){
+                if(e.secondNode().equals(b)){
+                    return e;
+                }
+            }
+        }
+        //Вернуть исключение???
+        e = null;
+        return e;
     }
 
     @Override
     public Iterable<Edge> getEdgesFrom(Node node) {
-        return null;
+        Set<Edge> node_edges = new HashSet<>();
+        Iterator<Edge> i = edges.iterator();
+        Edge e;
+        while(i.hasNext()){
+            e = i.next();
+            if(e.firstNode().equals(node)){
+                node_edges.add(e);
+            }
+        }
+        return node_edges;
     }
 
     @Override

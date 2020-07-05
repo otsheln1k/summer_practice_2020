@@ -39,7 +39,24 @@ public class Boruvka {
         }
         return result;
     }*/
-    private boolean hasNext(){
+    public boolean hasNext(Graph current_snapshot){
+        if(SnapShot.indexOf(current_snapshot) + 1 < SnapShot.size())
+            return true;
+        else
+            return false;
+    }
+
+    // Если нет следующеговозвращается тот же самый snashot
+    public Graph next(Graph current_snapshot){
+        if(hasNext(current_snapshot)){
+            return SnapShot.get(SnapShot.indexOf(current_snapshot)+1);
+        }
+        else{
+            return  current_snapshot;
+        }
+    }
+
+    private boolean hasNext_step(){
         if(SnapShot.size() < g.nodesCount() - amountCompanent){
             return true;
         }
@@ -48,7 +65,7 @@ public class Boruvka {
         }
     }
 
-    private Graph next(Graph snapshot, int mark){
+    private Graph next_step(Graph snapshot, int mark){
         //Выбрать мин ребро
         Iterable<IGraph.Edge> edges = g.getEdges();
         double min = 2000000;
@@ -100,8 +117,8 @@ public class Boruvka {
             snapshot.addNode();
         }
 
-        while (hasNext()){
-            snapshot = next(snapshot, mark);
+        while (hasNext_step()){
+            snapshot = next_step(snapshot, mark);
             SnapShot.add(snapshot);
             mark++;
         }
