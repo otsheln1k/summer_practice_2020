@@ -11,7 +11,7 @@ public class Boruvka {
     private int amountCompanent = 1;
     private Iterable<IGraph.Node> nodes;
 
-    public Boruvka(Graph g){
+    public Boruvka(Graph g) {
         this.g = g;
     }
 
@@ -39,90 +39,134 @@ public class Boruvka {
         }
         return result;
     }*/
-    public boolean hasNext(Graph current_snapshot){
-        if(SnapShot.indexOf(current_snapshot) + 1 < SnapShot.size())
+    public boolean hasNext(Graph current_snapshot) {
+        if (SnapShot.indexOf(current_snapshot) + 1 < SnapShot.size())
             return true;
         else
             return false;
     }
 
     // Если нет следующеговозвращается тот же самый snashot
-    public Graph next(Graph current_snapshot){
-        if(hasNext(current_snapshot)){
-            return SnapShot.get(SnapShot.indexOf(current_snapshot)+1);
-        }
-        else{
-            return  current_snapshot;
+    public Graph next(Graph current_snapshot) {
+        if (hasNext(current_snapshot)) {
+            return SnapShot.get(SnapShot.indexOf(current_snapshot) + 1);
+        } else {
+            return current_snapshot;
         }
     }
 
-    private boolean hasNext_step(){
-        if(SnapShot.size() < g.nodesCount() - amountCompanent){
+    private boolean hasNext_step(Graph snapshot) {
+        if (snapshot.edgesCount() < g.nodesCount() - amountCompanent) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    private Graph next_step(Graph snapshot, int mark){
+    private Graph next_step(Graph snapshot, int mark) {
         //Выбрать мин ребро
+        //System.out.println("ШАГ");
         Iterable<IGraph.Edge> edges = g.getEdges();
         double min = 2000000;
+        boolean flag_add_edge = false;
         IGraph.Edge edge = null;
-        for(IGraph.Edge e: edges){
-            if(e.getWeight() < min){
+        for (IGraph.Edge e : edges) {
+            if (e.getWeight() < min) {
                 min = e.getWeight();
                 edge = e;
             }
         }
+
+        //for(IGraph.Edge e1: edges){
+        //    System.out.println(e1.firstNode().getTitle() + " " + e1.secondNode().getTitle() + " " + e1.getWeight());
+        //}
         //Проверить на группу
-        if(componentMap.get(edge.firstNode()) == 0 && componentMap.get(edge.firstNode()) == 0) {
-            edge.setWeight(2000000);
+        /*Set<IGraph.Node> ln = componentMap.keySet();
+        for(IGraph.Node ig: ln){
+            if(edge.firstNode().equals(ig)){
+                System.out.println(edge.firstNode().getTitle() + " " + "First");
+                System.out.println(componentMap.get(edge.firstNode()));
+                componentMap.put(edge.firstNode(), mark);
+            }
+            if(edge.secondNode().equals(ig)){
+                System.out.println(edge.secondNode().getTitle() + " " + "Second");
+                System.out.println(componentMap.get(edge.secondNode()));
+                componentMap.put(edge.secondNode(), mark);
+            }
+        }*/
+        //////
+        //System.out.println("Найденое ребро " + edge.firstNode().getTitle() + " " + edge.secondNode().getTitle() + " " + edge.getWeight());
+        if (componentMap.get(edge.firstNode()).equals(0) && componentMap.get(edge.secondNode()).equals(0)) {
             componentMap.put(edge.firstNode(), mark);
             componentMap.put(edge.secondNode(), mark);
             //Добавить в snapshot
-            snapshot.addEdge(edge.firstNode(), edge.secondNode());
-        }
-        else {
-            if(componentMap.get(edge.firstNode()) * componentMap.get(edge.firstNode()) == 0){
-                mark = Math.max(componentMap.get(edge.firstNode()), componentMap.get(edge.firstNode()));
-                edge.setWeight(2000000);
+            snapshot.addEdge(edge.firstNode(), edge.secondNode()).setWeight(edge.getWeight());
+            flag_add_edge = true;
+            //System.out.println("Добавили ребро: " + edge.firstNode().getTitle() + " " + edge.secondNode().getTitle() + " " + edge.getWeight());
+            edge.setWeight(2000000);
+            //System.out.println("Обе вершины ребра имели метки 0");
+            //System.out.println("Метки теперь: " + componentMap.get(edge.firstNode()) + " " + componentMap.get(edge.secondNode()));
+        } else {
+            //System.out.println("Первый else");
+            //System.out.println(componentMap.get(edge.firstNode()) + " " + componentMap.get(edge.secondNode()));
+            //System.out.println(componentMap.get(edge.firstNode()) * componentMap.get(edge.secondNode()));
+            if (componentMap.get(edge.firstNode()) * componentMap.get(edge.secondNode()) == 0) {
+                mark = Math.max(componentMap.get(edge.firstNode()), componentMap.get(edge.secondNode()));
+                //System.out.println("Метки вершин: " + componentMap.get(edge.firstNode()) + " " + componentMap.get(edge.secondNode()));
+                //System.out.println("Ставим метку " + mark);
                 componentMap.put(edge.firstNode(), mark);
                 componentMap.put(edge.secondNode(), mark);
                 //Добавить в snapshot
-                snapshot.addEdge(edge.firstNode(), edge.secondNode());
-            }
-            else {
-                if(!componentMap.get(edge.firstNode()).equals(componentMap.get(edge.firstNode()))) {
-                    mark = Math.min(componentMap.get(edge.firstNode()), componentMap.get(edge.firstNode()));
-                    edge.setWeight(2000000);
+                snapshot.addEdge(edge.firstNode(), edge.secondNode()).setWeight(edge.getWeight());
+                flag_add_edge = true;
+                //System.out.println("Добавили ребро: " + edge.firstNode().getTitle() + " " + edge.secondNode().getTitle() + " " + edge.getWeight());
+                edge.setWeight(2000000);
+                //System.out.println("Одна из вершин ребра имела метку 0");
+                //System.out.println("Метки теперь: " + componentMap.get(edge.firstNode()) + " " + componentMap.get(edge.secondNode()));
+            } else {
+                //System.out.println("Второй else");
+                //System.out.println(componentMap.get(edge.firstNode()).equals(componentMap.get(edge.secondNode())));
+                if (componentMap.get(edge.firstNode()) != componentMap.get(edge.secondNode())) {
+                    mark = Math.min(componentMap.get(edge.firstNode()), componentMap.get(edge.secondNode()));
+                    //System.out.println("Метки вершин: " + componentMap.get(edge.firstNode()) + " " + componentMap.get(edge.secondNode()));
+                    //System.out.println("Ставим метку " + mark);
                     componentMap.put(edge.firstNode(), mark);
                     componentMap.put(edge.secondNode(), mark);
                     //Добавить в snapshot
-                    snapshot.addEdge(edge.firstNode(), edge.secondNode());
+                    snapshot.addEdge(edge.firstNode(), edge.secondNode()).setWeight(edge.getWeight());
+                    flag_add_edge = true;
+                    //System.out.println("Добавили ребро: " + edge.firstNode().getTitle() + " " + edge.secondNode().getTitle() + " " + edge.getWeight());
+                    edge.setWeight(2000000);
+                    //System.out.println("Ни одна из вершин ребра имела метку 0");
+                    //System.out.println("Метки теперь: " + componentMap.get(edge.firstNode()) + " " + componentMap.get(edge.secondNode()));
                 }
             }
         }
-        return snapshot;
+        //////
+        if (flag_add_edge) {
+            return snapshot;
+        } else {
+            edge.setWeight(2000000);
+            return snapshot;
+        }
     }
 
-    public void boruvka(){
+    public void boruvka() {
 
-        Graph snapshot = new Graph();
-        int mark = 0;
         Iterable<IGraph.Node> nodes = g.getNodes();
+        Graph snapshot = new Graph();
+        int mark = 1;
 
-        for(int i = 0; i < g.getSize(); i++){
-            snapshot.addNode();
+        for (IGraph.Node n : nodes) {
+            IGraph.Node nnode = snapshot.addNode();
+            nnode.setTitle(n.getTitle());
+            componentMap.put(n, 0);
         }
 
-        while (hasNext_step()){
+        while (hasNext_step(snapshot)) {
             snapshot = next_step(snapshot, mark);
-            SnapShot.add(snapshot);
             mark++;
         }
+        SnapShot.add(snapshot);
     }
-
-
 }
