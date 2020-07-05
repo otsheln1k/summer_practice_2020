@@ -67,6 +67,9 @@ public class SimpleGraph implements IGraph {
 	@Override
 	public void removeNode(Node node) {
 		nodes.remove(node);
+		for (Edge e : getEdgesFrom(node)) {
+			removeEdge(e);
+		}
 	}
 
 	@Override

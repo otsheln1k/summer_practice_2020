@@ -27,4 +27,31 @@ public class GraphGeneratorFacade {
 				new AlphabetNodeNameGenerator());
 		gen.generateGraph(g);
 	}
+
+	private GraphEdgeGenerator makeUnconnectedNEdgesGenerator(int edgesCount) {
+		return new ShuffleGraphEdgeGenerator(edgesCount);
+	}
+
+	private GraphEdgeGenerator makeConnectedNEdgesGenerator(int nodesCount,
+			int edgesCount) {
+		GraphEdgeGenerator g1 = new DividerSpanningTreeEdgeGenerator();
+		GraphEdgeGenerator g2 = new ShuffleGraphEdgeGenerator(
+				edgesCount - nodesCount + 1);
+		return g -> {
+			g1.generateEdges(g);
+			g2.generateEdges(g);
+		};
+	}
+
+	public void generateGraphByNEdges(IGraph g,
+			int nodesCount, int edgesCount, boolean connected) {
+		// TODO: check that edgesCount >= nodesCount - 1 if connected
+		GraphEdgeGenerator edgeGen = connected ? makeConnectedNEdgesGenerator(nodesCount, edgesCount)
+				: makeUnconnectedNEdgesGenerator(edgesCount);
+		GraphGenerator gen = new GraphGenerator(
+				nodesCount, edgeGen,
+				() -> rng.nextDouble() * 24 + 1,
+				new AlphabetNodeNameGenerator());
+		gen.generateGraph(g);
+	}
 }
