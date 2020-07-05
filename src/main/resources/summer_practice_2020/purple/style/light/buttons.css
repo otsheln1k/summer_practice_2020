@@ -8,14 +8,14 @@
     -fx-text-fill: #fff;
 }
 
-.button#back {
+.button#previous {
     -fx-border-radius: 5px 0px 0px 5px;
     -fx-background-radius: 5px 0px 0px 5px;
     -fx-border-width: 0 1px 0 0;
     -fx-pref-width: 45px;
 }
 
-.button#play-pause {
+.button#play_pause {
     -fx-border-radius: 0px;
     -fx-background-radius: 0px;
     -fx-border-width: 0;

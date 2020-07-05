@@ -9,29 +9,28 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="MainWindow" xmlns="http://javafx.com/javafx/10.0.2">
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
-            <AnchorPane id="Canva" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="375.0" prefWidth="424.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="176.0" AnchorPane.topAnchor="0.0">
-                  <Canvas height="200.0" layoutX="101.0" layoutY="37.0" width="200.0" />
-            </AnchorPane>
-            <AnchorPane id="Control_block" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                  <Button id="visualize" mnemonicParsing="false" prefHeight="25.0" prefWidth="114.0" text="Визуализировать" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0" />
-                  <ListView id="list" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="124.0" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0" />
-                  <Button id="back" mnemonicParsing="false" text="⏴" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" />
-                  <Button id="play-pause" mnemonicParsing="false" text="⏯" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="55.0" />
-                  <Button id="stop" mnemonicParsing="false" text="⏹" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="100.0" />
-                  <Button id="next" mnemonicParsing="false" text="⏵" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="145.0" />
-                  <Slider id="speed-control" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
-            </AnchorPane>
-      </AnchorPane>
+<AnchorPane id="MainWindow" xmlns="http://javafx.com/javafx/10.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="summer_practice_2020.purple.Controller">
       <MenuBar layoutY="2.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <Menu mnemonicParsing="false" text="Граф">
-                <MenuItem id="import" mnemonicParsing="false" text="Импортировать" />
+                  <MenuItem id="import" mnemonicParsing="false" text="Импортировать" />
                   <MenuItem id="export" mnemonicParsing="false" text="Экспортировать" />
             </Menu>
             <Menu mnemonicParsing="false" text="Помощь">
-                <MenuItem id="help" mnemonicParsing="false" text="Как это работает?" />
+                  <MenuItem id="help" mnemonicParsing="false" text="Как это работает?" />
                   <MenuItem id="about" mnemonicParsing="false" text="О создателях" />
             </Menu>
       </MenuBar>
+      <AnchorPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="26.0">
+            <AnchorPane  id="canvas_container" fx:id="canvas_container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="0.0">
+                  <Canvas id="canvas" fx:id="canvas" />
+            </AnchorPane>
+            <AnchorPane id="control_block" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <ListView id="list" fx:id="list" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="124.0" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0" />
+                  <Slider id="speed_control" fx:id="speed_control" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+                  <Button id="previous" fx:id="previous" mnemonicParsing="false" text="⏴" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" />
+                  <Button id="play_pause" fx:id="play_pause" mnemonicParsing="false" text="⏯" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="55.0" />
+                  <Button id="stop" fx:id="stop" mnemonicParsing="false" text="⏹" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="100.0" />
+                  <Button id="next" fx:id="next" mnemonicParsing="false" text="⏵" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="145.0" />
+            </AnchorPane>
+      </AnchorPane>
 </AnchorPane>
