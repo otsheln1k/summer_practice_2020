@@ -6,6 +6,11 @@ public interface IGraph {
         double getWeight();
         Node firstNode();
         Node secondNode();
+        
+        public default Node otherNode(Node n) {
+        	Node f = firstNode();
+        	return (n == f) ? secondNode() : f;
+        }
     }
 
     public interface Node {
