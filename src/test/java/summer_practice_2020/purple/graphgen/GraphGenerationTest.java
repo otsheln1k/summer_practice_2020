@@ -38,47 +38,65 @@ class GraphGenerationTest {
 			for (IGraph.Edge e : g.getEdgesFrom(i)) {
 				IGraph.Node o =
 						(e.firstNode() == i) ? e.secondNode() : e.firstNode();
-				if (s.add(o)) {
-					q.add(o);
-				}
+						if (s.add(o)) {
+							q.add(o);
+						}
 			}
 		}
 
 		assertEquals(count, s.size());
 	}
-	
+
+	@Test
+	void testNoDuplicateEdges() {
+		final int nNodes = 10;
+
+		IGraph g = new SimpleGraph();
+		for (int i = 0; i < nNodes; i++) {
+			g.addNode();
+		}
+
+		// should only generate nNodes*(nNodes-1)/2
+		GraphEdgeGenerator gen =
+				new ShuffleGraphEdgeGenerator(nNodes*(nNodes-1));
+
+		gen.generateEdges(g);
+
+		assertEquals(nNodes*(nNodes-1)/2, g.edgesCount());
+	}
+
 	@Test
 	void testAlphabetNameGenerator() {
 		final int alpha_size = 26;
-		
+
 		GraphNodeNameGenerator gen = new AlphabetNodeNameGenerator();
 		assertEquals("A", gen.generateName());
-		
+
 		final int skip = 15;
 		for (int i = 0; i < skip; i++) {
 			gen.generateName();
 		}
-		
+
 		assertEquals(String.valueOf((char)('A'+1+skip)), gen.generateName());
-		
+
 		final int skip2 = alpha_size-2-skip;
 		for (int i = 0; i < skip2; i++) {
 			gen.generateName();
 		}
-		
+
 		assertEquals("AA", gen.generateName());
-		
+
 		for (int i = 0; i < alpha_size-1; i++) {
 			gen.generateName();
 		}
-		
+
 		assertEquals("BA", gen.generateName());
-		
+
 		final int skip3 = alpha_size * (alpha_size-1) - 2;
 		for (int i = 0; i < skip3; i++) {
 			gen.generateName();
 		}
-		
+
 		assertEquals("ZZ", gen.generateName());
 		assertEquals("AAA", gen.generateName());
 	}
