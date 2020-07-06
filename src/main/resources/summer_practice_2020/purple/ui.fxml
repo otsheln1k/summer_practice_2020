@@ -9,11 +9,14 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
 
+<?import javafx.scene.control.SeparatorMenuItem?>
 <AnchorPane id="MainWindow" xmlns="http://javafx.com/javafx/10.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="summer_practice_2020.purple.Controller">
       <MenuBar layoutY="2.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <Menu mnemonicParsing="false" text="Граф">
-                  <MenuItem id="import" mnemonicParsing="false" text="Импортировать" />
-                  <MenuItem id="export" mnemonicParsing="false" text="Экспортировать" />
+                  <MenuItem fx:id="generateGraph" mnemonicParsing="false" text="Сгенерировать" />
+                  <SeparatorMenuItem />
+                  <MenuItem fx:id="importGraph" mnemonicParsing="false" text="Импортировать" />
+                  <MenuItem fx:id="exportGraph" mnemonicParsing="false" text="Экспортировать" />
             </Menu>
             <Menu mnemonicParsing="false" text="Помощь">
                   <MenuItem id="help" mnemonicParsing="false" text="Как это работает?" />
