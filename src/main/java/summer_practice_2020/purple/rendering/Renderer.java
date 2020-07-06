@@ -8,6 +8,7 @@ import summer_practice_2020.purple.IGraph;
 import javafx.scene.shape.ArcType;
 
 import java.util.Random;
+import java.util.Set;
 import java.util.Timer;
 
 
@@ -15,6 +16,7 @@ public class Renderer {
     Canvas workingCanvas;
     GraphicsContext graphicsContext;
     Graph graph;
+    Set<IGraph.Edge> edgeSet;
 
     public Renderer(Canvas canvas) {
         this.workingCanvas = canvas;
@@ -28,7 +30,12 @@ public class Renderer {
     }
 
     public void setGraph(Graph graph) {
+        this.setEdgeSet(null);
         this.graph = graph;
+    }
+
+    public void setEdgeSet(Set<IGraph.Edge> edgeSet) {
+        this.edgeSet = edgeSet;
     }
 
     public void drawGraph() {
@@ -74,11 +81,26 @@ public class Renderer {
     }
 
     public void drawEdge(Edge edge) {
-        this.graphicsContext.setLineWidth(3);
         Node node1 = edge.getNode1();
         Node node2 = edge.getNode2();
+        if (this.edgeSet != null && this.edgeSet.contains(edge.getEdge())) {
+            this.graphicsContext.setLineWidth(7);
+        } else if (this.edgeSet == null) {
+            this.graphicsContext.setLineWidth(3);
+        } else {
+            this.graphicsContext.setLineWidth(1);
+        }
+
         this.graphicsContext.setStroke(node1.getColor());
-        this.graphicsContext.strokeLine(node1.getPosx() + (node1.getTitle().length() + 2) * 6, node1.getPosy() + (node1.getTitle().length() + 2) * 6, node2.getPosx() + (node2.getTitle().length() + 2) * 6, node2.getPosy() + (node2.getTitle().length() + 2) * 6);
+        this.graphicsContext.strokeLine(node1.getPosx() + (node1.getTitle().
+
+                length() + 2) * 6, node1.getPosy() + (node1.getTitle().
+
+                length() + 2) * 6, node2.getPosx() + (node2.getTitle().
+
+                length() + 2) * 6, node2.getPosy() + (node2.getTitle().
+
+                length() + 2) * 6);
     }
 
     public void testFunc() {
