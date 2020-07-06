@@ -184,11 +184,15 @@ public class Boruvka {
         //SnapShot.add(snapshot);
     }
 
-    public Iterable<IGraph.Edge> getSnapShotSet(){
+    //public Iterable<IGraph.Edge> getSnapShotSet(){
+    //    return SnapShot;
+    //}
+
+    public Set<IGraph.Edge> resultEdgeSet(){
         return SnapShot;
     }
 
-    public HashMap<IGraph.Node, Integer> getComponentMap(){
-        return componentMap;
-    }
+    //public HashMap<IGraph.Node, Integer> getComponentMap(){
+    //    return componentMap;
+    //}
 }
