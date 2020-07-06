@@ -1,6 +1,6 @@
-package summer_practice_2020.purple;
+package summer_practice_2020.purple.graphgen;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayDeque;
 import java.util.HashSet;
@@ -8,6 +8,9 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+
+import summer_practice_2020.purple.IGraph;
+import summer_practice_2020.purple.SimpleGraph;
 
 class GraphGenerationTest {
 

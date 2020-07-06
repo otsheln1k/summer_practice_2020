@@ -1,4 +1,6 @@
-package summer_practice_2020.purple;
+package summer_practice_2020.purple.graphgen;
+
+import summer_practice_2020.purple.IGraph;
 
 public class GraphGenerator {
 	private final int nodesCount;
