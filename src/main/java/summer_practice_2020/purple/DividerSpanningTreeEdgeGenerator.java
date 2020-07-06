@@ -7,7 +7,7 @@ import java.util.Random;
 public class DividerSpanningTreeEdgeGenerator implements GraphEdgeGenerator {
 	private final Random rng = new Random();
 
-	private void generateList(IGraph g, List<Graph.Node> s) {
+	private void generateList(IGraph g, List<IGraph.Node> s) {
 		if (s.size() < 2) {
 			return;
 		}
