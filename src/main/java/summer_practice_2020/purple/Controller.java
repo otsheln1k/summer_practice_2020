@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import summer_practice_2020.purple.rendering.Renderer;
+import summer_practice_2020.purple.graphgen.*;
 
 public class Controller {
     Graph graphToWork;
@@ -59,11 +60,10 @@ public class Controller {
 
     @FXML
     private void generateGraph(){
-        this.renderer.testFunc();
-        GraphGeneratorFacade facade= new GraphGeneratorFacade();
-        facade.generateGraph(this.graphToWork, 5, true);
+        new GraphGeneratorFacade().generateGraph(this.graphToWork, 5, true);
         this.renderer.setGraph(this.graphToWork);
         this.renderer.drawGraph();
+        System.out.println("generated");
     }
 
 }
