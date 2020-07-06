@@ -114,8 +114,14 @@ public class Boruvka {
                 //System.out.println(componentMap.get(edge.firstNode()).equals(componentMap.get(edge.secondNode())));
                 if(componentMap.get(edge.firstNode()) != componentMap.get(edge.secondNode())) {
                     mark = Math.min(componentMap.get(edge.firstNode()), componentMap.get(edge.secondNode()));
+                    int not_mark = Math.max(componentMap.get(edge.firstNode()), componentMap.get(edge.secondNode()));
                     //System.out.println("Метки вершин: " + componentMap.get(edge.firstNode()) + " " + componentMap.get(edge.secondNode()));
                     //System.out.println("Ставим метку " + mark);
+                    for(Map.Entry<IGraph.Node, Integer> e: componentMap.entrySet()){
+                        if(e.getValue().equals(not_mark)){
+                            componentMap.put(e.getKey(), mark);
+                        }
+                    }
                     componentMap.put(edge.firstNode(), mark);
                     componentMap.put(edge.secondNode(), mark);
                     //Добавить в snapshot
