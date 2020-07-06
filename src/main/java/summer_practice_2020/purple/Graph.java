@@ -1,5 +1,4 @@
 package summer_practice_2020.purple;
-
 import java.util.*;
 
 public class Graph implements IGraph {
@@ -88,7 +87,6 @@ public class Graph implements IGraph {
     @Override
     public Edge addEdge(Node a, Node b) {
         Edge e = new DEdge(a, b);
-        vertexMap.get(a).put(b, 0);///???
         edges.add(e);
         return e;
     }
