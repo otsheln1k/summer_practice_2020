@@ -97,7 +97,8 @@ public class SimpleGraph implements IGraph {
 	@Override
 	public Edge getEdgeBetween(Node a, Node b) {
 		return edges.stream()
-				.filter(e -> e.firstNode() == a && e.secondNode() == b)
+				.filter(e -> e.firstNode() == a && e.secondNode() == b
+						|| e.firstNode() == b && e.secondNode() == a)
 				.findFirst().orElse(null);
 	}
 	
