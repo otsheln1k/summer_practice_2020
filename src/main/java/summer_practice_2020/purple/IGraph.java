@@ -6,8 +6,6 @@ package summer_practice_2020.purple;
             double getWeight();
             Node firstNode();
             Node secondNode();
-
-            Node otherNode(Node n);
         }
 
         interface Node {

@@ -1,12 +1,10 @@
 package summer_practice_2020.purple;
 
 import javafx.collections.FXCollections;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import summer_practice_2020.purple.rendering.Renderer;
@@ -14,6 +12,7 @@ import summer_practice_2020.purple.rendering.Renderer;
 public class Controller {
     Graph graphToWork;
     boolean isGraphBlocked;
+    Renderer renderer;
 
     @FXML
     private MenuItem generateGraph;
@@ -40,10 +39,10 @@ public class Controller {
 
     @FXML
     private void initialize() {
-        Renderer renderer = new Renderer(this.canvas);
-        isGraphBlocked = false;
+        this.renderer = new Renderer(this.canvas);
+        this.isGraphBlocked = false;
 
-        generateGraph.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> new GraphGeneratorFacade().generateGraph(this.graphToWork, 5, true));
+        generateGraph.setOnAction(e -> this.generateGraph());
 
         play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             this.isGraphBlocked = true;
@@ -52,11 +51,19 @@ public class Controller {
         });
 
         stop.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            renderer.clear();
+            this.renderer.clear();
             list.setItems(FXCollections.observableArrayList());
             this.isGraphBlocked = false;
         });
     }
 
+    @FXML
+    private void generateGraph(){
+        this.renderer.testFunc();
+        GraphGeneratorFacade facade= new GraphGeneratorFacade();
+        facade.generateGraph(this.graphToWork, 5, true);
+        this.renderer.setGraph(this.graphToWork);
+        this.renderer.drawGraph();
+    }
 
 }

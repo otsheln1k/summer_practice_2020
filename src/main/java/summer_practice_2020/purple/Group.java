@@ -11,7 +11,7 @@ public class Group {
 		for (IGraph.Node n : nodes) {
 			this.nodes.add(n);
 			for (IGraph.Edge e : g.getEdgesFrom(n)) {
-				IGraph.Node m = e.otherNode(n);
+				IGraph.Node m = e.firstNode().equals(n) ? e.secondNode() : e.firstNode();
 				if (this.nodes.contains(m)) {
 					this.edges.add(e);
 				}
@@ -21,11 +21,12 @@ public class Group {
 	
 	// copy ctor
 	public Group(Group grp) {
-		grp.nodes.forEach(this.nodes::add);
-		grp.edges.forEach(this.edges::add);
+		this.nodes.addAll(grp.nodes);
+		this.edges.addAll(grp.edges);
 	}
 	
-	public Group clone() {
+	public Group clone() throws CloneNotSupportedException {
+		Group clone = (Group) super.clone();
 		return new Group(this);
 	}
 	
