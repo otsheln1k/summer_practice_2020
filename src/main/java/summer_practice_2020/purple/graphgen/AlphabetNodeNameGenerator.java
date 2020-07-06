@@ -1,4 +1,4 @@
-package summer_practice_2020.purple;
+package summer_practice_2020.purple.graphgen;
 
 public class AlphabetNodeNameGenerator implements GraphNodeNameGenerator {
 	private StringBuilder next = new StringBuilder("A");
