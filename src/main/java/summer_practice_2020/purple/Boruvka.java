@@ -5,7 +5,7 @@ import java.lang.Math.*;
 
 public class Boruvka {
 
-    private Graph g;
+    private IGraph g;
     private HashMap<IGraph.Node, Integer> componentMap = new HashMap<IGraph.Node, Integer>();
     //private List<Graph> SnapShot = new ArrayList<Graph>();
     private int amountCompanent = 1;
@@ -13,7 +13,7 @@ public class Boruvka {
     private List<IGraph.Edge> list = new ArrayList<IGraph.Edge>();
     private Set<IGraph.Edge> SnapShot = new HashSet<IGraph.Edge>();
 
-    public Boruvka(Graph g) {
+    public Boruvka(IGraph g) {
         this.g = g;
     }
 
@@ -156,7 +156,7 @@ public class Boruvka {
     public void boruvka() {
 
         Iterable<IGraph.Node> nodes = g.getNodes();
-        Graph snapshot = new Graph();
+        //Graph snapshot = new Graph();
         g.getEdges().forEach(list::add);
         //System.out.println("LIST");
         Collections.sort(list, this::MyCompare);
@@ -169,8 +169,8 @@ public class Boruvka {
         int num = 0;
 
         for (IGraph.Node n : nodes) {
-            IGraph.Node nnode = snapshot.addNode();
-            nnode.setTitle(n.getTitle());
+            //IGraph.Node nnode = snapshot.addNode();
+            //nnode.setTitle(n.getTitle());
             componentMap.put(n, 0);
         }
 
