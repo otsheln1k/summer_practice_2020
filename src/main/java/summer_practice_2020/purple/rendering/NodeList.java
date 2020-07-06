@@ -1,5 +1,6 @@
 package summer_practice_2020.purple.rendering;
 
+import javafx.scene.paint.Color;
 import summer_practice_2020.purple.IGraph;
 
 public class NodeList {
@@ -25,11 +26,11 @@ public class NodeList {
         this.nodeList = tmp;
     }
 
-    public void addNode(IGraph.Node node, double posx, double posy) {
+    public void addNode(IGraph.Node node, double posx, double posy, Color color) {
         if (this.index == this.size) {
             this.extend();
         }
-        this.nodeList[this.index++] = new Node(node, posx, posy);
+        this.nodeList[this.index++] = new Node(node, posx, posy, color);
     }
 
     public Node[] getNodeArray() {

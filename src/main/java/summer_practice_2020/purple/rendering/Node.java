@@ -1,23 +1,26 @@
 package summer_practice_2020.purple.rendering;
 
+import javafx.scene.paint.Color;
 import summer_practice_2020.purple.IGraph;
 
 public class Node {
     private IGraph.Node node;
     private double posx;
     private double posy;
+    private Color color;
 
-    public Node(IGraph.Node node, double posx, double posy) {
+    public Node(IGraph.Node node, double posx, double posy, Color color) {
         this.node = node;
         this.posx = posx;
         this.posy = posy;
+        this.color = color;
     }
 
-    public String getTitle(){
+    public String getTitle() {
         return this.node.getTitle();
     }
 
-    public IGraph.Node getNode(){
+    public IGraph.Node getNode() {
         return this.node;
     }
 
@@ -29,11 +32,19 @@ public class Node {
         this.posy = y;
     }
 
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
     public double getPosx() {
         return this.posx;
     }
 
     public double getPosy() {
         return this.posy;
+    }
+
+    public Color getColor() {
+        return this.color;
     }
 }

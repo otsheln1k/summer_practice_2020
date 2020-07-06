@@ -60,6 +60,7 @@ public class Controller {
 
     @FXML
     private void generateGraph(){
+        this.graphToWork = new Graph();
         new GraphGeneratorFacade().generateGraph(this.graphToWork, 5, true);
         this.renderer.setGraph(this.graphToWork);
         this.renderer.drawGraph();

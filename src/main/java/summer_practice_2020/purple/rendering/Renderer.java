@@ -7,14 +7,14 @@ import summer_practice_2020.purple.Graph;
 import summer_practice_2020.purple.IGraph;
 import javafx.scene.shape.ArcType;
 
+import java.util.Random;
+import java.util.Timer;
+
 
 public class Renderer {
     Canvas workingCanvas;
     GraphicsContext graphicsContext;
     Graph graph;
-
-    double nextposx = 10;
-    double nextposy = 10;
 
     public Renderer(Canvas canvas) {
         this.workingCanvas = canvas;
@@ -34,14 +34,18 @@ public class Renderer {
     public void drawGraph() {
         NodeList nodeList = new NodeList(graph.nodesCount());
         EdgeList edgeList = new EdgeList(graph.edgesCount());
+        double angle = 90.0;
+        double angleStep = 360.0 / graph.nodesCount();
+        double posx;
+        double posy;
+        Random r = new Random();
+        r.setSeed(System.currentTimeMillis());
 
         for (IGraph.Node node : this.graph.getNodes()) {
-            this.nextposx += (node.getTitle().length() + 2) * 12;
-            if (this.nextposx > this.workingCanvas.getWidth()) {
-                this.nextposx = 10;
-                this.nextposy += 50;
-            }
-            nodeList.addNode(node, this.nextposx, this.nextposy);
+            posx = 150 + 75 * Math.cos(2 * Math.PI / 360 * angle);
+            posy = 150 - 75 * Math.sin(2 * Math.PI / 360 * angle);
+            angle += angleStep;
+            nodeList.addNode(node, posx, posy, Color.rgb((int) (r.nextDouble() * 155) + 100, 0, (int) (r.nextDouble() * 155) + 100));
         }
 
         for (IGraph.Edge edge : this.graph.getEdges()) {
@@ -62,20 +66,22 @@ public class Renderer {
 
 
     public void drawNode(Node node) {
-        this.graphicsContext.setFill(Color.rgb(255, 255, 0));
+        this.graphicsContext.setFill(node.getColor());
+        this.graphicsContext.setLineWidth(1);
+        this.graphicsContext.setStroke(Color.rgb(0, 0, 0));
         this.graphicsContext.fillOval(node.getPosx(), node.getPosy(), (node.getTitle().length() + 2) * 12, (node.getTitle().length() + 2) * 12);
-        this.graphicsContext.fillText(node.getTitle(), node.getPosx() + 12, node.getPosy() / 2 + 6);
+        this.graphicsContext.strokeText(node.getTitle(), node.getPosx() + 12, node.getPosy() + ((float) (node.getTitle().length() + 2) * 8));
     }
 
     public void drawEdge(Edge edge) {
-        this.graphicsContext.setFill(Color.rgb(255, 0, 255));
+        this.graphicsContext.setLineWidth(3);
         Node node1 = edge.getNode1();
         Node node2 = edge.getNode2();
-        this.graphicsContext.moveTo(node1.getPosx() + (node1.getTitle().length() + 2) * 6, node1.getPosy() + (node1.getTitle().length() + 2) * 6);
-        this.graphicsContext.lineTo(node2.getPosx() + (node2.getTitle().length() + 2) * 6, node2.getPosy() + (node2.getTitle().length() + 2) * 6);
+        this.graphicsContext.setStroke(node1.getColor());
+        this.graphicsContext.strokeLine(node1.getPosx() + (node1.getTitle().length() + 2) * 6, node1.getPosy() + (node1.getTitle().length() + 2) * 6, node2.getPosx() + (node2.getTitle().length() + 2) * 6, node2.getPosy() + (node2.getTitle().length() + 2) * 6);
     }
 
-    public void testFunc(){
+    public void testFunc() {
         graphicsContext.setFill(Color.GREEN);
         graphicsContext.setStroke(Color.BLUE);
         graphicsContext.setLineWidth(5);
