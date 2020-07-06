@@ -1,16 +1,18 @@
 package summer_practice_2020.purple;
 
+import java.util.Set;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
 import summer_practice_2020.purple.rendering.Renderer;
-import summer_practice_2020.purple.graphgen.*;
-import java.util.Set;
-
-import java.util.Set;
 
 public class Controller {
     Graph graphToWork;
