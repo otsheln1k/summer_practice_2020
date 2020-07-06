@@ -189,7 +189,8 @@ public class Boruvka {
     //}
 
     public Set<IGraph.Edge> resultEdgeSet(){
-        return SnapShot;
+        Set<IGraph.Edge> fixed = Collections.unmodifiableSet( new HashSet<IGraph.Edge>(SnapShot) );
+        return fixed;
     }
 
     //public HashMap<IGraph.Node, Integer> getComponentMap(){
