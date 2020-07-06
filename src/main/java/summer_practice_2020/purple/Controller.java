@@ -1,7 +1,6 @@
 package summer_practice_2020.purple;
 
 import javafx.collections.FXCollections;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
@@ -9,6 +8,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import summer_practice_2020.purple.rendering.Renderer;
 import summer_practice_2020.purple.graphgen.*;
+import java.util.Set;
+
+import java.util.Set;
 
 public class Controller {
     Graph graphToWork;
@@ -49,6 +51,10 @@ public class Controller {
             this.isGraphBlocked = true;
             Boruvka boruvka = new Boruvka(this.graphToWork);
             boruvka.boruvka();
+            Set<IGraph.Edge> edges = boruvka.resultEdgeSet();
+            this.renderer.setEdgeSet(edges);
+            this.renderer.clear();
+            this.renderer.drawGraph();
         });
 
         stop.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
