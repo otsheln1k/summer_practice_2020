@@ -1,19 +1,19 @@
 package summer_practice_2020.purple;
 
 import java.util.*;
-import java.lang.Math.*;
 
 public class Boruvka {
 
-    private IGraph g;
+    private Graph g;
     private HashMap<IGraph.Node, Integer> componentMap = new HashMap<IGraph.Node, Integer>();
-    //private List<Graph> SnapShot = new ArrayList<Graph>();
     private int amountCompanent = 1;
     private Iterable<IGraph.Node> nodes;
     private List<IGraph.Edge> list = new ArrayList<IGraph.Edge>();
     private Set<IGraph.Edge> SnapShot = new HashSet<IGraph.Edge>();
+    private List<BoruvkaSnapshot> blist = new ArrayList<BoruvkaSnapshot>();
+    private int step = 0;
 
-    public Boruvka(IGraph g) {
+    public Boruvka(Graph g) {
         this.g = g;
     }
 
@@ -45,21 +45,6 @@ public class Boruvka {
             }
         }
         return result;
-    }*/
-    /*public boolean hasNext(Graph current_snapshot) {
-        if (SnapShot.indexOf(current_snapshot) + 1 < SnapShot.size())
-            return true;
-        else
-            return false;
-    }
-
-    // Если нет следующеговозвращается тот же самый snashot
-    public Graph next(Graph current_snapshot) {
-        if (hasNext(current_snapshot)) {
-            return SnapShot.get(SnapShot.indexOf(current_snapshot) + 1);
-        } else {
-            return current_snapshot;
-        }
     }*/
 
     private boolean hasNext_step() {
@@ -150,13 +135,12 @@ public class Boruvka {
             edge.setWeight(2000000);
             return snapshot;
         }*/
-        //return snapshot;
     }
 
     public void boruvka() {
 
         Iterable<IGraph.Node> nodes = g.getNodes();
-        //Graph snapshot = new Graph();
+        Graph snapshot = new Graph();
         g.getEdges().forEach(list::add);
         //System.out.println("LIST");
         Collections.sort(list, this::MyCompare);
@@ -169,8 +153,8 @@ public class Boruvka {
         int num = 0;
 
         for (IGraph.Node n : nodes) {
-            //IGraph.Node nnode = snapshot.addNode();
-            //nnode.setTitle(n.getTitle());
+            IGraph.Node nnode = snapshot.addNode();
+            nnode.setTitle(n.getTitle());
             componentMap.put(n, 0);
         }
 
@@ -178,22 +162,41 @@ public class Boruvka {
         while (hasNext_step()) {
             edge = list.get(num);
             next_step(mark, edge);
+            blist.add(BoruvkaSnapshot.fromMapAndSet(componentMap, SnapShot));
             mark++;
             num++;
+
         }
         //SnapShot.add(snapshot);
     }
 
-    //public Iterable<IGraph.Edge> getSnapShotSet(){
-    //    return SnapShot;
-    //}
-
-    public Set<IGraph.Edge> resultEdgeSet(){
-        Set<IGraph.Edge> fixed = Collections.unmodifiableSet( new HashSet<IGraph.Edge>(SnapShot) );
-        return fixed;
+    public Iterable<IGraph.Edge> getSnapShotSet(){
+        return SnapShot;
     }
 
-    //public HashMap<IGraph.Node, Integer> getComponentMap(){
-    //    return componentMap;
-    //}
+    public Set<IGraph.Edge> resultEdgeSet(){
+        return SnapShot;
+    }
+
+    public HashMap<IGraph.Node, Integer> getComponentMap(){
+        return componentMap;
+    }
+
+    public boolean hasNext() {
+        if(step < SnapShot.size()){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public void setStep(int st){
+        step = st;
+    }
+
+    public BoruvkaSnapshot next() {
+        step++;
+        return blist.get(step-1);
+    }
 }
