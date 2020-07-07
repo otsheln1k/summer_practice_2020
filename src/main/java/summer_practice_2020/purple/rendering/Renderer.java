@@ -2,14 +2,15 @@ package summer_practice_2020.purple.rendering;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import summer_practice_2020.purple.Graph;
 import summer_practice_2020.purple.IGraph;
 import javafx.scene.shape.ArcType;
 
 import java.util.Random;
 import java.util.Set;
-import java.util.Timer;
 
 
 public class Renderer {
@@ -17,6 +18,7 @@ public class Renderer {
     GraphicsContext graphicsContext;
     Graph graph;
     Set<IGraph.Edge> edgeSet;
+    Node[] nodes;
 
     public Renderer(Canvas canvas) {
         this.workingCanvas = canvas;
@@ -60,14 +62,14 @@ public class Renderer {
         }
 
         Edge[] edges = edgeList.getEdgeArray();
-        Node[] nodes = nodeList.getNodeArray();
+        this.nodes = nodeList.getNodeArray();
 
         for (int i = 0; i < edgeList.getEdgeArray().length; i++) {
             drawEdge(edges[i]);
         }
 
         for (int i = 0; i < nodeList.getNodeArray().length; i++) {
-            drawNode(nodes[i]);
+            drawNode(this.nodes[i]);
         }
     }
 
@@ -76,8 +78,9 @@ public class Renderer {
         this.graphicsContext.setFill(node.getColor());
         this.graphicsContext.setLineWidth(1);
         this.graphicsContext.setStroke(Color.rgb(0, 0, 0));
-        this.graphicsContext.fillOval(node.getPosx(), node.getPosy(), (node.getTitle().length() + 2) * 12, (node.getTitle().length() + 2) * 12);
-        this.graphicsContext.strokeText(node.getTitle(), node.getPosx() + 12, node.getPosy() + ((float) (node.getTitle().length() + 2) * 8));
+        this.graphicsContext.fillOval(node.getPosx(), node.getPosy(), node.getRadius() * 2, node.getRadius() * 2);
+        this.graphicsContext.strokeOval(node.getPosx(), node.getPosy(), node.getRadius() * 2, node.getRadius() * 2);
+        this.graphicsContext.strokeText(node.getTitle(), node.getPosx() + 12, node.getPosy() + node.getRadius() * 1.5);
     }
 
     public void drawEdge(Edge edge) {
@@ -101,6 +104,30 @@ public class Renderer {
                 length() + 2) * 6, node2.getPosy() + (node2.getTitle().
 
                 length() + 2) * 6);
+    }
+
+    public Node isNodePosition(double posx, double posy) {
+        /*
+          Function returns Node, if it is situated in given position.
+          Else returns null.
+         */
+
+        double nodePosX;
+        double nodePosy;
+        double width;
+        if (graph != null) {
+            for (Node node : nodes) {
+                nodePosX = node.getPosx();
+                nodePosy = node.getPosy();
+                width = node.getRadius() * 2;
+                if (posx >= nodePosX && posx < nodePosX + width) {
+                    if (posy >= nodePosy && posy < nodePosy + width) {
+                        return node;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public void testFunc() {

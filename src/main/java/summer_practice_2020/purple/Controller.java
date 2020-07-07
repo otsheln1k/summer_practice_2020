@@ -5,10 +5,8 @@ import java.util.Set;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
@@ -46,6 +44,7 @@ public class Controller {
     private void initialize() {
         this.renderer = new Renderer(this.canvas);
         this.isGraphBlocked = false;
+        this.graphToWork = new Graph();
 
         generateGraph.setOnAction(e -> this.generateGraph());
 
@@ -60,15 +59,43 @@ public class Controller {
         });
 
         stop.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            this.renderer.setEdgeSet(null);
             this.renderer.clear();
+            this.renderer.drawGraph();
             list.setItems(FXCollections.observableArrayList());
             this.isGraphBlocked = false;
+        });
+
+        canvas_container.setOnMouseClicked(e-> {
+            ContextMenu menu = new ContextMenu();
+            MenuItem rename = new MenuItem("Переименовать вершину");
+            MenuItem deleteNode = new MenuItem("Удалить вершину");
+            MenuItem deleteEdge = new MenuItem("Удалить ребро");
+            MenuItem[] edgeList = new MenuItem[0];
+            menu.getItems().addAll(rename, deleteNode, deleteEdge);
+            if (e.getButton() == MouseButton.PRIMARY) {
+                System.out.println("Primary at x = " + e.getX() + " y = " + e.getY());
+                if (renderer.isNodePosition(e.getX(), e.getY()) != null){
+                    menu.show(canvas_container, e.getScreenX(), e.getScreenY());
+                } else {
+                    IGraph.Node addedNode = this.graphToWork.addNode();
+                    addedNode.setTitle("name");
+                    addedNode.setPosX(e.getX());
+                    addedNode.setPosY(e.getY());
+                    renderer.drawGraph();
+                }
+            } else if (e.getButton() == MouseButton.SECONDARY) {
+                System.out.println("Secondary at x = " + e.getX() + " y = " + e.getY());
+                if (renderer.isNodePosition(e.getX(), e.getY()) != null){
+                    menu.show(canvas_container, e.getScreenX(), e.getScreenY());
+                }
+
+            }
         });
     }
 
     @FXML
     private void generateGraph(){
-        this.graphToWork = new Graph();
         new GraphGeneratorFacade().generateGraph(this.graphToWork, 5, true);
         this.renderer.setGraph(this.graphToWork);
         this.renderer.drawGraph();

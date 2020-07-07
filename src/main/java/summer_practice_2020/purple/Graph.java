@@ -1,14 +1,17 @@
 package summer_practice_2020.purple;
+
 import java.util.*;
 
 public class Graph implements IGraph {
 
 
-    private final HashMap<Node, Map<Node, Integer>> vertexMap = new HashMap<Node, Map<Node, Integer>>();
+    private final HashMap<Node, Map<Node, Integer>> vertexMap = new HashMap<>();
     private final Set<Edge> edges = new HashSet<>();
 
     private static class DNode implements IGraph.Node {
         private String title = "";
+        private double posX = -1;
+        private double posY = -1;
 
         @Override
         public String getTitle() {
@@ -20,6 +23,25 @@ public class Graph implements IGraph {
             this.title = title;
         }
 
+        @Override
+        public void setPosX(double posX) {
+            this.posX = posX;
+        }
+
+        @Override
+        public void setPosY(double posY) {
+            this.posY = posY;
+        }
+
+        @Override
+        public double getPosX() {
+            return this.posX;
+        }
+
+        @Override
+        public double getPosY() {
+            return posY;
+        }
     }
 
     private static class DEdge implements IGraph.Edge {
@@ -57,7 +79,7 @@ public class Graph implements IGraph {
     @Override
     public Node addNode() {
         Node n = new DNode();
-        vertexMap.put(n, new HashMap<Node, Integer>());
+        vertexMap.put(n, new HashMap<>());
         return n;
     }
 
@@ -68,7 +90,7 @@ public class Graph implements IGraph {
         Edge e;
         while (i.hasNext()) {
             e = i.next();
-            if(e.firstNode().equals(node)){
+            if (e.firstNode().equals(node)) {
                 edges.remove(e);
             }
         }
@@ -103,10 +125,10 @@ public class Graph implements IGraph {
     public Edge getEdgeBetween(Node a, Node b) {
         Iterator<Edge> i = edges.iterator();
         Edge e;
-        while (i.hasNext()){
+        while (i.hasNext()) {
             e = i.next();
-            if(e.firstNode().equals(a)){
-                if(e.secondNode().equals(b)){
+            if (e.firstNode().equals(a)) {
+                if (e.secondNode().equals(b)) {
                     return e;
                 }
             }
@@ -121,9 +143,9 @@ public class Graph implements IGraph {
         Set<Edge> node_edges = new HashSet<>();
         Iterator<Edge> i = edges.iterator();
         Edge e;
-        while(i.hasNext()){
+        while (i.hasNext()) {
             e = i.next();
-            if(e.firstNode().equals(node)){
+            if (e.firstNode().equals(node)) {
                 node_edges.add(e);
             }
         }
@@ -144,7 +166,7 @@ public class Graph implements IGraph {
         return vertexMap;
     }
 
-    public Integer getSize(){
+    public Integer getSize() {
         return vertexMap.size();
     }
 }
