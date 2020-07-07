@@ -10,15 +10,19 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import summer_practice_2020.purple.IGraph;
-import summer_practice_2020.purple.SimpleGraph;
+import summer_practice_2020.purple.Graph;
 
 class GraphGenerationTest {
+	
+	private static IGraph createEmptyGraph() {
+		return new Graph();
+	}
 
 	@Test
 	void testDividerSpanningTree() {
 		final int count = 25;
 
-		IGraph g = new SimpleGraph();
+		IGraph g = createEmptyGraph();
 		IGraph.Node n = g.addNode();
 		for (int i = 0; i < count-1; i++) {
 			g.addNode();
@@ -48,10 +52,10 @@ class GraphGenerationTest {
 	}
 
 	@Test
-	void testNoDuplicateEdges() {
+	void testNoDuplicateEdgesInShuffleGenerator() {
 		final int nNodes = 10;
 
-		IGraph g = new SimpleGraph();
+		IGraph g = createEmptyGraph();
 		for (int i = 0; i < nNodes; i++) {
 			g.addNode();
 		}
@@ -59,6 +63,23 @@ class GraphGenerationTest {
 		// should only generate nNodes*(nNodes-1)/2
 		GraphEdgeGenerator gen =
 				new ShuffleGraphEdgeGenerator(nNodes*(nNodes-1));
+
+		gen.generateEdges(g);
+
+		assertEquals(nNodes*(nNodes-1)/2, g.edgesCount());
+	}
+
+	@Test
+	void testNoDuplicateEdgesInSimpleGenerator() {
+		final int nNodes = 10;
+
+		IGraph g = createEmptyGraph();
+		for (int i = 0; i < nNodes; i++) {
+			g.addNode();
+		}
+
+		// should only generate nNodes*(nNodes-1)/2
+		GraphEdgeGenerator gen = new SimpleGraphEdgeGenerator(1.0);
 
 		gen.generateEdges(g);
 
