@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Boruvka {
 
-    private Graph g;
+    private IGraph g;
     private HashMap<IGraph.Node, Integer> componentMap = new HashMap<IGraph.Node, Integer>();
     private int amountCompanent = 1;
     private Iterable<IGraph.Node> nodes;
@@ -13,7 +13,7 @@ public class Boruvka {
     private List<BoruvkaSnapshot> blist = new ArrayList<BoruvkaSnapshot>();
     private int step = 0;
 
-    public Boruvka(Graph g) {
+    public Boruvka(IGraph g) {
         this.g = g;
     }
 

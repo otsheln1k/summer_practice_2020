@@ -20,7 +20,6 @@ class GraphTest {
 
 	static IGraph createEmptyGraph() {
 		return new Graph();
-		//return new SimpleGraph();
 	}
 
 	static int randomInt(int min, int max) {
