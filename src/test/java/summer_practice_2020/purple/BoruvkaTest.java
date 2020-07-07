@@ -112,7 +112,6 @@ class BoruvkaTest {
 	@RepeatedTest(10)
 	void testResultIsSpanningTree() {
 		int nNodes = randomInt(50, 100);
-		//		int nNodes = 5;
 		IGraph g = createEmptyGraph();
 		generateConnectedGraph(g, nNodes);
 

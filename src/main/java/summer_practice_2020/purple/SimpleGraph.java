@@ -94,9 +94,17 @@ public class SimpleGraph implements IGraph {
 
 	@Override
 	public Edge addEdge(Node a, Node b) {
+		if (a == b) {
+			throw new IllegalArgumentException(
+					"tried to add a loop edge");
+		}
 		if (!nodes.contains(a) || !nodes.contains(b)) {
 			throw new NoSuchElementException(
 					"cannot add edge to nonexistant node");
+		}
+		if (getEdgeBetween(a, b) != null) {
+			throw new IllegalArgumentException(
+					"tried to add a duplicate edge");
 		}
 		Edge e = new SimpleEdge(a, b);
 		edges.add(e);
