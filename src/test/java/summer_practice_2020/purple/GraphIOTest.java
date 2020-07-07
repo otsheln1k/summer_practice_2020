@@ -17,10 +17,14 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class GraphIOTest {
+	
+	private static IGraph createEmptyGraph() {
+		return new Graph();
+	}
 
 	@Test
 	void testWriteGraph() {
-		IGraph g = new SimpleGraph();
+		IGraph g = createEmptyGraph();
 		IGraph.Node n1 = g.addNode();
 		IGraph.Node n2 = g.addNode();
 		IGraph.Node n3 = g.addNode();
@@ -59,7 +63,7 @@ class GraphIOTest {
 				"node a A\nnode b B\nnode c C\nedge a b 0.75\nedge a c 1.5\n";
 		ByteArrayInputStream s = new ByteArrayInputStream(input.getBytes());
 
-		IGraph g = new SimpleGraph();
+		IGraph g = createEmptyGraph();
 		GraphIO.readGraph(s, g);
 
 		assertEquals(3, g.nodesCount());
