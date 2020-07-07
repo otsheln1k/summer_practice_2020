@@ -5,14 +5,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>summer_practice_2020.purple</groupId>
-  <artifactId>test-javafx-app</artifactId>
+  <artifactId>summer-practice-2020-purple</artifactId>
   <version>1.0</version>
 
   <packaging>jar</packaging>
 
-  <name>test-javafx-app</name>
-  <description>A test JavaFX graphical app.</description>
-  <url>https://github.com/otsheln1k/hellojavafx</url>
+  <url>https://github.com/otsheln1k/summer_practice_2020</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -69,7 +67,7 @@
   </dependencies>
 
   <build>
-    <finalName>test-javafx</finalName>
+    <finalName>boruvka</finalName>
 
     <plugins>
 
@@ -126,4 +124,6 @@
     </plugins>
   </build>
 
+  <name>summer_practice_2020</name>
+  <description>A visualization of Boruvka's algorithm.</description>
 </project>

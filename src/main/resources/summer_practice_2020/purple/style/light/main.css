@@ -15,8 +15,10 @@
     -fx-background-color: #e0e0e0;
 }
 
-#Canva {
+#canvas_container {
     -fx-background-color: #fff;
+    -fx-pref-height: 375px;
+    -fx-pref-width: 400px;
 }
 
 #Control_block {

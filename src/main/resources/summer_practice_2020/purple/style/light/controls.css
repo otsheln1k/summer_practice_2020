@@ -1,10 +1,10 @@
 @import url("buttons.css");
 
-#speed-control{
+#speed_control{
     -fx-major-tick-unit: 25;
     -fx-minor-tick-count: 1;
 }
 
-#speed-control .thumb{
+#speed_control .thumb{
     -fx-background-color: #18a0d6;
 }

@@ -76,7 +76,7 @@ public class Graph implements IGraph {
 
     @Override
     public Iterable<Node> getNodes() {
-        return (new ArrayList(vertexMap.keySet()));
+        return vertexMap.keySet();
     }
 
     @Override
