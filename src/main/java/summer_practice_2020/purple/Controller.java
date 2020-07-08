@@ -1,10 +1,13 @@
 package summer_practice_2020.purple;
 
+import java.util.Optional;
 import java.util.Set;
 
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
@@ -12,21 +15,30 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import javafx.util.Pair;
 import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
+import summer_practice_2020.purple.rendering.Edge;
 import summer_practice_2020.purple.rendering.Node;
 import summer_practice_2020.purple.rendering.Renderer;
 
 public class Controller {
     Graph graphToWork;
     Renderer renderer;
+
     boolean isGraphBlocked;
     boolean nodeMoveMode;
+    boolean addEdgeMode;
+
     Node selectedNode;
+    Node nodeForEdge;
+    Edge selectedEdge;
 
     @FXML
     private MenuItem generateGraph;
@@ -55,6 +67,7 @@ public class Controller {
     private void initialize() {
         this.isGraphBlocked = false;
         this.nodeMoveMode = false;
+        this.addEdgeMode = false;
         this.graphToWork = new Graph();
         this.renderer = new Renderer(this.canvas);
         renderer.setGraph(this.graphToWork);
@@ -91,13 +104,12 @@ public class Controller {
 
         canvas_container.setOnMouseClicked(e -> {
             ContextMenu menu = new ContextMenu();
-            MenuItem rename = new MenuItem("Переименовать вершину");
             MenuItem deleteNode = new MenuItem("Удалить вершину");
-            MenuItem deleteEdge = new MenuItem("Удалить ребро");
-            MenuItem[] edgeList = new MenuItem[0];
+            MenuItem addEdge = new MenuItem("Добавить ребро");
+            MenuItem rename = new MenuItem("Переименовать вершину");
             TextArea newName = new TextArea();
 
-            menu.getItems().addAll(rename, deleteNode, deleteEdge);
+            menu.getItems().addAll(deleteNode, addEdge, rename);
             newName.getOnKeyPressed();
 
             this.selectedNode = renderer.isNodePosition(e.getX(), e.getY());
@@ -107,47 +119,51 @@ public class Controller {
                 this.renderer.drawGraph();
             });
 
-            rename.setOnAction(g -> {
-                Stage nameEditStage = new Stage();
-                Pane root = new Pane();
-                TextField textField = new TextField();
-                root.getChildren().addAll(textField);
-                Scene nameEditScene = new Scene(root);
-                nameEditStage.setScene(nameEditScene);
-                nameEditStage.setX(e.getScreenX());
-                nameEditStage.setY(e.getScreenY());
-                nameEditStage.setAlwaysOnTop(true);
-                nameEditStage.initModality(Modality.APPLICATION_MODAL);
-                nameEditStage.initStyle(StageStyle.UNDECORATED);
-                nameEditStage.show();
-
-                textField.setOnKeyPressed(f -> {
-                    if (f.getCode() == KeyCode.ENTER) {
-                        this.selectedNode.getNode().setTitle(textField.getText());
-                        this.renderer.drawGraph();
-                        nameEditStage.close();
-                    }
-                });
+            addEdge.setOnAction(g -> {
+                this.nodeForEdge = this.selectedNode;
+                this.addEdgeMode = true;
             });
+
+            rename.setOnAction(g -> this.editPole(e));
 
             if (e.getButton() == MouseButton.PRIMARY) {
                 System.out.println("Primary at x = " + e.getX() + " y = " + e.getY());
-                if (this.selectedNode == null) {
-                    IGraph.Node addedNode = this.graphToWork.addNode();
-                    addedNode.setTitle("name");
-                    addedNode.setPosX(e.getX());
-                    addedNode.setPosY(e.getY());
-                    renderer.drawGraph();
-                } else {
-                    this.nodeMoveMode = true;
+                if (!addEdgeMode) {
+                    if (this.selectedNode == null) {
+                        this.selectedEdge = this.renderer.isEdgePosition(e.getX(), e.getY());
+                        if (this.selectedEdge == null) {
+                            IGraph.Node addedNode = this.graphToWork.addNode();
+                            addedNode.setTitle("name");
+                            addedNode.setPosX(e.getX());
+                            addedNode.setPosY(e.getY());
+                            renderer.drawGraph();
+                        } else {
+                            editPole(e);
+                        }
+                    } else {
+                        this.nodeMoveMode = true;
+                    }
+                } else if (this.selectedNode != null) {
+                    if (!this.selectedNode.equals(this.nodeForEdge)) {
+                        IGraph.Edge edge = this.graphToWork.addEdge(this.selectedNode.getNode(), this.nodeForEdge.getNode());
+                        edge.setWeight(0);
+                        this.addEdgeMode = false;
+                        this.renderer.drawGraph();
+                    }
                 }
             } else if (e.getButton() == MouseButton.SECONDARY) {
                 System.out.println("Secondary at x = " + e.getX() + " y = " + e.getY());
-                if (renderer.isNodePosition(e.getX(), e.getY()) != null) {
+                if (this.selectedNode != null) {
                     if (this.nodeMoveMode) {
                         this.nodeMoveMode = false;
                     } else {
                         menu.show(canvas_container, e.getScreenX(), e.getScreenY());
+                    }
+                } else {
+                    this.selectedEdge = this.renderer.isEdgePosition(e.getX(), e.getY());
+                    if (this.selectedEdge != null) {
+                        this.graphToWork.removeEdge(this.selectedEdge.getEdge());
+                        this.renderer.drawGraph();
                     }
                 }
 
@@ -155,11 +171,75 @@ public class Controller {
         });
     }
 
+    private void editPole(MouseEvent e) {
+        Stage editStage = new Stage();
+        Pane root = new Pane();
+        TextField textField = new TextField();
+        root.getChildren().addAll(textField);
+        Scene editScene = new Scene(root);
+        editStage.setScene(editScene);
+        editStage.setX(e.getScreenX());
+        editStage.setY(e.getScreenY());
+        editStage.setAlwaysOnTop(true);
+        editStage.initModality(Modality.APPLICATION_MODAL);
+        editStage.initStyle(StageStyle.UNDECORATED);
+        editStage.show();
+
+        textField.setOnKeyPressed(f -> {
+            if (f.getCode() == KeyCode.ENTER) {
+                if (this.selectedNode != null) {
+                    this.selectedNode.getNode().setTitle(textField.getText());
+                } else {
+                    this.selectedEdge.getEdge().setWeight(Double.parseDouble(textField.getText()));
+                }
+                this.renderer.drawGraph();
+                editStage.close();
+            }
+        });
+    }
+
+
     @FXML
     private void generateGraph() {
-        new GraphGeneratorFacade().generateGraph(this.graphToWork, 5, true);
-        this.renderer.drawGraph();
-        System.out.println("generated");
+        Stage dialog = new Stage();
+        dialog.setTitle("Параметры генерации");
+        VBox root = new VBox();
+
+        TextField nodesCount = new TextField();
+        nodesCount.setPromptText("Введите количество верщин");
+        CheckBox connected = new CheckBox();
+        connected.setAllowIndeterminate(false);
+
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(20, 150, 10, 10));
+
+        gridPane.add(new Label("Количество вершин:"), 0, 0);
+        gridPane.add(nodesCount, 1, 0);
+        gridPane.add(new Label("Соединить вершины:"), 0, 1);
+        gridPane.add(connected, 1, 1);
+
+        Button submit = new Button("Принять");
+        submit.setDefaultButton(true);
+
+        root.getChildren().addAll(gridPane, submit);
+
+        Scene scene = new Scene(root);
+
+        dialog.setScene(scene);
+
+        dialog.show();
+
+        submit.setOnAction(e -> {
+            this.graphToWork = new Graph();
+            this.renderer.setGraph(this.graphToWork);
+            new GraphGeneratorFacade().generateGraph(this.graphToWork,
+                    Integer.parseInt(nodesCount.getText()), connected.isSelected());
+            this.renderer.drawGraph();
+            System.out.println("generated " + connected.isSelected());
+            dialog.close();
+        });
     }
 
 }

@@ -20,6 +20,7 @@ public class Renderer {
     Graph graph;
     Set<IGraph.Edge> edgeSet;
     Node[] nodes;
+    Edge[] edges;
 
     public Renderer(Canvas canvas) {
         this.workingCanvas = canvas;
@@ -66,7 +67,7 @@ public class Renderer {
             edgeList.addEdge(edge, nodeList.getNodeArray());
         }
 
-        Edge[] edges = edgeList.getEdgeArray();
+        this.edges = edgeList.getEdgeArray();
         this.nodes = nodeList.getNodeArray();
 
         clear();
@@ -121,15 +122,37 @@ public class Renderer {
         this.graphicsContext.strokeText(Integer.toString(approximatedValueofWeight), node1.getPosx() + middlePosX - String.valueOf(approximatedValueofWeight).length() * 6, node1.getPosy() + middlePosY + 3);
     }
 
-    public Node isNodePosition(double posx, double posy) {
-        /*
-          Function returns Node, if it is situated in given position.
-          Else returns null.
-         */
+    public Edge isEdgePosition(double posx, double posy) {
+        double edgePosX;
+        double edgePosY;
+        Node node1;
+        Node node2;
+        double middlePosX;
+        double middlePosY;
+        int approximatedValueofWeight;
+        if (graph != null && this.edges != null) {
+            for (Edge edge : this.edges) {
+                node1 = edge.getNode1();
+                node2 = edge.getNode2();
+                middlePosX = (node2.getPosx() - node1.getPosx()) / 2;
+                middlePosY = (node2.getPosy() - node1.getPosy()) / 2;
+                approximatedValueofWeight = (int) edge.getWeight();
+                edgePosX = node1.getPosx() + middlePosX -
+                        (String.valueOf(approximatedValueofWeight).length() + 1) * 6;
+                edgePosY = node1.getPosy() + middlePosY - 10;
+                if(posx >= edgePosX && posx < edgePosX + (String.valueOf(Math.round(edge.getWeight())).length() + 2) * 6) {
+                    if (posy >= edgePosY && posy < edgePosY + 15) {
+                        return edge;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
+    public Node isNodePosition(double posx, double posy) {
         double nodePosX;
         double nodePosy;
-        double width;
         if (graph != null && this.nodes != null) {
             for (Node node : this.nodes) {
                 nodePosX = node.getPosx();
