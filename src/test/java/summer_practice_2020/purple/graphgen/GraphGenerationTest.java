@@ -163,8 +163,9 @@ class GraphGenerationTest {
 	void testComponentsWithNEdges() {
 		final int nodesCount = randomInt(100, 200);
 		final int compsCount = randomInt(3, 10);
-		final int moreNodes = randomInt(1, 200);
-		final int edgesCount = nodesCount - compsCount + moreNodes;
+		final int moreEdges = randomInt(1, 200);
+
+		final int edgesCount = nodesCount - compsCount + moreEdges;
 
 		IGraph g = createEmptyGraph();
 		GraphGeneratorFacade gen = new GraphGeneratorFacade();
@@ -179,7 +180,7 @@ class GraphGenerationTest {
 		for (Set<IGraph.Node> nodes : nodeSets) {
 			Set<IGraph.Edge> edges = nodeSetEdges(g, nodes);
 			int size = edges.size();
-			assertTrue(size <= nodes.size() - 1 + moreNodes);
+			assertTrue(size <= nodes.size() - 1 + moreEdges);
 		}
 	}
 
