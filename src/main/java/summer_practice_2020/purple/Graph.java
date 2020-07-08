@@ -8,6 +8,8 @@ public class Graph implements IGraph  {
 
     private static class DNode implements IGraph.Node {
         private String title = "";
+        private double posX = -1;
+        private double posY = -1;
 
         @Override
         public String getTitle() {
@@ -19,6 +21,25 @@ public class Graph implements IGraph  {
             this.title = title;
         }
 
+        @Override
+        public void setPosX(double posX) {
+            this.posX = posX;
+        }
+
+        @Override
+        public void setPosY(double posY) {
+            this.posY = posY;
+        }
+
+        @Override
+        public double getPosX() {
+            return this.posX;
+        }
+
+        @Override
+        public double getPosY() {
+            return posY;
+        }
     }
 
     private static class DEdge implements IGraph.Edge {
@@ -115,7 +136,7 @@ public class Graph implements IGraph  {
 
     @Override
     public Iterable<Edge> getEdgesFrom(Node node) {
-        Set<Edge> fromNode = new HashSet<Edge>();
+        Set<Edge> fromNode = new HashSet<>();
         for(Edge e: edges){
             if(e.firstNode() == node || e.secondNode() == node){
                 fromNode.add(e);

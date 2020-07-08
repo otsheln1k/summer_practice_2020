@@ -15,7 +15,7 @@ public class Node {
         this.posx = posx;
         this.posy = posy;
         this.color = color;
-        this.radius = (node.getTitle().length() + 2) * 6;
+        this.radius = (node.getTitle().length() + 1) * 6;
     }
 
     public String getTitle() {
@@ -34,6 +34,10 @@ public class Node {
         this.posy = y;
     }
 
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
     public void setColor(Color color) {
         this.color = color;
     }
@@ -50,5 +54,9 @@ public class Node {
 
     public Color getColor() {
         return this.color;
+    }
+
+    public void updateRadius(){
+        this.radius =  (node.getTitle().length() + 1) * 6;
     }
 }
