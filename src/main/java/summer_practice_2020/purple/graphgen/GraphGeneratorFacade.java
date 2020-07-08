@@ -8,12 +8,12 @@ public class GraphGeneratorFacade {
 	private final Random rng = new Random();
 
 	private GraphEdgeGenerator makeUnconnectedGenerator() {
-		return new SimpleGraphEdgeGenerator(0.6);
+		return new SimpleGraphEdgeGenerator(0.3);
 	}
 
 	private GraphEdgeGenerator makeConnectedGenerator() {
 		GraphEdgeGenerator g1 = new DividerSpanningTreeEdgeGenerator();
-		GraphEdgeGenerator g2 = new SimpleGraphEdgeGenerator(0.5);
+		GraphEdgeGenerator g2 = new SimpleGraphEdgeGenerator(0.2);
 		return g -> {
 			g1.generateEdges(g);
 			g2.generateEdges(g);
