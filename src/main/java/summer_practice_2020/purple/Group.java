@@ -43,4 +43,8 @@ public class Group {
 	public boolean isEmpty() {
 		return nodes.isEmpty();
 	}
+
+	public Set<IGraph.Node> getNodesGroup(){
+		return nodes;
+	}
 }
