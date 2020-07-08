@@ -1,9 +1,6 @@
 package summer_practice_2020.purple;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class BoruvkaSnapshot {
 	private final List<Group> groups = new ArrayList<>();
@@ -28,5 +25,23 @@ public class BoruvkaSnapshot {
 	
 	public boolean getEdgePicked(IGraph.Edge e) {
 		return pickedEdges.contains(e);
+	}
+
+	public static BoruvkaSnapshot fromMapAndSet(
+			Map<IGraph.Node, Integer> compMap,
+			Set<IGraph.Edge> edges) {
+		Map<Integer, Group> groupMap = new HashMap<>();
+
+		for (Map.Entry<IGraph.Node, Integer> e
+				: compMap.entrySet()) {
+			Group grp = groupMap.compute(e.getValue(),
+					(x, pgrp) -> (pgrp == null) ? new Group() : pgrp);
+			grp.addNode(e.getKey());
+		}
+
+		return new BoruvkaSnapshot(
+				groupMap.values(),
+				new BoruvkaFinalStep(),
+				edges);
 	}
 }

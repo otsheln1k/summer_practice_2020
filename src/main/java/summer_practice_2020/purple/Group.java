@@ -5,36 +5,42 @@ import java.util.Set;
 
 public class Group {
 	private final Set<IGraph.Node> nodes = new HashSet<>();
-	private final Set<IGraph.Edge> edges = new HashSet<>();
-	
-	public Group(IGraph g, Iterable<IGraph.Node> nodes) {
-		for (IGraph.Node n : nodes) {
-			this.nodes.add(n);
-			for (IGraph.Edge e : g.getEdgesFrom(n)) {
-				IGraph.Node m = e.firstNode().equals(n) ? e.secondNode() : e.firstNode();
-				if (this.nodes.contains(m)) {
-					this.edges.add(e);
-				}
-			}
-		}
-	}
-	
-	// copy ctor
-	public Group(Group grp) {
-		this.nodes.addAll(grp.nodes);
-		this.edges.addAll(grp.edges);
-	}
-	
-	public Group clone() throws CloneNotSupportedException {
-		Group clone = (Group) super.clone();
-		return new Group(this);
-	}
-	
-	Iterable<IGraph.Edge> getEdges() {
-		return edges;
+
+	public Group() {
 	}
 
-	Iterable<IGraph.Node> getNodes() {
+	public Group(Iterable<IGraph.Node> nodes) {
+		nodes.forEach(this.nodes::add);
+	}
+
+	// copy ctor
+	public Group(Group grp) {
+		grp.nodes.forEach(this.nodes::add);
+	}
+
+	public Group clone() {
+		return new Group(this);
+	}
+
+	public boolean hasEdge(IGraph.Edge e) {
+		return nodes.contains(e.firstNode())
+				&& nodes.contains(e.secondNode());
+	}
+
+	public void addNode(IGraph.Node node) {
+		nodes.add(node);
+	}
+
+	public Iterable<IGraph.Node> getNodes() {
 		return nodes;
+	}
+
+	public void merge(Group g) {
+		g.nodes.forEach(this.nodes::add);
+		g.nodes.clear();
+	}
+
+	public boolean isEmpty() {
+		return nodes.isEmpty();
 	}
 }
