@@ -24,6 +24,7 @@ import summer_practice_2020.purple.graphgen.AlphabetNodeNameGenerator;
 import summer_practice_2020.purple.graphgen.DividerSpanningTreeEdgeGenerator;
 import summer_practice_2020.purple.graphgen.GraphEdgeGenerator;
 import summer_practice_2020.purple.graphgen.GraphEdgeWeightGenerator;
+import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
 import summer_practice_2020.purple.graphgen.GraphNodeNameGenerator;
 import summer_practice_2020.purple.graphgen.SimpleGraphEdgeGenerator;
 
@@ -111,7 +112,7 @@ class BoruvkaTest {
 
 	@RepeatedTest(10)
 	void testResultIsSpanningTree() {
-		int nNodes = randomInt(50, 100);
+		final int nNodes = randomInt(50, 100);
 		IGraph g = createEmptyGraph();
 		generateConnectedGraph(g, nNodes);
 
@@ -235,7 +236,7 @@ class BoruvkaTest {
 
 	@RepeatedTest(10)
 	void testResultIsOptimal() {
-		int nNodes = randomInt(5, 8);
+		final int nNodes = randomInt(5, 8);
 		IGraph g = createEmptyGraph();
 		generateConnectedGraph(g, nNodes);
 		Node start = someNode(g);
@@ -266,7 +267,73 @@ class BoruvkaTest {
 			assertFalse(weight < answerWeight);
 		}
 	}
+	
+	
+	@Test
+	void testNoEdges() {
+		final int nNodes = 100;
+		IGraph g = createEmptyGraph();
+		for (int i = 0; i < nNodes; i++) {
+			g.addNode();
+		}
+		
+		Boruvka b = new Boruvka(g);
+		b.boruvka();
+		
+		assertEquals(nNodes, g.nodesCount());
+		assertEquals(0, b.resultEdgeSet().size());
+	}
 
-	// TODO: tests with unconnected graphs
+	private void generateComponentGraph(IGraph g, int nNodes, int nComps) {
+		GraphGeneratorFacade gen = new GraphGeneratorFacade();
+		gen.generateComponents(g, nNodes, nComps);
+	}
+
+	private Set<IGraph.Edge> nodeSetEdges(IGraph g, Set<IGraph.Node> nodes) {
+		Set<IGraph.Edge> edges = new HashSet<>();
+		for (IGraph.Node n : nodes) {
+			for (IGraph.Edge e : g.getEdgesFrom(n)) {
+				edges.add(e);
+			}
+		}
+		return edges;
+	}
+	
+	@Test
+	void testComponentsResultIsSpanningTree() {
+		final int nNodes = 100;
+		final int nComps = 5;
+		IGraph g = createEmptyGraph();
+		generateComponentGraph(g, nNodes, nComps);
+		
+		Boruvka b = new Boruvka(g);
+		b.boruvka();
+		Set<Edge> edges = b.resultEdgeSet();
+		
+		Set<Node> nodes = new HashSet<>();
+		List<Set<Edge>> edgesSets = new ArrayList<>();
+		for (Node n : g.getNodes()) {
+			if (!nodes.contains(n)) {
+				Set<Node> comp = reachableNodes(g, edges, n);
+				comp.forEach(nodes::add);
+				Set<Edge> compEdges = nodeSetEdges(g, comp);
+				edgesSets.add(compEdges);
+			}
+		}
+		
+		assertEquals(nComps, edgesSets.size());
+		
+		int totalEdges = edgesSets.stream().mapToInt(Set::size).sum();
+		assertEquals(g.edgesCount(), totalEdges);
+		
+		// Test that there are no common edges
+		for (int i = 0; i < edgesSets.size(); i++) {
+			for (int j = i+1; j < edgesSets.size(); j++) {
+				for (Edge e : edgesSets.get(j)) {
+					assertFalse(edgesSets.get(i).remove(e));
+				}
+			}
+		}
+	}
 
 }
