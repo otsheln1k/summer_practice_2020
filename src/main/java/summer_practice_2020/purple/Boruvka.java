@@ -28,15 +28,11 @@ public class Boruvka {
         for(IGraph.Edge now: g.getEdgesFrom(v)) {
             if (v.equals(now.firstNode())) {
                 if (visitedMap.get(now.secondNode()).equals("not_visited")) {
-                    System.out.println("Second = " + now.secondNode().getTitle());
-                    System.out.println();
                     dfs(now.secondNode());
                 }
             }
             else {
                 if (visitedMap.get(now.firstNode()).equals("not_visited")) {
-                    System.out.println("First = " + now.firstNode().getTitle());
-                    System.out.println();
                     dfs(now.firstNode());
                 }
             }
