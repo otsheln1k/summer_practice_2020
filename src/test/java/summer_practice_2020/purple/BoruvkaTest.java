@@ -300,7 +300,7 @@ class BoruvkaTest {
 		return edges;
 	}
 
-	@RepeatedTest(100)
+	@RepeatedTest(10)
 	void testComponentsResultIsSpanningTree() {
 		final int nNodes = randomInt(50, 400);
 		final int nComps = randomInt(5, 50);

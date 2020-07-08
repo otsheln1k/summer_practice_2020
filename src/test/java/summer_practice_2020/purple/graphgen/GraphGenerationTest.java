@@ -19,6 +19,12 @@ import summer_practice_2020.purple.IGraph;
 
 class GraphGenerationTest {
 
+	static final Random rng = new Random();
+
+	private static int randomInt(int min, int max) {
+		return rng.nextInt(max - min + 1) + min;
+	}
+
 	private static IGraph createEmptyGraph() {
 		return new Graph();
 	}
@@ -128,15 +134,9 @@ class GraphGenerationTest {
 		return nodeSets;
 	}
 
-	static final Random rng = new Random();
-	
-	private static int randomInt(int min, int max) {
-		return rng.nextInt(max - min + 1) + min;
-	}
-
 	@RepeatedTest(10)
 	void testSubgraphsFromFacade() {
-		final int nodesCount = randomInt(50, 300);
+		final int nodesCount = randomInt(50, 400);
 		final int compsCount = randomInt(5, 50);
 
 		IGraph g = createEmptyGraph();
@@ -159,11 +159,11 @@ class GraphGenerationTest {
 		return edges;
 	}
 
-	@Test
+	@RepeatedTest(10)
 	void testComponentsWithNEdges() {
-		final int nodesCount = 100;
-		final int compsCount = 10;
-		final int moreNodes = 5;
+		final int nodesCount = randomInt(100, 200);
+		final int compsCount = randomInt(3, 10);
+		final int moreNodes = randomInt(1, 200);
 		final int edgesCount = nodesCount - compsCount + moreNodes;
 
 		IGraph g = createEmptyGraph();
