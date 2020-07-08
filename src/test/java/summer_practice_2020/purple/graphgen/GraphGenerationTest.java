@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
 
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import summer_practice_2020.purple.Graph;
@@ -126,10 +128,16 @@ class GraphGenerationTest {
 		return nodeSets;
 	}
 
-	@Test
+	static final Random rng = new Random();
+	
+	private static int randomInt(int min, int max) {
+		return rng.nextInt(max - min + 1) + min;
+	}
+
+	@RepeatedTest(10)
 	void testSubgraphsFromFacade() {
-		final int nodesCount = 100;
-		final int compsCount = 5;
+		final int nodesCount = randomInt(50, 300);
+		final int compsCount = randomInt(5, 50);
 
 		IGraph g = createEmptyGraph();
 		GraphGeneratorFacade gen = new GraphGeneratorFacade();

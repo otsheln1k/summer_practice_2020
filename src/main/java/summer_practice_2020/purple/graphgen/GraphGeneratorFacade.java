@@ -79,9 +79,9 @@ public class GraphGeneratorFacade {
 	private List<Integer> distributeList(int n, int total) {
 		List<Integer> res = new ArrayList<>();
 		for (int i = 0; i < n; i++) {
-			res.add(0);
+			res.add(1);
 		}
-		randomlyDistribute(res, total);
+		randomlyDistribute(res, total - n);
 		return res;
 	}
 
