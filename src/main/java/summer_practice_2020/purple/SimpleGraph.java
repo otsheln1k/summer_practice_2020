@@ -1,12 +1,14 @@
 package summer_practice_2020.purple;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import summer_practice_2020.purple.util.FilteredIterator;
 
 public class SimpleGraph implements IGraph {
-	
+
 	private static class SimpleNode implements IGraph.Node {
 		private String title = "";
 
@@ -19,9 +21,9 @@ public class SimpleGraph implements IGraph {
 		public void setTitle(String title) {
 			this.title = title;
 		}
-		
+
 	}
-	
+
 	private static class SimpleEdge implements IGraph.Edge {
 		private double weight = 0.0;
 		private final Node a;
@@ -51,9 +53,9 @@ public class SimpleGraph implements IGraph {
 		public Node secondNode() {
 			return b;
 		}
-		
+
 	}
-	
+
 	private final Set<Node> nodes = new HashSet<>();
 	private final Set<Edge> edges = new HashSet<>();
 
@@ -66,9 +68,17 @@ public class SimpleGraph implements IGraph {
 
 	@Override
 	public void removeNode(Node node) {
-		nodes.remove(node);
-		for (Edge e : getEdgesFrom(node)) {
-			removeEdge(e);
+		if (!nodes.remove(node)) {
+			throw new NoSuchElementException(
+					"cannot remove nonexistant node");
+		}
+
+		Iterator<Edge> iter = edges.iterator();
+		while (iter.hasNext()) {
+			Edge e = iter.next();
+			if (e.firstNode() == node || e.secondNode() == node) {
+				iter.remove();
+			}
 		}
 	}
 
@@ -84,6 +94,18 @@ public class SimpleGraph implements IGraph {
 
 	@Override
 	public Edge addEdge(Node a, Node b) {
+		if (a == b) {
+			throw new IllegalArgumentException(
+					"tried to add a loop edge");
+		}
+		if (!nodes.contains(a) || !nodes.contains(b)) {
+			throw new NoSuchElementException(
+					"cannot add edge to nonexistant node");
+		}
+		if (getEdgeBetween(a, b) != null) {
+			throw new IllegalArgumentException(
+					"tried to add a duplicate edge");
+		}
 		Edge e = new SimpleEdge(a, b);
 		edges.add(e);
 		return e;
@@ -91,17 +113,21 @@ public class SimpleGraph implements IGraph {
 
 	@Override
 	public void removeEdge(Edge edge) {
-		edges.remove(edge);
+		if (!edges.remove(edge)) {
+			throw new NoSuchElementException(
+					"cannot remove nonexistant edge");
+		}
 	}
 
 	@Override
 	public Edge getEdgeBetween(Node a, Node b) {
 		return edges.stream()
-				.filter(e -> e.firstNode() == a && e.secondNode() == b
-						|| e.firstNode() == b && e.secondNode() == a)
-				.findFirst().orElse(null);
+				.filter(e -> {
+					return e.firstNode() == a && e.secondNode() == b
+							|| e.firstNode() == b && e.secondNode() == a;
+				}).findFirst().orElse(null);
 	}
-	
+
 	@Override
 	public Iterable<Edge> getEdgesFrom(Node node) {
 		return () -> new FilteredIterator<>(edges.iterator(),
