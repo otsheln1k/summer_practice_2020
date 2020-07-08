@@ -29,10 +29,8 @@ public class GraphGeneratorFacade {
 			g2.generateEdgesOnNodes(g, ns);
 		};
 	}
-
-	public void generateGraph(IGraph g, int nodesCount, boolean connected) {
-		GraphEdgeGenerator edgeGen = connected ? makeConnectedGenerator()
-				: makeUnconnectedGenerator();
+	private void generateGraphWithEdgeGen(IGraph g,
+			GraphEdgeGenerator edgeGen, int nodesCount) {
 		GraphGenerator gen = new GraphGenerator(
 				nodesCount, edgeGen,
 				makeDefaultWeightGenerator(),
@@ -40,9 +38,16 @@ public class GraphGeneratorFacade {
 		gen.generateGraph(g);
 	}
 
+	public void generateGraph(IGraph g, int nodesCount, boolean connected) {
+		GraphEdgeGenerator edgeGen = connected ? makeConnectedGenerator()
+				: makeUnconnectedGenerator();
+		generateGraphWithEdgeGen(g, edgeGen, nodesCount);
+	}
+
 	private GraphEdgeGenerator makeUnconnectedNEdgesGenerator(int edgesCount) {
 		return new ShuffleGraphEdgeGenerator(edgesCount);
 	}
+
 
 	private GraphEdgeGenerator makeConnectedNEdgesGenerator(int nodesCount,
 			int edgesCount) {
@@ -60,11 +65,7 @@ public class GraphGeneratorFacade {
 		// TODO: check that edgesCount >= nodesCount - 1 if connected
 		GraphEdgeGenerator edgeGen = connected ? makeConnectedNEdgesGenerator(nodesCount, edgesCount)
 				: makeUnconnectedNEdgesGenerator(edgesCount);
-		GraphGenerator gen = new GraphGenerator(
-				nodesCount, edgeGen,
-				() -> rng.nextDouble() * 24 + 1,
-				new AlphabetNodeNameGenerator());
-		gen.generateGraph(g);
+		generateGraphWithEdgeGen(g, edgeGen, nodesCount);
 	}
 
 	public void randomlyDistribute(List<Integer> ints, int total) {
@@ -75,19 +76,62 @@ public class GraphGeneratorFacade {
 		}
 	}
 
+	private List<Integer> distributeList(int n, int total) {
+		List<Integer> res = new ArrayList<>();
+		for (int i = 0; i < n; i++) {
+			res.add(0);
+		}
+		randomlyDistribute(res, total);
+		return res;
+	}
+
 	public void generateComponents(IGraph g, int nodesCount, int compsCount) {
 		GraphEdgeGenerator edgeGen = makeConnectedGenerator();
+
 		GraphGenerator gen = new GraphGenerator(
 				nodesCount, edgeGen,
 				makeDefaultWeightGenerator(),
 				makeDefaultNameGenerator());
 
-		List<Integer> counts = new ArrayList<>();
-		for (int i = 0; i < compsCount; i++) {
-			counts.add(0);
-		}
-		randomlyDistribute(counts, nodesCount);
+		List<Integer> counts = distributeList(compsCount, nodesCount);
 
 		gen.generateGraphComponents(g, counts);
+	}
+
+	private List<GraphEdgeGenerator> distributeEdgeGenerators(
+			List<Integer> nodeCounts, int edgesCount, int compsCount) {
+		List<Integer> genCounts = new ArrayList<>();
+		int total = edgesCount;
+
+		for (int nc : nodeCounts) {
+			genCounts.add(nc - 1);
+			total -= nc - 1;
+		}
+
+		randomlyDistribute(genCounts, total);
+
+		List<GraphEdgeGenerator> gens = new ArrayList<>();
+		for (int i = 0; i < compsCount; i++) {
+			gens.add(makeConnectedNEdgesGenerator(
+					nodeCounts.get(i), genCounts.get(i)));
+		}
+
+		return gens;
+	}
+
+	public void generateComponentsWithNEdges(IGraph g,
+			int nodesCount, int edgesCount, int compsCount) {
+
+		GraphGenerator gen = new GraphGenerator(
+				nodesCount, null,
+				makeDefaultWeightGenerator(),
+				makeDefaultNameGenerator());
+
+		List<Integer> counts = distributeList(compsCount, nodesCount);
+
+		List<GraphEdgeGenerator> gens =
+				distributeEdgeGenerators(counts, edgesCount, compsCount);
+
+		gen.generateGraphComponents(g, counts, gens);
 	}
 }

@@ -1,7 +1,7 @@
 package summer_practice_2020.purple.graphgen;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -12,8 +12,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import summer_practice_2020.purple.IGraph;
 import summer_practice_2020.purple.Graph;
+import summer_practice_2020.purple.IGraph;
 
 class GraphGenerationTest {
 
@@ -109,15 +109,7 @@ class GraphGenerationTest {
 		assertEquals(size2, s2.size());
 	}
 
-	@Test
-	void testSubgraphsFromFacade() {
-		final int nodesCount = 100;
-		final int compsCount = 5;
-
-		IGraph g = createEmptyGraph();
-		GraphGeneratorFacade gen = new GraphGeneratorFacade();
-		gen.generateComponents(g, nodesCount, compsCount);
-
+	private List<Set<IGraph.Node>> getNodeSets(IGraph g) {
 		Set<IGraph.Node> visitedNodes = new HashSet<>();
 		List<Set<IGraph.Node>> nodeSets = new ArrayList<>();
 
@@ -131,7 +123,56 @@ class GraphGenerationTest {
 			nodes.forEach(visitedNodes::add);
 		}
 
+		return nodeSets;
+	}
+
+	@Test
+	void testSubgraphsFromFacade() {
+		final int nodesCount = 100;
+		final int compsCount = 5;
+
+		IGraph g = createEmptyGraph();
+		GraphGeneratorFacade gen = new GraphGeneratorFacade();
+		gen.generateComponents(g, nodesCount, compsCount);
+
+		assertEquals(nodesCount, g.nodesCount());
+
+		List<Set<IGraph.Node>> nodeSets = getNodeSets(g);
 		assertEquals(compsCount, nodeSets.size());
+	}
+
+	private Set<IGraph.Edge> nodeSetEdges(IGraph g, Set<IGraph.Node> nodes) {
+		Set<IGraph.Edge> edges = new HashSet<>();
+		for (IGraph.Node n : nodes) {
+			for (IGraph.Edge e : g.getEdgesFrom(n)) {
+				edges.add(e);
+			}
+		}
+		return edges;
+	}
+
+	@Test
+	void testComponentsWithNEdges() {
+		final int nodesCount = 100;
+		final int compsCount = 10;
+		final int moreNodes = 5;
+		final int edgesCount = nodesCount - compsCount + moreNodes;
+
+		IGraph g = createEmptyGraph();
+		GraphGeneratorFacade gen = new GraphGeneratorFacade();
+		gen.generateComponentsWithNEdges(g, nodesCount, edgesCount, compsCount);
+
+		assertEquals(nodesCount, g.nodesCount());
+		assertEquals(edgesCount, g.edgesCount());
+
+		List<Set<IGraph.Node>> nodeSets = getNodeSets(g);
+		assertEquals(compsCount, nodeSets.size());
+
+		for (Set<IGraph.Node> nodes : nodeSets) {
+			Set<IGraph.Edge> edges = nodeSetEdges(g, nodes);
+			int size = edges.size();
+			assertTrue(size <= nodes.size() - 1 + moreNodes);
+		}
 	}
 
 	@Test

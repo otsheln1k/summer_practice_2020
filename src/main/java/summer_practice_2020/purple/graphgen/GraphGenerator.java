@@ -1,6 +1,7 @@
 package summer_practice_2020.purple.graphgen;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import summer_practice_2020.purple.IGraph;
@@ -62,6 +63,17 @@ public class GraphGenerator {
 		List<List<IGraph.Node>> nodeLists = genNodesInComponents(g, counts);
 		for (List<IGraph.Node> nodes : nodeLists) {
 			edgeGen.generateEdgesOnNodes(g, nodes);
+		}
+		genWeights(g);
+	}
+	
+	// NOTE: ignores the generator's GraphEdgeGenerator
+	public void generateGraphComponents(IGraph g, Iterable<Integer> counts,
+			Iterable<GraphEdgeGenerator> gens) {
+		Iterator<GraphEdgeGenerator> genIter = gens.iterator();
+		List<List<IGraph.Node>> nodeLists = genNodesInComponents(g, counts);
+		for (List<IGraph.Node> nodes : nodeLists) {
+			genIter.next().generateEdgesOnNodes(g, nodes);
 		}
 		genWeights(g);
 	}
