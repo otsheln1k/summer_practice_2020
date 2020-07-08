@@ -2,6 +2,7 @@ package summer_practice_2020.purple;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -110,7 +111,7 @@ class BoruvkaTest {
 		}
 	}
 
-	@RepeatedTest(10)
+	@RepeatedTest(5)
 	void testResultIsSpanningTree() {
 		final int nNodes = randomInt(50, 100);
 		IGraph g = createEmptyGraph();
@@ -234,7 +235,7 @@ class BoruvkaTest {
 		}
 	}
 
-	@RepeatedTest(10)
+	@RepeatedTest(5)
 	void testResultIsOptimal() {
 		final int nNodes = randomInt(5, 8);
 		IGraph g = createEmptyGraph();
@@ -267,8 +268,8 @@ class BoruvkaTest {
 			assertFalse(weight < answerWeight);
 		}
 	}
-	
-	
+
+
 	@Test
 	void testNoEdges() {
 		final int nNodes = 100;
@@ -276,10 +277,10 @@ class BoruvkaTest {
 		for (int i = 0; i < nNodes; i++) {
 			g.addNode();
 		}
-		
+
 		Boruvka b = new Boruvka(g);
 		b.boruvka();
-		
+
 		assertEquals(nNodes, g.nodesCount());
 		assertEquals(0, b.resultEdgeSet().size());
 	}
@@ -298,34 +299,43 @@ class BoruvkaTest {
 		}
 		return edges;
 	}
-	
-	@Test
+
+	@RepeatedTest(100)
 	void testComponentsResultIsSpanningTree() {
-		final int nNodes = 100;
-		final int nComps = 5;
+		final int nNodes = randomInt(50, 400);
+		final int nComps = randomInt(5, 50);
 		IGraph g = createEmptyGraph();
 		generateComponentGraph(g, nNodes, nComps);
-		
+
 		Boruvka b = new Boruvka(g);
 		b.boruvka();
 		Set<Edge> edges = b.resultEdgeSet();
-		
+
+		Set<Edge> realEdges = new HashSet<>();
+		g.getEdges().forEach(realEdges::add);
+
 		Set<Node> nodes = new HashSet<>();
 		List<Set<Edge>> edgesSets = new ArrayList<>();
 		for (Node n : g.getNodes()) {
 			if (!nodes.contains(n)) {
 				Set<Node> comp = reachableNodes(g, edges, n);
-				comp.forEach(nodes::add);
+				Set<Node> realComp = reachableNodes(g, realEdges, n);
+
+				assertEquals(realComp, comp);
+
+				for (Node m : comp) {
+					assertTrue(nodes.add(m));
+				}
 				Set<Edge> compEdges = nodeSetEdges(g, comp);
 				edgesSets.add(compEdges);
 			}
 		}
-		
+
 		assertEquals(nComps, edgesSets.size());
-		
+
 		int totalEdges = edgesSets.stream().mapToInt(Set::size).sum();
 		assertEquals(g.edgesCount(), totalEdges);
-		
+
 		// Test that there are no common edges
 		for (int i = 0; i < edgesSets.size(); i++) {
 			for (int j = i+1; j < edgesSets.size(); j++) {
