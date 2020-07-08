@@ -3,12 +3,20 @@ package summer_practice_2020.purple;
 import java.util.Set;
 
 import javafx.collections.FXCollections;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.Window;
 import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
 import summer_practice_2020.purple.rendering.Node;
 import summer_practice_2020.purple.rendering.Renderer;
@@ -87,13 +95,39 @@ public class Controller {
             MenuItem deleteNode = new MenuItem("Удалить вершину");
             MenuItem deleteEdge = new MenuItem("Удалить ребро");
             MenuItem[] edgeList = new MenuItem[0];
+            TextArea newName = new TextArea();
+
             menu.getItems().addAll(rename, deleteNode, deleteEdge);
+            newName.getOnKeyPressed();
 
             this.selectedNode = renderer.isNodePosition(e.getX(), e.getY());
 
             deleteNode.setOnAction(g -> {
                 this.graphToWork.removeNode(this.selectedNode.getNode());
                 this.renderer.drawGraph();
+            });
+
+            rename.setOnAction(g -> {
+                Stage nameEditStage = new Stage();
+                Pane root = new Pane();
+                TextField textField = new TextField();
+                root.getChildren().addAll(textField);
+                Scene nameEditScene = new Scene(root);
+                nameEditStage.setScene(nameEditScene);
+                nameEditStage.setX(e.getScreenX());
+                nameEditStage.setY(e.getScreenY());
+                nameEditStage.setAlwaysOnTop(true);
+                nameEditStage.initModality(Modality.APPLICATION_MODAL);
+                nameEditStage.initStyle(StageStyle.UNDECORATED);
+                nameEditStage.show();
+
+                textField.setOnKeyPressed(f -> {
+                    if (f.getCode() == KeyCode.ENTER) {
+                        this.selectedNode.getNode().setTitle(textField.getText());
+                        this.renderer.drawGraph();
+                        nameEditStage.close();
+                    }
+                });
             });
 
             if (e.getButton() == MouseButton.PRIMARY) {
