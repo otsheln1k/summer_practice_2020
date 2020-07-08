@@ -15,9 +15,29 @@ import summer_practice_2020.purple.IGraph;
 import summer_practice_2020.purple.Graph;
 
 class GraphGenerationTest {
-	
+
 	private static IGraph createEmptyGraph() {
 		return new Graph();
+	}
+
+	private Set<IGraph.Node> reachableNodes(IGraph g, IGraph.Node start) {
+		Set<IGraph.Node> s = new HashSet<>();
+		Queue<IGraph.Node> q = new ArrayDeque<>();
+		q.add(start);
+
+		while (!q.isEmpty()) {
+			IGraph.Node i = q.remove();
+			for (IGraph.Edge e : g.getEdgesFrom(i)) {
+				IGraph.Node fn = e.firstNode();
+				IGraph.Node sn = e.secondNode();
+				IGraph.Node o = (fn == i) ? sn : fn;
+				if (s.add(o)) {
+					q.add(o);
+				}
+			}
+		}
+
+		return s;
 	}
 
 	@Test
@@ -36,20 +56,7 @@ class GraphGenerationTest {
 		assertEquals(count, g.nodesCount());
 		assertEquals(count - 1, g.edgesCount());
 
-		Set<IGraph.Node> s = new HashSet<>();
-		Queue<IGraph.Node> q = new ArrayDeque<>();
-		q.add(n);
-		while (!q.isEmpty()) {
-			IGraph.Node i = q.remove();
-			for (IGraph.Edge e : g.getEdgesFrom(i)) {
-				IGraph.Node o =
-						(e.firstNode() == i) ? e.secondNode() : e.firstNode();
-						if (s.add(o)) {
-							q.add(o);
-						}
-			}
-		}
-
+		Set<IGraph.Node> s = reachableNodes(g, n);
 		assertEquals(count, s.size());
 	}
 
@@ -70,29 +77,35 @@ class GraphGenerationTest {
 
 		assertEquals(nNodes*(nNodes-1)/2, g.edgesCount());
 	}
-	
+
 	@Test
 	void testTwoSubgraphs() {
 		final int size1 = 20;
 		final int size2 = 20;
-		
-		IGraph g = new SimpleGraph();
-		
+
+		IGraph g = createEmptyGraph();
+
 		List<IGraph.Node> nodes1 = new ArrayList<>();
 		for (int i = 0; i < size1; i++) {
 			nodes1.add(g.addNode());
 		}
-		
+
 		List<IGraph.Node> nodes2 = new ArrayList<>();
 		for (int i = 0; i < size2; i++) {
 			nodes2.add(g.addNode());
 		}
-		
+
 		GraphEdgeGenerator gen = new DividerSpanningTreeEdgeGenerator();
 		gen.generateEdgesOnNodes(g, nodes1);
 		gen.generateEdgesOnNodes(g, nodes2);
-		
+
 		assertEquals(size1 + size2 - 2, g.edgesCount());
+		
+		Set<IGraph.Node> s1 = reachableNodes(g, nodes1.get(0));
+		assertEquals(size1, s1.size());
+		
+		Set<IGraph.Node> s2 = reachableNodes(g, nodes2.get(0));
+		assertEquals(size2, s2.size());
 	}
 
 	@Test
