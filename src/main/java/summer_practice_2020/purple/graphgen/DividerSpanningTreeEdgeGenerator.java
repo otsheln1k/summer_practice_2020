@@ -33,9 +33,9 @@ public class DividerSpanningTreeEdgeGenerator implements GraphEdgeGenerator {
 	}
 
 	@Override
-	public void generateEdges(IGraph g) {
+	public void generateEdgesOnNodes(IGraph g, Iterable<IGraph.Node> nodes) {
 		List<IGraph.Node> list = new ArrayList<>();
-		g.getNodes().forEach(list::add);
+		nodes.forEach(list::add);
 		generateList(g, list);
 	}
 

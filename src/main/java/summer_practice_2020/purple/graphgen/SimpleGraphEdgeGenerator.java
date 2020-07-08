@@ -16,9 +16,9 @@ public class SimpleGraphEdgeGenerator implements GraphEdgeGenerator {
 	}
 
 	@Override
-	public void generateEdges(IGraph g) {
+	public void generateEdgesOnNodes(IGraph g, Iterable<IGraph.Node> ns) {
 		List<IGraph.Node> nodes = new ArrayList<>();
-		g.getNodes().forEach(nodes::add);
+		ns.forEach(nodes::add);
 
 		for (int i = 0; i < nodes.size(); i++) {
 			for (int j = i+1; j < nodes.size(); j++) {

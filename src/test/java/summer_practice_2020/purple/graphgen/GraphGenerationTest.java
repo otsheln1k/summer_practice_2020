@@ -3,7 +3,9 @@ package summer_practice_2020.purple.graphgen;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
@@ -63,6 +65,30 @@ class GraphGenerationTest {
 		gen.generateEdges(g);
 
 		assertEquals(nNodes*(nNodes-1)/2, g.edgesCount());
+	}
+	
+	@Test
+	void testTwoSubgraphs() {
+		final int size1 = 20;
+		final int size2 = 20;
+		
+		IGraph g = new SimpleGraph();
+		
+		List<IGraph.Node> nodes1 = new ArrayList<>();
+		for (int i = 0; i < size1; i++) {
+			nodes1.add(g.addNode());
+		}
+		
+		List<IGraph.Node> nodes2 = new ArrayList<>();
+		for (int i = 0; i < size2; i++) {
+			nodes2.add(g.addNode());
+		}
+		
+		GraphEdgeGenerator gen = new DividerSpanningTreeEdgeGenerator();
+		gen.generateEdgesOnNodes(g, nodes1);
+		gen.generateEdgesOnNodes(g, nodes2);
+		
+		assertEquals(size1 + size2 - 2, g.edgesCount());
 	}
 
 	@Test

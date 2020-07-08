@@ -14,9 +14,9 @@ public class GraphGeneratorFacade {
 	private GraphEdgeGenerator makeConnectedGenerator() {
 		GraphEdgeGenerator g1 = new DividerSpanningTreeEdgeGenerator();
 		GraphEdgeGenerator g2 = new SimpleGraphEdgeGenerator(0.2);
-		return g -> {
-			g1.generateEdges(g);
-			g2.generateEdges(g);
+		return (g, ns) -> {
+			g1.generateEdgesOnNodes(g, ns);
+			g2.generateEdgesOnNodes(g, ns);
 		};
 	}
 
@@ -39,9 +39,9 @@ public class GraphGeneratorFacade {
 		GraphEdgeGenerator g1 = new DividerSpanningTreeEdgeGenerator();
 		GraphEdgeGenerator g2 = new ShuffleGraphEdgeGenerator(
 				edgesCount - nodesCount + 1);
-		return g -> {
-			g1.generateEdges(g);
-			g2.generateEdges(g);
+		return (g, ns) -> {
+			g1.generateEdgesOnNodes(g, ns);
+			g2.generateEdgesOnNodes(g, ns);
 		};
 	}
 
