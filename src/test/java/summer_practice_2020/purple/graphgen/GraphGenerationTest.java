@@ -8,14 +8,22 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Set;
 
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import summer_practice_2020.purple.Graph;
 import summer_practice_2020.purple.IGraph;
 
 class GraphGenerationTest {
+
+	static final Random rng = new Random();
+
+	private static int randomInt(int min, int max) {
+		return rng.nextInt(max - min + 1) + min;
+	}
 
 	private static IGraph createEmptyGraph() {
 		return new Graph();
@@ -126,10 +134,10 @@ class GraphGenerationTest {
 		return nodeSets;
 	}
 
-	@Test
+	@RepeatedTest(10)
 	void testSubgraphsFromFacade() {
-		final int nodesCount = 100;
-		final int compsCount = 5;
+		final int nodesCount = randomInt(50, 400);
+		final int compsCount = randomInt(5, 50);
 
 		IGraph g = createEmptyGraph();
 		GraphGeneratorFacade gen = new GraphGeneratorFacade();
@@ -151,11 +159,11 @@ class GraphGenerationTest {
 		return edges;
 	}
 
-	@Test
+	@RepeatedTest(10)
 	void testComponentsWithNEdges() {
-		final int nodesCount = 100;
-		final int compsCount = 10;
-		final int moreNodes = 5;
+		final int nodesCount = randomInt(100, 200);
+		final int compsCount = randomInt(3, 10);
+		final int moreNodes = randomInt(1, 200);
 		final int edgesCount = nodesCount - compsCount + moreNodes;
 
 		IGraph g = createEmptyGraph();
