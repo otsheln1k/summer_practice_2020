@@ -4,14 +4,14 @@ import java.util.*;
 
 public class Boruvka {
 
-    private IGraph g;
-    private HashMap<IGraph.Node, Integer> componentMap = new HashMap<IGraph.Node, Integer>();
-    private HashMap<IGraph.Node, String> visitedMap = new HashMap<IGraph.Node, String>();
+    private final IGraph g;
+    private final HashMap<IGraph.Node, Integer> componentMap = new HashMap<>();
+    private final HashMap<IGraph.Node, String> visitedMap = new HashMap<>();
     private int amountCompanent = 1;
     private Iterable<IGraph.Node> nodes;
-    private List<IGraph.Edge> list = new ArrayList<IGraph.Edge>();
-    private Set<IGraph.Edge> SnapShot = new HashSet<IGraph.Edge>();
-    private List<BoruvkaSnapshot> blist = new ArrayList<BoruvkaSnapshot>();
+    private final List<IGraph.Edge> list = new ArrayList<>();
+    private final Set<IGraph.Edge> SnapShot = new HashSet<>();
+    private final List<BoruvkaSnapshot> blist = new ArrayList<>();
     private int step = 0;
 
     public Boruvka(IGraph g) {
@@ -55,11 +55,7 @@ public class Boruvka {
     }
 
     private boolean hasNext_step() {
-        if (SnapShot.size() < g.nodesCount() - amountCompanent) {
-            return true;
-        } else {
-            return false;
-        }
+        return SnapShot.size() < g.nodesCount() - amountCompanent;
     }
 
     private void next_step(int mark, IGraph.Edge edge) {
@@ -74,7 +70,7 @@ public class Boruvka {
                 componentMap.put(edge.secondNode(), mark);
                 SnapShot.add(edge);
             } else {
-                if (componentMap.get(edge.firstNode()) != componentMap.get(edge.secondNode())) {
+                if (!componentMap.get(edge.firstNode()).equals(componentMap.get(edge.secondNode()))) {
                     mark = Math.min(componentMap.get(edge.firstNode()), componentMap.get(edge.secondNode()));
                     int not_mark = Math.max(componentMap.get(edge.firstNode()), componentMap.get(edge.secondNode()));
                     for(Map.Entry<IGraph.Node, Integer> e: componentMap.entrySet()){
@@ -95,7 +91,7 @@ public class Boruvka {
         Iterable<IGraph.Node> nodes = g.getNodes();
         Graph snapshot = new Graph();
         g.getEdges().forEach(list::add);
-        Collections.sort(list, this::MyCompare);
+        list.sort(this::MyCompare);
 
         int mark = 1;
         int num = 0;
@@ -108,7 +104,7 @@ public class Boruvka {
             componentMap.put(n, 0);
         }
 
-        IGraph.Edge edge = null;
+        IGraph.Edge edge;
         while (hasNext_step()) {
             edge = list.get(num);
             next_step(mark, edge);
@@ -132,12 +128,7 @@ public class Boruvka {
     }
 
     public boolean hasNext() {
-        if(step < SnapShot.size()){
-            return true;
-        }
-        else {
-            return false;
-        }
+        return step < SnapShot.size();
     }
 
     public void setStep(int st){

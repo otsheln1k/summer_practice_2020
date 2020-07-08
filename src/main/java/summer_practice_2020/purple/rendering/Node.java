@@ -4,9 +4,10 @@ import javafx.scene.paint.Color;
 import summer_practice_2020.purple.IGraph;
 
 public class Node {
-    private IGraph.Node node;
+    private final IGraph.Node node;
     private double posx;
     private double posy;
+    private double radius;
     private Color color;
 
     public Node(IGraph.Node node, double posx, double posy, Color color) {
@@ -14,6 +15,7 @@ public class Node {
         this.posx = posx;
         this.posy = posy;
         this.color = color;
+        this.radius = (node.getTitle().length() + 1) * 6;
     }
 
     public String getTitle() {
@@ -32,6 +34,10 @@ public class Node {
         this.posy = y;
     }
 
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
     public void setColor(Color color) {
         this.color = color;
     }
@@ -44,7 +50,13 @@ public class Node {
         return this.posy;
     }
 
+    public double getRadius() { return this.radius; }
+
     public Color getColor() {
         return this.color;
+    }
+
+    public void updateRadius(){
+        this.radius =  (node.getTitle().length() + 1) * 6;
     }
 }

@@ -4,3 +4,4 @@ target/
 dependency-reduced-pom.xml
 /.idea/
 test-javafx-app.iml
+report.pdf

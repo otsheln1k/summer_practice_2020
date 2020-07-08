@@ -3,9 +3,9 @@ package summer_practice_2020.purple.rendering;
 import summer_practice_2020.purple.IGraph;
 
 public class Edge {
-    private IGraph.Edge edge;
-    private Node node1;
-    private Node node2;
+    private final IGraph.Edge edge;
+    private final Node node1;
+    private final Node node2;
 
     public Edge(IGraph.Edge edge, Node node1, Node node2) {
         this.edge = edge;

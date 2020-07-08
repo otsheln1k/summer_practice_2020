@@ -1,7 +1,7 @@
 package summer_practice_2020.purple.graphgen;
 
 public class AlphabetNodeNameGenerator implements GraphNodeNameGenerator {
-	private StringBuilder next = new StringBuilder("A");
+	private final StringBuilder next = new StringBuilder("A");
 
 	@Override
 	public String generateName() {
