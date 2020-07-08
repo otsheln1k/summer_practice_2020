@@ -1,6 +1,7 @@
 package summer_practice_2020.purple.graphgen;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -100,12 +101,37 @@ class GraphGenerationTest {
 		gen.generateEdgesOnNodes(g, nodes2);
 
 		assertEquals(size1 + size2 - 2, g.edgesCount());
-		
+
 		Set<IGraph.Node> s1 = reachableNodes(g, nodes1.get(0));
 		assertEquals(size1, s1.size());
-		
+
 		Set<IGraph.Node> s2 = reachableNodes(g, nodes2.get(0));
 		assertEquals(size2, s2.size());
+	}
+
+	@Test
+	void testSubgraphsFromFacade() {
+		final int nodesCount = 100;
+		final int compsCount = 5;
+
+		IGraph g = createEmptyGraph();
+		GraphGeneratorFacade gen = new GraphGeneratorFacade();
+		gen.generateComponents(g, nodesCount, compsCount);
+
+		Set<IGraph.Node> visitedNodes = new HashSet<>();
+		List<Set<IGraph.Node>> nodeSets = new ArrayList<>();
+
+		for (IGraph.Node n : g.getNodes()) {
+			if (visitedNodes.contains(n)) {
+				continue;
+			}
+
+			Set<IGraph.Node> nodes = reachableNodes(g, n);
+			nodeSets.add(nodes);
+			nodes.forEach(visitedNodes::add);
+		}
+
+		assertEquals(compsCount, nodeSets.size());
 	}
 
 	@Test
