@@ -4,14 +4,14 @@ import java.util.*;
 
 public class Boruvka {
 
-    private IGraph g;
-    private HashMap<IGraph.Node, Integer> componentMap = new HashMap<>();
-    private HashMap<IGraph.Node, String> visitedMap = new HashMap<>();
+    private final IGraph g;
+    private final HashMap<IGraph.Node, Integer> componentMap = new HashMap<>();
+    private final HashMap<IGraph.Node, String> visitedMap = new HashMap<>();
     private int amountCompanent = 1;
     private Iterable<IGraph.Node> nodes;
-    private List<IGraph.Edge> list = new ArrayList<>();
-    private Set<IGraph.Edge> SnapShot = new HashSet<>();
-    private List<BoruvkaSnapshot> blist = new ArrayList<>();
+    private final List<IGraph.Edge> list = new ArrayList<>();
+    private final Set<IGraph.Edge> SnapShot = new HashSet<>();
+    private final List<BoruvkaSnapshot> blist = new ArrayList<>();
     private int step = 0;
 
     public Boruvka(IGraph g) {

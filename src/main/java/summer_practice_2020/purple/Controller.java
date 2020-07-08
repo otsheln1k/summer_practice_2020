@@ -95,7 +95,6 @@ public class Controller {
 
         canvas_container.setOnMouseMoved(e -> {
             if (this.selectedNode != null && this.nodeMoveMode) {
-                System.out.println("Node move detected at x = " + e.getX() + " y = " + e.getY());
                 this.selectedNode.getNode().setPosX(e.getX());
                 this.selectedNode.getNode().setPosY(e.getY());
                 this.renderer.drawGraph();
@@ -127,7 +126,6 @@ public class Controller {
             rename.setOnAction(g -> this.editPole(e));
 
             if (e.getButton() == MouseButton.PRIMARY) {
-                System.out.println("Primary at x = " + e.getX() + " y = " + e.getY());
                 if (!addEdgeMode) {
                     if (this.selectedNode == null) {
                         this.selectedEdge = this.renderer.isEdgePosition(e.getX(), e.getY());
@@ -152,7 +150,6 @@ public class Controller {
                     }
                 }
             } else if (e.getButton() == MouseButton.SECONDARY) {
-                System.out.println("Secondary at x = " + e.getX() + " y = " + e.getY());
                 if (this.selectedNode != null) {
                     if (this.nodeMoveMode) {
                         this.nodeMoveMode = false;
@@ -237,7 +234,6 @@ public class Controller {
             new GraphGeneratorFacade().generateGraph(this.graphToWork,
                     Integer.parseInt(nodesCount.getText()), connected.isSelected());
             this.renderer.drawGraph();
-            System.out.println("generated " + connected.isSelected());
             dialog.close();
         });
     }

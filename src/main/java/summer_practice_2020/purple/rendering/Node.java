@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 import summer_practice_2020.purple.IGraph;
 
 public class Node {
-    private IGraph.Node node;
+    private final IGraph.Node node;
     private double posx;
     private double posy;
     private double radius;

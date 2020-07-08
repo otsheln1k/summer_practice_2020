@@ -92,7 +92,6 @@ public class Renderer {
         this.graphicsContext.strokeOval(node.getPosx() - node.getRadius(), node.getPosy() - node.getRadius(),
                 node.getRadius() * 2, node.getRadius() * 2);
         this.graphicsContext.strokeText(node.getTitle(), node.getPosx() - node.getRadius() / 6.0, node.getPosy() + 3);
-        System.out.println(node.getPosx() + " " + node.getRadius() + " " + (node.getPosx() - node.getRadius() / 6.0));
     }
 
     public void drawEdge(Edge edge) {
