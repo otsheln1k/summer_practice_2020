@@ -15,9 +15,9 @@ import summer_practice_2020.purple.rendering.Renderer;
 
 public class Controller {
     Graph graphToWork;
-    boolean isGraphBlocked;
     Renderer renderer;
-    boolean isLeftMouseDown;
+    boolean isGraphBlocked;
+    boolean nodeMoveMode;
     Node selectedNode;
 
     @FXML
@@ -46,6 +46,7 @@ public class Controller {
     @FXML
     private void initialize() {
         this.isGraphBlocked = false;
+        this.nodeMoveMode = false;
         this.graphToWork = new Graph();
         this.renderer = new Renderer(this.canvas);
         renderer.setGraph(this.graphToWork);
@@ -72,10 +73,10 @@ public class Controller {
         });
 
         canvas_container.setOnMouseMoved(e -> {
-            System.out.println("Mouse move detected at x = " + e.getX() + " y = " + e.getY());
-            if (this.isLeftMouseDown && this.selectedNode != null) {
-                this.selectedNode.setPosx(e.getX());
-                this.selectedNode.setPosy(e.getY());
+            if (this.selectedNode != null && this.nodeMoveMode) {
+                System.out.println("Node move detected at x = " + e.getX() + " y = " + e.getY());
+                this.selectedNode.getNode().setPosX(e.getX());
+                this.selectedNode.getNode().setPosY(e.getY());
                 this.renderer.drawGraph();
             }
         });
@@ -103,11 +104,17 @@ public class Controller {
                     addedNode.setPosX(e.getX());
                     addedNode.setPosY(e.getY());
                     renderer.drawGraph();
+                } else {
+                    this.nodeMoveMode = true;
                 }
             } else if (e.getButton() == MouseButton.SECONDARY) {
                 System.out.println("Secondary at x = " + e.getX() + " y = " + e.getY());
                 if (renderer.isNodePosition(e.getX(), e.getY()) != null) {
-                    menu.show(canvas_container, e.getScreenX(), e.getScreenY());
+                    if (this.nodeMoveMode) {
+                        this.nodeMoveMode = false;
+                    } else {
+                        menu.show(canvas_container, e.getScreenX(), e.getScreenY());
+                    }
                 }
 
             }

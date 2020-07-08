@@ -105,13 +105,20 @@ public class Graph implements IGraph  {
 
     @Override
     public Edge addEdge(Node a, Node b) {
-        if(nodes.contains(a) & nodes.contains(b)) {
-            Edge e = new DEdge(a, b);
-            edges.add(e);
-            return e;
-        }
-        else{
-            throw new NoSuchElementException();
+        if(a == b){
+            throw new IllegalArgumentException();
+        }else{
+            if(getEdgeBetween(a, b) != null | getEdgeBetween(b, a) != null){
+                throw new IllegalArgumentException();
+            }else{
+                if(!nodes.contains(a) || !nodes.contains(b)){
+                    throw new NoSuchElementException();
+                }else{
+                    Edge e = new DEdge(a, b);
+                    edges.add(e);
+                    return e;
+                }
+            }
         }
     }
 

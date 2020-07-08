@@ -134,11 +134,8 @@ public class Renderer {
             for (Node node : this.nodes) {
                 nodePosX = node.getPosx();
                 nodePosy = node.getPosy();
-                width = node.getRadius() * 2;
-                if (posx >= nodePosX && posx < nodePosX + width) {
-                    if (posy >= nodePosy && posy < nodePosy + width) {
-                        return node;
-                    }
+                if (Math.pow(Math.abs(posx - nodePosX), 2) + Math.pow(Math.abs(posy - nodePosy), 2) <= Math.pow(node.getRadius(), 2)) {
+                    return node;
                 }
             }
         }
