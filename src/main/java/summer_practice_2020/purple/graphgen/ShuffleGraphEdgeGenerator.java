@@ -37,7 +37,7 @@ public class ShuffleGraphEdgeGenerator implements GraphEdgeGenerator {
 	@Override
 	public void generateEdgesOnNodes(IGraph g, Iterable<IGraph.Node> ns) {
 		List<IGraph.Node> nodes = new ArrayList<>();
-		nodes.forEach(nodes::add);
+		ns.forEach(nodes::add);
 
 		List<EdgeCandidate> possibleEdges = new ArrayList<>();
 		for (int i = 0; i < nodes.size(); i++) {
