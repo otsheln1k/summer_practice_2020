@@ -45,15 +45,19 @@ class GraphIOTest {
 
 		int nodes = 0;
 		int edges = 0;
+		int pos = 0;
 		for (String l : lines) {
 			if (l.startsWith("node ")) {
 				nodes++;
 			} else if (l.startsWith("edge ")) {
 				edges++;
+			} else if (l.startsWith("pos ")) {
+				pos++;
 			}
 		}
 
 		assertEquals(3, nodes);
+		assertEquals(nodes, pos);
 		assertEquals(3, edges);
 	}
 
