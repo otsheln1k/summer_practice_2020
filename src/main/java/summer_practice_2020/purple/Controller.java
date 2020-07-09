@@ -93,13 +93,22 @@ public class Controller {
             this.isGraphBlocked = false;
         });
 
-        canvas_container.setOnMouseMoved(e -> {
+        canvas_container.setOnDragEntered(e -> {
+            this.selectedNode = renderer.isNodePosition(e.getX(), e.getY());
+            if (this.selectedNode != null) {
+                this.nodeMoveMode = true;
+            }
+        });
+
+        canvas_container.setOnDragDetected(e -> {
             if (this.selectedNode != null && this.nodeMoveMode) {
                 this.selectedNode.getNode().setPosX(e.getX());
                 this.selectedNode.getNode().setPosY(e.getY());
                 this.renderer.drawGraph();
             }
         });
+
+        canvas_container.setOnDragDropped(e -> this.nodeMoveMode = false);
 
         canvas_container.setOnMouseClicked(e -> {
             ContextMenu menu = new ContextMenu();
@@ -128,18 +137,11 @@ public class Controller {
             if (e.getButton() == MouseButton.PRIMARY) {
                 if (!addEdgeMode) {
                     if (this.selectedNode == null) {
-                        this.selectedEdge = this.renderer.isEdgePosition(e.getX(), e.getY());
-                        if (this.selectedEdge == null) {
-                            IGraph.Node addedNode = this.graphToWork.addNode();
-                            addedNode.setTitle("name");
-                            addedNode.setPosX(e.getX());
-                            addedNode.setPosY(e.getY());
-                            renderer.drawGraph();
-                        } else {
-                            editPole(e);
-                        }
-                    } else {
-                        this.nodeMoveMode = true;
+                        IGraph.Node addedNode = this.graphToWork.addNode();
+                        addedNode.setTitle("name");
+                        addedNode.setPosX(e.getX());
+                        addedNode.setPosY(e.getY());
+                        renderer.drawGraph();
                     }
                 } else if (this.selectedNode != null) {
                     if (!this.selectedNode.equals(this.nodeForEdge)) {
@@ -151,11 +153,7 @@ public class Controller {
                 }
             } else if (e.getButton() == MouseButton.SECONDARY) {
                 if (this.selectedNode != null) {
-                    if (this.nodeMoveMode) {
-                        this.nodeMoveMode = false;
-                    } else {
-                        menu.show(canvas_container, e.getScreenX(), e.getScreenY());
-                    }
+                    menu.show(canvas_container, e.getScreenX(), e.getScreenY());
                 } else {
                     this.selectedEdge = this.renderer.isEdgePosition(e.getX(), e.getY());
                     if (this.selectedEdge != null) {
@@ -171,7 +169,8 @@ public class Controller {
     private void editPole(MouseEvent e) {
         Stage editStage = new Stage();
         Pane root = new Pane();
-        TextField textField = new TextField();
+        TextField textField = new TextField(this.selectedNode.getTitle());
+        textField.selectAll();
         root.getChildren().addAll(textField);
         Scene editScene = new Scene(root);
         editStage.setScene(editScene);

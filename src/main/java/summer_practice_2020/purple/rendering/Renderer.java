@@ -1,14 +1,10 @@
 package summer_practice_2020.purple.rendering;
 
-import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.Canvas; 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.chart.LineChart;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import summer_practice_2020.purple.Graph;
 import summer_practice_2020.purple.IGraph;
-import javafx.scene.shape.ArcType;
 
 import java.util.Random;
 import java.util.Set;
