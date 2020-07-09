@@ -5,5 +5,9 @@ import summer_practice_2020.purple.IGraph;
 // NOTE: nodes are pre-generated
 @FunctionalInterface
 public interface GraphEdgeGenerator {
-	void generateEdges(IGraph g);
+	void generateEdgesOnNodes(IGraph g, Iterable<IGraph.Node> nodes);
+
+	default void generateEdges(IGraph g) {
+		generateEdgesOnNodes(g, g.getNodes());
+	}
 }

@@ -16,13 +16,13 @@ import summer_practice_2020.purple.IGraph.Node;
 
 class GraphTest {
 
-	static final Random rng = new Random();
+	private static final Random rng = new Random();
 
-	static IGraph createEmptyGraph() {
+	private static IGraph createEmptyGraph() {
 		return new Graph();
 	}
 
-	static int randomInt(int min, int max) {
+	private static int randomInt(int min, int max) {
 		return rng.nextInt(max - min + 1) + min;
 	}
 
@@ -74,6 +74,12 @@ class GraphTest {
 		g.removeNode(n6);
 
 		g.addEdge(n1, n2);
+		assertThrows(IllegalArgumentException.class,
+				() -> g.addEdge(n1, n2));
+		assertThrows(IllegalArgumentException.class,
+				() -> g.addEdge(n2, n1));
+		assertThrows(IllegalArgumentException.class,
+				() -> g.addEdge(n3, n3));
 		assertThrows(NoSuchElementException.class,
 				() -> g.addEdge(n3, n4));
 		assertThrows(NoSuchElementException.class,
@@ -127,7 +133,7 @@ class GraphTest {
 		assertTrue(edges.isEmpty());
 	}
 
-	static <T> boolean presentInIterable(T x, Iterable<T> it) {
+	private static <T> boolean presentInIterable(T x, Iterable<T> it) {
 		for (T y : it) {
 			if (y == x) {
 				return true;
@@ -179,7 +185,7 @@ class GraphTest {
 		assertNull(g.getEdgeBetween(n3, n3));
 	}
 
-	void fillRandomGraph(IGraph g, int nNodes) {
+	private static void fillRandomGraph(IGraph g, int nNodes) {
 		List<Node> nodes = new ArrayList<>();
 		for (int i = 0; i < nNodes; i++) {
 			nodes.add(g.addNode());
@@ -197,7 +203,7 @@ class GraphTest {
 	@Test
 	void testEdgeNodeRefs() {
 		IGraph g = createEmptyGraph();
-		int nNodes = randomInt(100, 200);
+		int nNodes = randomInt(50, 100);
 		fillRandomGraph(g, nNodes);
 
 		for (Edge e : g.getEdges()) {

@@ -1,5 +1,9 @@
 package summer_practice_2020.purple.graphgen;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import summer_practice_2020.purple.IGraph;
 
 public class GraphGenerator {
@@ -17,12 +21,30 @@ public class GraphGenerator {
 		this.weightGen = weightGen;
 		this.nameGen = nameGen;
 	}
+	
+	private IGraph.Node genNode(IGraph g) {
+		IGraph.Node n = g.addNode();
+		n.setTitle(nameGen.generateName());
+		return n;
+	}
 
 	private void genNodes(IGraph g) {
 		for (int i = 0; i < nodesCount; i++) {
-			IGraph.Node n = g.addNode();
-			n.setTitle(nameGen.generateName());
+			genNode(g);
 		}
+	}
+	
+	private List<List<IGraph.Node>> genNodesInComponents(
+			IGraph g, Iterable<Integer> counts) {
+		List<List<IGraph.Node>> lists = new ArrayList<>();
+		for (int count : counts) {
+			List<IGraph.Node> nodes = new ArrayList<>();
+			for (int i = 0; i < count; i++) {
+				nodes.add(genNode(g));
+			}
+			lists.add(nodes);
+		}
+		return lists;
 	}
 
 	private void genWeights(IGraph g) {
@@ -34,6 +56,25 @@ public class GraphGenerator {
 	public void generateGraph(IGraph g) {
 		genNodes(g);
 		edgeGen.generateEdges(g);
+		genWeights(g);
+	}
+	
+	public void generateGraphComponents(IGraph g, Iterable<Integer> counts) {
+		List<List<IGraph.Node>> nodeLists = genNodesInComponents(g, counts);
+		for (List<IGraph.Node> nodes : nodeLists) {
+			edgeGen.generateEdgesOnNodes(g, nodes);
+		}
+		genWeights(g);
+	}
+	
+	// NOTE: ignores the generator's GraphEdgeGenerator
+	public void generateGraphComponents(IGraph g, Iterable<Integer> counts,
+			Iterable<GraphEdgeGenerator> gens) {
+		Iterator<GraphEdgeGenerator> genIter = gens.iterator();
+		List<List<IGraph.Node>> nodeLists = genNodesInComponents(g, counts);
+		for (List<IGraph.Node> nodes : nodeLists) {
+			genIter.next().generateEdgesOnNodes(g, nodes);
+		}
 		genWeights(g);
 	}
 }
