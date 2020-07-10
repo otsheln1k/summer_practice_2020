@@ -11,7 +11,6 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -165,7 +164,6 @@ class GraphGenerationTest {
 		return edges;
 	}
 
-	@Disabled  // TODO: debug
 	@RepeatedTest(10)
 	void testComponentsWithNEdges() {
 		final int nodesCount = randomInt(100, 200);
