@@ -1,10 +1,10 @@
 package summer_practice_2020.purple.graphgen;
 
+import summer_practice_2020.purple.IGraph;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import summer_practice_2020.purple.IGraph;
 
 public class GraphGeneratorFacade {
 	private final Random rng = new Random();

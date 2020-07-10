@@ -1,22 +1,15 @@
 package summer_practice_2020.purple.graphgen;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Queue;
-import java.util.Random;
-import java.util.Set;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-
 import summer_practice_2020.purple.Graph;
 import summer_practice_2020.purple.IGraph;
+
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GraphGenerationTest {
 
@@ -129,7 +122,7 @@ class GraphGenerationTest {
 
 			Set<IGraph.Node> nodes = reachableNodes(g, n);
 			nodeSets.add(nodes);
-			nodes.forEach(visitedNodes::add);
+			visitedNodes.addAll(nodes);
 		}
 
 		return nodeSets;

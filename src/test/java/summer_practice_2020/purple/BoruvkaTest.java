@@ -1,34 +1,16 @@
 package summer_practice_2020.purple;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Queue;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-
 import summer_practice_2020.purple.IGraph.Edge;
 import summer_practice_2020.purple.IGraph.Node;
-import summer_practice_2020.purple.graphgen.AlphabetNodeNameGenerator;
-import summer_practice_2020.purple.graphgen.DividerSpanningTreeEdgeGenerator;
-import summer_practice_2020.purple.graphgen.GraphEdgeGenerator;
-import summer_practice_2020.purple.graphgen.GraphEdgeWeightGenerator;
-import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
-import summer_practice_2020.purple.graphgen.GraphNodeNameGenerator;
-import summer_practice_2020.purple.graphgen.SimpleGraphEdgeGenerator;
+import summer_practice_2020.purple.graphgen.*;
+
+import java.util.*;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class BoruvkaTest {
 
@@ -75,7 +57,7 @@ class BoruvkaTest {
 		while (!q.isEmpty()) {
 			Node n = q.remove();
 			for (Edge e : edges) {
-				Node d = null;
+				Node d;
 				if (e.firstNode() == n) {
 					d = e.secondNode();
 				} else if (e.secondNode() == n) {
@@ -220,14 +202,19 @@ class BoruvkaTest {
 		}
 
 		Iterator<Set<Integer>> iter =
-				new CombinationsIterator<Integer>(elts, k);
+				new CombinationsIterator<>(elts, k);
 
 		// trick to get iterator from stream
-		int[] res = Stream.iterate(null, (x) -> null)
-				.takeWhile(x -> iter.hasNext())
-				.map(x -> iter.next())
-				.mapToInt(s -> s.stream().mapToInt(Integer::intValue).sum())
-				.toArray();
+		int[] res = new int[10];
+		int count = 0;
+
+		while (iter.hasNext()) {
+			Set<Integer> s = iter.next();
+			int sum = s.stream().mapToInt(Integer::intValue).sum();
+			if (res.length == count) res = Arrays.copyOf(res, count * 2);
+			res[count++] = sum;
+		}
+		res = Arrays.copyOfRange(res, 0, count);
 
 		assertEquals(answer.size(), res.length);
 
@@ -255,7 +242,7 @@ class BoruvkaTest {
 		g.getEdges().forEach(allEdges::add);
 
 		Iterator<Set<Edge>> iter =
-				new CombinationsIterator<Edge>(allEdges, nNodes - 1);
+				new CombinationsIterator<>(allEdges, nNodes - 1);
 
 		while (iter.hasNext()) {
 			Set<Edge> tryEdges = iter.next();

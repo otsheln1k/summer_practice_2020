@@ -1,11 +1,12 @@
 package summer_practice_2020.purple.rendering;
 
-import javafx.scene.canvas.Canvas; 
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import summer_practice_2020.purple.Graph;
 import summer_practice_2020.purple.IGraph;
 
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ public class Renderer {
     }
 
     public void setGraph(Graph graph) {
-        this.setEdgeSet(null);
+        this.setEdgeSet(new HashSet<>());
         this.graph = graph;
     }
 
@@ -37,6 +38,13 @@ public class Renderer {
     }
 
     public void addToEdgeSet(IGraph.Edge edge) {
+        if (edge == null) {
+            System.out.println("edge null");
+            System.exit(-1);
+        } else if (this.edgeSet == null) {
+            System.out.println("Edgeset null");
+            System.exit(-2);
+        }
         this.edgeSet.add(edge);
     }
 

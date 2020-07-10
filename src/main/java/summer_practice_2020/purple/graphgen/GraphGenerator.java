@@ -1,10 +1,10 @@
 package summer_practice_2020.purple.graphgen;
 
+import summer_practice_2020.purple.IGraph;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import summer_practice_2020.purple.IGraph;
 
 public class GraphGenerator {
 	private final int nodesCount;

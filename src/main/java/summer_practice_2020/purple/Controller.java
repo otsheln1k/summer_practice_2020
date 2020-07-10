@@ -1,13 +1,8 @@
 package summer_practice_2020.purple;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -24,11 +19,19 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
 import summer_practice_2020.purple.rendering.Edge;
 import summer_practice_2020.purple.rendering.Node;
 import summer_practice_2020.purple.rendering.Renderer;
 import summer_practice_2020.purple.rendering.WorkStep;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Controller {
     Graph graphToWork;
@@ -39,6 +42,7 @@ public class Controller {
 
     boolean isGraphBlocked;
     boolean nodeMoveMode;
+    boolean autoShow;
     boolean addEdgeMode;
 
     Node selectedNode;
@@ -71,14 +75,19 @@ public class Controller {
     @FXML
     private void initialize() {
 
-        next.setDisable(true);
-        previous.setDisable(true);
-        stop.setDisable(true);
+        this.next.setDisable(true);
+        this.previous.setDisable(true);
+        this.stop.setDisable(true);
+        this.speed_control.setMin(0);
+        this.speed_control.setMax(10);
+        this.speed_control.setBlockIncrement(0.5);
 
 
         this.isGraphBlocked = false;
         this.nodeMoveMode = false;
         this.addEdgeMode = false;
+        this.autoShow = false;
+
         this.graphToWork = new Graph();
         this.canvas.widthProperty().bind(canvas_container.widthProperty());
         this.canvas.heightProperty().bind(canvas_container.heightProperty());
@@ -86,10 +95,34 @@ public class Controller {
 
 
         this.renderer.setGraph(this.graphToWork);
-        //this.renderer.setEdgeSet(this.algorithm.next());
+
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.millis(0), ae -> {
+                    System.out.println("TimerClock " + ((1000 * 10) - this.speed_control.getValue() * 1000));
+                    this.next.fire();
+                }));
+
+        timeline.setCycleCount(99999);
 
 
         generateGraph.setOnAction(e -> this.generateGraph());
+
+        this.list.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    setMinWidth(param.getWidth());
+                    setMaxWidth(param.getWidth());
+                    setPrefWidth(param.getWidth());
+                    setWrapText(true);
+                    setText(item);
+                }
+            }
+        });
 
         importGraph.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
@@ -123,31 +156,43 @@ public class Controller {
             }
         });
 
-        play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            this.isGraphBlocked = true;
-            this.algorithm = new Boruvka(this.graphToWork);
-            this.algorithm.boruvka();
-            this.stepList = new LinkedList<>();
-            this.index = 0;
+        speed_control.setOnTouchReleased(e -> timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000));
 
-            stop.setDisable(false);
-            if (this.algorithm.hasNext()) {
-                next.setDisable(false);
+        play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (timeline.getStatus() == Animation.Status.STOPPED) {
+                this.isGraphBlocked = true;
+                this.algorithm = new Boruvka(this.graphToWork);
+                this.algorithm.boruvka();
+                this.stepList = new LinkedList<>();
+                this.index = 0;
+
+                stop.setDisable(false);
+
+                if (this.algorithm.hasNext()) {
+                    next.setDisable(false);
+                    timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000);
+                    timeline.play();
+                }
+            } else {
+                timeline.pause();
             }
         });
 
         next.setOnMouseClicked(e -> {
             if (this.algorithm.hasNext()) {
-                this.stepList.add(new WorkStep(this.algorithm.next(), this.graphToWork));
+                this.stepList.add(new WorkStep(this.algorithm.next()));
                 previous.setDisable(false);
                 this.renderer.addToEdgeSet(this.stepList.get(this.index).getEdge());
                 this.list.getItems().add(this.stepList.get(this.index).getDescription());
                 this.index += 1;
                 this.renderer.drawGraph();
             } else {
+                this.list.getItems().add("Конец работы алгоритма");
                 next.setDisable(true);
+                timeline.stop();
             }
         });
+
 
         previous.setOnMouseClicked(e -> {
 
@@ -159,6 +204,7 @@ public class Controller {
             this.renderer.drawGraph();
             list.setItems(FXCollections.observableArrayList());
             this.isGraphBlocked = false;
+            timeline.stop();
         });
 
         canvas_container.setOnMouseMoved(e -> this.selectedNode = renderer.isNodePosition(e.getX(), e.getY()));
@@ -198,7 +244,7 @@ public class Controller {
 
             rename.setOnAction(g -> this.editPole(e));
 
-            if (e.getButton() == MouseButton.PRIMARY) {
+            if (e.getButton() == MouseButton.PRIMARY && !this.isGraphBlocked) {
                 if (!addEdgeMode) {
                     if (this.selectedNode == null) {
                         this.selectedEdge = this.renderer.isEdgePosition(e.getX(), e.getY());
