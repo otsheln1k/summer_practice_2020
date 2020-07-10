@@ -2,25 +2,30 @@ package summer_practice_2020.purple;
 
 import java.util.*;
 
-public class Boruvka {
+public class Boruvka{
 
-    private final IGraph g;
-    private final HashMap<IGraph.Node, Integer> componentMap = new HashMap<>();
-    private final HashMap<IGraph.Node, String> visitedMap = new HashMap<>();
+    private IGraph g;
+    private HashMap<IGraph.Node, Integer> componentMap = new HashMap<IGraph.Node, Integer>();
+    private HashMap<IGraph.Node, String> visitedMap = new HashMap<IGraph.Node, String>();
     private int amountCompanent = 1;
     private Iterable<IGraph.Node> nodes;
-    private final List<IGraph.Edge> list = new ArrayList<>();
-    private final Set<IGraph.Edge> SnapShot = new HashSet<>();
-    private final List<BoruvkaSnapshot> blist = new ArrayList<>();
+    private List<Group> all_group = new ArrayList<Group>();
+    private Set<IGraph.Edge> blockedEdges = new HashSet<IGraph.Edge>();
+    private List<IGraph.Edge> list = new ArrayList<IGraph.Edge>();
+    private Set<IGraph.Edge> SnapShot = new HashSet<IGraph.Edge>();
+    //private List<BoruvkaSnapshot> blist = new ArrayList<BoruvkaSnapshot>();
+    private List<List> blist = new ArrayList<>();
+    private Group nullGroup = new Group();
     private int step = 0;
 
-    public Boruvka(IGraph g) {
-        this.g = g;
-    }
-
+    private Queue<Group> allGroups = new ArrayDeque<>();
 
     public int MyCompare (IGraph.Edge e1, IGraph.Edge e2){
         return Double.compare(e1.getWeight(), e2.getWeight());
+    }
+
+    public Boruvka(IGraph g) {
+        this.g = g;
     }
 
     private void dfs(IGraph.Node v){
@@ -48,6 +53,7 @@ public class Boruvka {
         for(IGraph.Node it:g.getNodes()){
             if(visitedMap.get(it).equals("not_visited")){
                 dfs(it);
+                System.out.println();
                 result++;
             }
         }
@@ -55,62 +61,103 @@ public class Boruvka {
     }
 
     private boolean hasNext_step() {
-        return SnapShot.size() < g.nodesCount() - amountCompanent;
+        if (SnapShot.size() < g.nodesCount() - amountCompanent) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
-    private void next_step(int mark, IGraph.Edge edge) {
-        if (componentMap.get(edge.firstNode()).equals(0) && componentMap.get(edge.secondNode()).equals(0)) {
-            componentMap.put(edge.firstNode(), mark);
-            componentMap.put(edge.secondNode(), mark);
-            SnapShot.add(edge);
-        } else {
-            if (componentMap.get(edge.firstNode()) * componentMap.get(edge.secondNode()) == 0) {
-                mark = Math.max(componentMap.get(edge.firstNode()), componentMap.get(edge.secondNode()));
-                componentMap.put(edge.firstNode(), mark);
-                componentMap.put(edge.secondNode(), mark);
-                SnapShot.add(edge);
-            } else {
-                if (!componentMap.get(edge.firstNode()).equals(componentMap.get(edge.secondNode()))) {
-                    mark = Math.min(componentMap.get(edge.firstNode()), componentMap.get(edge.secondNode()));
-                    int not_mark = Math.max(componentMap.get(edge.firstNode()), componentMap.get(edge.secondNode()));
-                    for(Map.Entry<IGraph.Node, Integer> e: componentMap.entrySet()){
-                        if(e.getValue().equals(not_mark)){
-                            componentMap.put(e.getKey(), mark);
+    private List next_step(){
+
+        List<List> snapshot = new ArrayList<>();
+        List<IGraph.Edge> snapshotEdges = new ArrayList<IGraph.Edge>();
+        List<Group> snapshotGroup = new ArrayList<Group>();
+
+        Group nowGroup = allGroups.remove();
+
+        double min = 2000000;
+        IGraph.Edge minEdge = null;
+
+        Set<IGraph.Node> nowNodes = nowGroup.getNodesGroup();
+        Iterable<IGraph.Edge> nowEdges = g.getEdges();
+        for(IGraph.Node n: nowNodes){
+            for(IGraph.Edge e: nowEdges){
+                if(nowGroup.HasEdge(e) && !blockedEdges.contains(e)){
+                    if(!nowGroup.getNodesGroup().contains(e.firstNode()) | !nowGroup.getNodesGroup().contains(e.secondNode())) {
+                        snapshotEdges.add(e);
+                        if(e.getWeight() < min) {
+                            min = e.getWeight();
+                            minEdge = e;
                         }
                     }
-                    componentMap.put(edge.firstNode(), mark);
-                    componentMap.put(edge.secondNode(), mark);
-                    SnapShot.add(edge);
                 }
             }
         }
+
+        snapshotEdges.sort(this::MyCompare);
+
+        if(nowNodes.size() == 1){
+            nullGroup.addNode(nowNodes.iterator().next());
+        }
+        Group cloneGroupfirst, cloneGroupsecond;
+        if(minEdge != null) {
+            blockedEdges.add(minEdge);
+            boolean flag = true;
+            List<Group> newlist = new ArrayList<Group>();
+            newlist.addAll(allGroups);
+            for (Group now : newlist) {
+                if (flag && now.HasEdge(minEdge)) {
+                    cloneGroupfirst = nowGroup.clone();
+                    cloneGroupsecond = now.clone();
+                    snapshotGroup.add(cloneGroupfirst);
+                    snapshotGroup.add(cloneGroupsecond);
+                    now.merge(nowGroup);
+                    SnapShot.add(minEdge);
+                }
+            }
+            allGroups.add(nowGroup);
+            snapshot.add(snapshotEdges);
+            snapshot.add(snapshotGroup);
+            return snapshot;
+        }
+        return null;
     }
 
     public void boruvka() {
 
-        Iterable<IGraph.Node> nodes = g.getNodes();
-        Graph snapshot = new Graph();
-        g.getEdges().forEach(list::add);
-        list.sort(this::MyCompare);
-
-        int mark = 1;
-        int num = 0;
+        nodes = g.getNodes();
 
         amountCompanent = component();
 
         for (IGraph.Node n : nodes) {
-            IGraph.Node nnode = snapshot.addNode();
-            nnode.setTitle(n.getTitle());
+            Group now = new Group();
+            now.addNode(n);
+            allGroups.add(now);
             componentMap.put(n, 0);
         }
 
-        IGraph.Edge edge;
-        while (hasNext_step()) {
-            edge = list.get(num);
-            next_step(mark, edge);
+        int mark = 1;
+        while (hasNext_step() && !allGroups.isEmpty()) {
+            List<List> nowSnapshot = new ArrayList<>();
+            nowSnapshot = next_step();
+            if(nowSnapshot != null)
+                blist.add(nowSnapshot);
+            /*all_group.clear();
+            all_group.addAll(allGroups);
+            for(Group gr:all_group){
+                Set<IGraph.Node> pg = gr.getNodesGroup();
+                if(pg.size() == 1){
+                    componentMap.put(pg.iterator().next(), 0);
+                }
+                else {
+                    for (IGraph.Node pgn : pg) {
+                        componentMap.put(pgn, mark);
+                    }
+                }
+            }
             blist.add(BoruvkaSnapshot.fromMapAndSet(componentMap, SnapShot));
-            mark++;
-            num++;
+            mark++;*/
         }
 
     }
@@ -128,14 +175,24 @@ public class Boruvka {
     }
 
     public boolean hasNext() {
-        return step < SnapShot.size();
+        if(step < SnapShot.size()){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public void setStep(int st){
         step = st;
     }
 
-    public BoruvkaSnapshot next() {
+    /*public BoruvkaSnapshot next() {
+        step++;
+        return blist.get(step-1);
+    }*/
+
+    public  List next(){
         step++;
         return blist.get(step-1);
     }

@@ -27,6 +27,11 @@ public class Group {
 				&& nodes.contains(e.secondNode());
 	}
 
+	public boolean HasEdge(IGraph.Edge e) {
+		return nodes.contains(e.firstNode())
+				|| nodes.contains(e.secondNode());
+	}
+
 	public void addNode(IGraph.Node node) {
 		nodes.add(node);
 	}
@@ -42,5 +47,9 @@ public class Group {
 
 	public boolean isEmpty() {
 		return nodes.isEmpty();
+	}
+
+	public Set<IGraph.Node> getNodesGroup(){
+		return nodes;
 	}
 }
