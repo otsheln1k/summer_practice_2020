@@ -51,7 +51,6 @@ public class Boruvka{
         for(IGraph.Node it:g.getNodes()){
             if(visitedMap.get(it).equals("not_visited")){
                 dfs(it);
-                System.out.println();
                 result++;
             }
         }
