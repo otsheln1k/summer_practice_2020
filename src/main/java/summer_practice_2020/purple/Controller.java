@@ -1,5 +1,9 @@
 package summer_practice_2020.purple;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +20,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -86,6 +91,38 @@ public class Controller {
 
         generateGraph.setOnAction(e -> this.generateGraph());
 
+        importGraph.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Выберите файл графа");
+            File file = fileChooser.showOpenDialog(new Stage());
+            if (file == null) return;
+            try {
+                FileInputStream stream = new FileInputStream(file);
+                this.graphToWork = new Graph();
+                GraphIO.readGraph(stream, this.graphToWork);
+            } catch (FileNotFoundException fileNotFoundException) {
+                Alert importError = new Alert(Alert.AlertType.ERROR);
+                importError.setContentText("Ошибка при импортировании графа");
+                importError.showAndWait();
+            }
+        });
+
+        exportGraph.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Выберите директорию для сохранения графа");
+            fileChooser.setInitialFileName("Graph");
+            File newGraphFile = fileChooser.showSaveDialog(new Stage());
+            if (newGraphFile == null) return;
+            try {
+                FileOutputStream stream = new FileOutputStream(newGraphFile);
+                GraphIO.writeGraph(stream, this.graphToWork);
+            } catch (FileNotFoundException fileNotFoundException) {
+                Alert importError = new Alert(Alert.AlertType.ERROR);
+                importError.setContentText("Ошибка при экспортировании графа");
+                importError.showAndWait();
+            }
+        });
+
         play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             this.isGraphBlocked = true;
             this.algorithm = new Boruvka(this.graphToWork);
@@ -110,6 +147,10 @@ public class Controller {
             } else {
                 next.setDisable(true);
             }
+        });
+
+        previous.setOnMouseClicked(e -> {
+
         });
 
         stop.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
