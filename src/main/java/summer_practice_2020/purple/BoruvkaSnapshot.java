@@ -1,59 +1,67 @@
 package summer_practice_2020.purple;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class BoruvkaSnapshot {
-	private final List<Group> groups = new ArrayList<>();
-	//private final BoruvkaStep step;
-	private final Set<IGraph.Edge> pickedEdges = new HashSet<>();
-	
-	public BoruvkaSnapshot(Iterable<Group> groups,
-			//BoruvkaStep step,
-			Iterable<IGraph.Edge> edges) {
-		groups.forEach(this.groups::add);
-		edges.forEach(this.pickedEdges::add);
-		//this.step = step;
+	private final List<Group> groups;
+	private final Set<IGraph.Edge> pickedEdges;
+	private final Group currentGroup;
+	private final Group nextGroup;
+	private final Set<IGraph.Edge> availEdges;
+	private final IGraph.Edge selectedEdge;
+
+	public Group getCurrentGroup() {
+		return currentGroup;
 	}
-	
+
+	public Group getNextGroup() {
+		return nextGroup;
+	}
+
+	public IGraph.Edge getSelectedEdge() {
+		return selectedEdge;
+	}
+
 	public Iterable<Group> getGroups() {
 		return groups;
 	}
-	
-	//public BoruvkaStep getStep() {
-	//	return step;
-	//}
-	
+
 	public boolean getEdgePicked(IGraph.Edge e) {
 		return pickedEdges.contains(e);
 	}
 
-	public static BoruvkaSnapshot fromMapAndSet(
-			Map<IGraph.Node, Integer> compMap,
-			Set<IGraph.Edge> edges) {
-		Map<Integer, Group> groupMap = new HashMap<>();
-
-		for (Map.Entry<IGraph.Node, Integer> e
-				: compMap.entrySet()) {
-			Group grp = groupMap.compute(e.getValue(),
-					(x, pgrp) -> (pgrp == null) ? new Group() : pgrp);
-			grp.addNode(e.getKey());
-		}
-
-		return new BoruvkaSnapshot(
-				groupMap.values(),
-				//new BoruvkaFinalStep(),
-				edges);
+	public boolean getEdgeAvailable(IGraph.Edge e) {
+		return availEdges.contains(e);
 	}
 
-	/*public static BoruvkaSnapshot fromCopies(Iterable<Group> groups,
-											 Iterable<IGraph.Edge> edges,
-											 BoruvkaStep step) {
+	public BoruvkaSnapshot(Iterable<Group> groups,
+						   Iterable<IGraph.Edge> edges,
+						   Group currentGroup,
+						   Group nextGroup,
+						   Iterable<IGraph.Edge> availEdges,
+						   IGraph.Edge selectedEdge) {
 		List<Group> groupsCopy = new ArrayList<>();
-		groups.forEach(g -> groupsCopy.add(g.clone()));
-
+		Group currentGroupCopy = currentGroup.clone();
+		Group nextGroupCopy = nextGroup.clone();
 		Set<IGraph.Edge> edgesCopy = new HashSet<>();
-		edges.forEach(edgesCopy::add);
+		Set<IGraph.Edge> availEdgesCopy = new HashSet<>();
 
-		return new BoruvkaSnapshot(groupsCopy, step, edgesCopy);
-	}*/
+		for (Group g : groups) {
+			Group gc = g.clone();
+			groupsCopy.add(gc);
+		}
+
+		edges.forEach(edgesCopy::add);
+		availEdges.forEach(availEdgesCopy::add);
+
+		this.groups = groupsCopy;
+		this.pickedEdges = edgesCopy;
+		this.currentGroup = currentGroupCopy;
+		this.availEdges = availEdgesCopy;
+		this.selectedEdge = selectedEdge;
+		this.nextGroup = nextGroupCopy;
+	}
 }
