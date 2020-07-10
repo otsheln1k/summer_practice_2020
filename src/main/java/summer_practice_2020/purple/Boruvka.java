@@ -16,13 +16,14 @@ public class Boruvka{
     private List<BoruvkaSnapshot> blist = new ArrayList<BoruvkaSnapshot>();
     //private List<List> blist = new ArrayList<>();
     private Group nullGroup = new Group();
+    private boolean choose = false;
     private int step = 0;
 
     private Queue<Group> allGroups = new ArrayDeque<>();
 
-    public int MyCompare (IGraph.Edge e1, IGraph.Edge e2){
-        return Double.compare(e1.getWeight(), e2.getWeight());
-    }
+    //public int MyCompare (IGraph.Edge e1, IGraph.Edge e2){
+    //    return Double.compare(e1.getWeight(), e2.getWeight());
+    //}
 
     public Boruvka(IGraph g) {
         this.g = g;
@@ -100,7 +101,7 @@ public class Boruvka{
         if(nowNodes.size() == 1){
             nullGroup.addNode(nowNodes.iterator().next());
         }
-        Group cloneGroupfirst, cloneGroupsecond;
+        //Group cloneGroupfirst, cloneGroupsecond;
         if(minEdge != null) {
             blockedEdges.add(minEdge);
             boolean flag = true;
@@ -108,8 +109,8 @@ public class Boruvka{
             newlist.addAll(allGroups);
             for (Group now : newlist) {
                 if (flag && now.HasEdge(minEdge)) {
-                    cloneGroupfirst = nowGroup.clone();
-                    cloneGroupsecond = now.clone();
+                    //cloneGroupfirst = nowGroup.clone();
+                    //cloneGroupsecond = now.clone();
                     //snapshotGroup.add(cloneGroupfirst);
                     //snapshotGroup.add(cloneGroupsecond);
                     now.merge(nowGroup);
@@ -117,11 +118,14 @@ public class Boruvka{
                 }
             }
             allGroups.add(nowGroup);
+            choose = true;
             //snapshot.add(snapshotEdges);
             //snapshot.add(snapshotGroup);
             //return snapshot;
+
         }
         //return null;
+        choose = false;
     }
 
     public void boruvka() {
@@ -142,22 +146,24 @@ public class Boruvka{
             //List<List> nowSnapshot = new ArrayList<>();
             //nowSnapshot = next_step();
             //if(nowSnapshot != null)
-                //blist.add(nowSnapshot);
-            all_group.clear();
-            all_group.addAll(allGroups);
-            for(Group gr:all_group){
-                Set<IGraph.Node> pg = gr.getNodesGroup();
-                if(pg.size() == 1){
-                    componentMap.put(pg.iterator().next(), 0);
-                }
-                else {
-                    for (IGraph.Node pgn : pg) {
-                        componentMap.put(pgn, mark);
+            //blist.add(nowSnapshot);
+            next_step();
+            if(choose) {
+                all_group.clear();
+                all_group.addAll(allGroups);
+                for (Group gr : all_group) {
+                    Set<IGraph.Node> pg = gr.getNodesGroup();
+                    if (pg.size() == 1) {
+                        componentMap.put(pg.iterator().next(), 0);
+                    } else {
+                        for (IGraph.Node pgn : pg) {
+                            componentMap.put(pgn, mark);
+                        }
                     }
                 }
+                blist.add(BoruvkaSnapshot.fromMapAndSet(componentMap, SnapShot));
+                mark++;
             }
-            blist.add(BoruvkaSnapshot.fromMapAndSet(componentMap, SnapShot));
-            mark++;
         }
 
     }
