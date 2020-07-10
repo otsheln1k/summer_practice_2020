@@ -204,6 +204,9 @@ public class Controller {
             this.renderer.drawGraph();
             list.setItems(FXCollections.observableArrayList());
             this.isGraphBlocked = false;
+            this.stop.setDisable(true);
+            this.next.setDisable(true);
+            this.previous.setDisable(true);
             timeline.stop();
         });
 
