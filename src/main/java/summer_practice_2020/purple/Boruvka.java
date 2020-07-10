@@ -5,17 +5,14 @@ import java.util.*;
 public class Boruvka{
 
     private IGraph g;
-    private HashMap<IGraph.Node, Integer> componentMap = new HashMap<IGraph.Node, Integer>();
     private HashMap<IGraph.Node, String> visitedMap = new HashMap<IGraph.Node, String>();
     private int amountCompanent = 1;
     private Iterable<IGraph.Node> nodes;
-    private List<Group> all_group = new ArrayList<Group>();
     private Set<IGraph.Edge> blockedEdges = new HashSet<IGraph.Edge>();
     private List<IGraph.Edge> list = new ArrayList<IGraph.Edge>();
     private Set<IGraph.Edge> SnapShot = new HashSet<IGraph.Edge>();
     private List<BoruvkaSnapshot> blist = new ArrayList<BoruvkaSnapshot>();
     private Group nullGroup = new Group();
-    private boolean choose = false;
     private int step = 0;
     private  Group cloneGroupfirst, cloneGroupsecond;
     private IGraph.Edge currentMinEdge = null;
@@ -108,10 +105,8 @@ public class Boruvka{
                 }
             }
             allGroups.add(nowGroup);
-            choose = true;
 
         }
-        choose = false;
     }
 
     public void boruvka() {
@@ -124,7 +119,6 @@ public class Boruvka{
             Group now = new Group();
             now.addNode(n);
             allGroups.add(now);
-            componentMap.put(n, 0);
         }
 
         int mark = 1;
@@ -146,10 +140,6 @@ public class Boruvka{
 
     public Set<IGraph.Edge> resultEdgeSet(){
         return SnapShot;
-    }
-
-    public HashMap<IGraph.Node, Integer> getComponentMap(){
-        return componentMap;
     }
 
     public boolean hasNext() {
