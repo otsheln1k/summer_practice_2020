@@ -1,8 +1,5 @@
 package summer_practice_2020.purple;
 
-import java.io.IOException;
-import java.net.URL;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -11,6 +8,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URL;
 
 
 public class App extends Application {

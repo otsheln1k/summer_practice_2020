@@ -2,14 +2,11 @@ package summer_practice_2020.purple.rendering;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.chart.LineChart;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import summer_practice_2020.purple.Graph;
 import summer_practice_2020.purple.IGraph;
-import javafx.scene.shape.ArcType;
 
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
@@ -24,8 +21,6 @@ public class Renderer {
 
     public Renderer(Canvas canvas) {
         this.workingCanvas = canvas;
-        workingCanvas.setWidth(1000);
-        workingCanvas.setHeight(1000);
         this.graphicsContext = this.workingCanvas.getGraphicsContext2D();
     }
 
@@ -34,7 +29,7 @@ public class Renderer {
     }
 
     public void setGraph(Graph graph) {
-        this.setEdgeSet(null);
+        this.setEdgeSet(new HashSet<>());
         this.graph = graph;
     }
 
@@ -42,7 +37,19 @@ public class Renderer {
         this.edgeSet = edgeSet;
     }
 
+    public void addToEdgeSet(IGraph.Edge edge) {
+        if (edge == null) {
+            System.out.println("edge null");
+            System.exit(-1);
+        } else if (this.edgeSet == null) {
+            System.out.println("Edgeset null");
+            System.exit(-2);
+        }
+        this.edgeSet.add(edge);
+    }
+
     public void drawGraph() {
+
         NodeList nodeList = new NodeList(graph.nodesCount());
         EdgeList edgeList = new EdgeList(graph.edgesCount());
         double angle = 90.0;

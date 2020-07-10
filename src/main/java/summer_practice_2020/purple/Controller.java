@@ -1,39 +1,48 @@
 package summer_practice_2020.purple;
 
-import java.util.Optional;
-import java.util.Set;
-
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
-import javafx.util.Pair;
+import javafx.util.Duration;
 import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
 import summer_practice_2020.purple.rendering.Edge;
 import summer_practice_2020.purple.rendering.Node;
 import summer_practice_2020.purple.rendering.Renderer;
+import summer_practice_2020.purple.rendering.WorkStep;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Controller {
     Graph graphToWork;
+    Boruvka algorithm;
     Renderer renderer;
+    List<WorkStep> stepList;
+    int index;
 
     boolean isGraphBlocked;
     boolean nodeMoveMode;
+    boolean autoShow;
     boolean addEdgeMode;
 
     Node selectedNode;
@@ -65,24 +74,128 @@ public class Controller {
 
     @FXML
     private void initialize() {
+
+        this.next.setDisable(true);
+        this.previous.setDisable(true);
+        this.stop.setDisable(true);
+        this.speed_control.setMin(0);
+        this.speed_control.setMax(10);
+        this.speed_control.setBlockIncrement(0.5);
+
+
         this.isGraphBlocked = false;
         this.nodeMoveMode = false;
         this.addEdgeMode = false;
+        this.autoShow = false;
+
         this.graphToWork = new Graph();
+        this.canvas.widthProperty().bind(canvas_container.widthProperty());
+        this.canvas.heightProperty().bind(canvas_container.heightProperty());
         this.renderer = new Renderer(this.canvas);
-        renderer.setGraph(this.graphToWork);
+
+
+        this.renderer.setGraph(this.graphToWork);
+
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.millis(0), ae -> {
+                    System.out.println("TimerClock " + ((1000 * 10) - this.speed_control.getValue() * 1000));
+                    this.next.fire();
+                }));
+
+        timeline.setCycleCount(99999);
 
 
         generateGraph.setOnAction(e -> this.generateGraph());
 
+        this.list.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    setMinWidth(param.getWidth());
+                    setMaxWidth(param.getWidth());
+                    setPrefWidth(param.getWidth());
+                    setWrapText(true);
+                    setText(item);
+                }
+            }
+        });
+
+        importGraph.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Выберите файл графа");
+            File file = fileChooser.showOpenDialog(new Stage());
+            if (file == null) return;
+            try {
+                FileInputStream stream = new FileInputStream(file);
+                this.graphToWork = new Graph();
+                GraphIO.readGraph(stream, this.graphToWork);
+            } catch (FileNotFoundException fileNotFoundException) {
+                Alert importError = new Alert(Alert.AlertType.ERROR);
+                importError.setContentText("Ошибка при импортировании графа");
+                importError.showAndWait();
+            }
+        });
+
+        exportGraph.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Выберите директорию для сохранения графа");
+            fileChooser.setInitialFileName("Graph");
+            File newGraphFile = fileChooser.showSaveDialog(new Stage());
+            if (newGraphFile == null) return;
+            try {
+                FileOutputStream stream = new FileOutputStream(newGraphFile);
+                GraphIO.writeGraph(stream, this.graphToWork);
+            } catch (FileNotFoundException fileNotFoundException) {
+                Alert importError = new Alert(Alert.AlertType.ERROR);
+                importError.setContentText("Ошибка при экспортировании графа");
+                importError.showAndWait();
+            }
+        });
+
+        speed_control.setOnTouchReleased(e -> timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000));
+
         play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            this.isGraphBlocked = true;
-            Boruvka boruvka = new Boruvka(this.graphToWork);
-            boruvka.boruvka();
-            Set<IGraph.Edge> edges = boruvka.resultEdgeSet();
-            this.renderer.setEdgeSet(edges);
-            this.renderer.clear();
-            this.renderer.drawGraph();
+            if (timeline.getStatus() == Animation.Status.STOPPED) {
+                this.isGraphBlocked = true;
+                this.algorithm = new Boruvka(this.graphToWork);
+                this.algorithm.boruvka();
+                this.stepList = new LinkedList<>();
+                this.index = 0;
+
+                stop.setDisable(false);
+
+                if (this.algorithm.hasNext()) {
+                    next.setDisable(false);
+                    timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000);
+                    timeline.play();
+                }
+            } else {
+                timeline.pause();
+            }
+        });
+
+        next.setOnMouseClicked(e -> {
+            if (this.algorithm.hasNext()) {
+                this.stepList.add(new WorkStep(this.algorithm.next()));
+                previous.setDisable(false);
+                this.renderer.addToEdgeSet(this.stepList.get(this.index).getEdge());
+                this.list.getItems().add(this.stepList.get(this.index).getDescription());
+                this.index += 1;
+                this.renderer.drawGraph();
+            } else {
+                this.list.getItems().add("Конец работы алгоритма");
+                next.setDisable(true);
+                timeline.stop();
+            }
+        });
+
+
+        previous.setOnMouseClicked(e -> {
+
         });
 
         stop.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
@@ -91,15 +204,21 @@ public class Controller {
             this.renderer.drawGraph();
             list.setItems(FXCollections.observableArrayList());
             this.isGraphBlocked = false;
+            timeline.stop();
         });
 
-        canvas_container.setOnMouseMoved(e -> {
-            if (this.selectedNode != null && this.nodeMoveMode) {
+        canvas_container.setOnMouseMoved(e -> this.selectedNode = renderer.isNodePosition(e.getX(), e.getY()));
+
+        canvas_container.setOnMouseDragged(e -> {
+            if (this.selectedNode != null) {
+                this.nodeMoveMode = true;
                 this.selectedNode.getNode().setPosX(e.getX());
                 this.selectedNode.getNode().setPosY(e.getY());
                 this.renderer.drawGraph();
             }
         });
+
+        canvas_container.setOnMouseDragReleased(e -> this.nodeMoveMode = false);
 
         canvas_container.setOnMouseClicked(e -> {
             ContextMenu menu = new ContextMenu();
@@ -125,21 +244,19 @@ public class Controller {
 
             rename.setOnAction(g -> this.editPole(e));
 
-            if (e.getButton() == MouseButton.PRIMARY) {
+            if (e.getButton() == MouseButton.PRIMARY && !this.isGraphBlocked) {
                 if (!addEdgeMode) {
                     if (this.selectedNode == null) {
                         this.selectedEdge = this.renderer.isEdgePosition(e.getX(), e.getY());
-                        if (this.selectedEdge == null) {
+                        if (this.selectedEdge != null) {
+                            this.editPole(e);
+                        } else {
                             IGraph.Node addedNode = this.graphToWork.addNode();
                             addedNode.setTitle("name");
                             addedNode.setPosX(e.getX());
                             addedNode.setPosY(e.getY());
                             renderer.drawGraph();
-                        } else {
-                            editPole(e);
                         }
-                    } else {
-                        this.nodeMoveMode = true;
                     }
                 } else if (this.selectedNode != null) {
                     if (!this.selectedNode.equals(this.nodeForEdge)) {
@@ -151,11 +268,7 @@ public class Controller {
                 }
             } else if (e.getButton() == MouseButton.SECONDARY) {
                 if (this.selectedNode != null) {
-                    if (this.nodeMoveMode) {
-                        this.nodeMoveMode = false;
-                    } else {
-                        menu.show(canvas_container, e.getScreenX(), e.getScreenY());
-                    }
+                    menu.show(canvas_container, e.getScreenX(), e.getScreenY());
                 } else {
                     this.selectedEdge = this.renderer.isEdgePosition(e.getX(), e.getY());
                     if (this.selectedEdge != null) {
@@ -171,7 +284,10 @@ public class Controller {
     private void editPole(MouseEvent e) {
         Stage editStage = new Stage();
         Pane root = new Pane();
-        TextField textField = new TextField();
+        TextField textField = this.selectedNode == null ?
+                new TextField(Long.toString(Math.round(this.selectedEdge.getWeight())))
+                : new TextField(this.selectedNode.getTitle());
+        textField.selectAll();
         root.getChildren().addAll(textField);
         Scene editScene = new Scene(root);
         editStage.setScene(editScene);

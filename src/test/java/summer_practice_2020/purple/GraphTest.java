@@ -1,18 +1,12 @@
 package summer_practice_2020.purple;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Random;
-import java.util.Set;
-
 import org.junit.jupiter.api.Test;
-
 import summer_practice_2020.purple.IGraph.Edge;
 import summer_practice_2020.purple.IGraph.Node;
+
+import java.util.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class GraphTest {
 
