@@ -5,8 +5,8 @@ import summer_practice_2020.purple.IGraph;
 
 public class Node {
     private final IGraph.Node node;
-    private double posx;
-    private double posy;
+    private final double posx;
+    private final double posy;
     private double radius;
     private Color color;
 
@@ -24,18 +24,6 @@ public class Node {
 
     public IGraph.Node getNode() {
         return this.node;
-    }
-
-    public void setPosx(double x) {
-        this.posx = x;
-    }
-
-    public void setPosy(double y) {
-        this.posy = y;
-    }
-
-    public void setRadius(double radius) {
-        this.radius = radius;
     }
 
     public void setColor(Color color) {
