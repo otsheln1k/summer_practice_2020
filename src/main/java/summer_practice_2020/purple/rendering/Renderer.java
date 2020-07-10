@@ -38,6 +38,10 @@ public class Renderer {
         this.edgeSet = edgeSet;
     }
 
+    public void addToEdgeSet(IGraph.Edge edge) {
+        this.edgeSet.add(edge);
+    }
+
     public void drawGraph() {
         NodeList nodeList = new NodeList(graph.nodesCount());
         EdgeList edgeList = new EdgeList(graph.edgesCount());

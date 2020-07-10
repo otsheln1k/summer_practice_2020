@@ -1,5 +1,7 @@
 package summer_practice_2020.purple;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import javafx.collections.FXCollections;
@@ -21,10 +23,14 @@ import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
 import summer_practice_2020.purple.rendering.Edge;
 import summer_practice_2020.purple.rendering.Node;
 import summer_practice_2020.purple.rendering.Renderer;
+import summer_practice_2020.purple.rendering.WorkStep;
 
 public class Controller {
     Graph graphToWork;
+    Boruvka algorithm;
     Renderer renderer;
+    List<WorkStep> stepList;
+    int index;
 
     boolean isGraphBlocked;
     boolean nodeMoveMode;
@@ -59,24 +65,49 @@ public class Controller {
 
     @FXML
     private void initialize() {
+        this.index = 0;
+
+        next.setDisable(true);
+        previous.setDisable(true);
+        stop.setDisable(true);
+
+
         this.isGraphBlocked = false;
         this.nodeMoveMode = false;
         this.addEdgeMode = false;
         this.graphToWork = new Graph();
         this.renderer = new Renderer(this.canvas);
-        renderer.setGraph(this.graphToWork);
+
+
+        this.renderer.setGraph(this.graphToWork);
+        //this.renderer.setEdgeSet(this.algorithm.next());
 
 
         generateGraph.setOnAction(e -> this.generateGraph());
 
         play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             this.isGraphBlocked = true;
-            Boruvka boruvka = new Boruvka(this.graphToWork);
-            boruvka.boruvka();
-            Set<IGraph.Edge> edges = boruvka.resultEdgeSet();
-            this.renderer.setEdgeSet(edges);
-            this.renderer.clear();
-            this.renderer.drawGraph();
+            this.algorithm = new Boruvka(this.graphToWork);
+            this.algorithm.boruvka();
+            this.stepList = new LinkedList<>();
+
+            stop.setDisable(false);
+            if (this.algorithm.hasNext()) {
+                next.setDisable(false);
+            }
+        });
+
+        next.setOnMouseClicked(e -> {
+            if (this.algorithm.hasNext()) {
+                this.stepList.add(new WorkStep(this.algorithm.next(), this.graphToWork));
+                previous.setDisable(false);
+                this.renderer.addToEdgeSet(this.stepList.get(this.index).getEdge());
+                this.list.getItems().add(this.stepList.get(this.index).getDescription());
+                this.index += 1;
+                this.renderer.drawGraph();
+            } else {
+                next.setDisable(true);
+            }
         });
 
         stop.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
