@@ -61,8 +61,10 @@ public class Renderer {
 
         for (IGraph.Node node : this.graph.getNodes()) {
             if (node.getPosX() == -1) {
-                posx = 150 + 75 * Math.cos(2 * Math.PI / 360 * angle);
-                posy = 150 - 75 * Math.sin(2 * Math.PI / 360 * angle);
+                double tmpMin = Math.min(this.workingCanvas.getWidth(), this.workingCanvas.getHeight());
+                tmpMin *= 0.45;
+                posx = this.workingCanvas.getWidth() / 2 + tmpMin * Math.cos(2 * Math.PI / 360 * angle);
+                posy = this.workingCanvas.getHeight() / 2 - tmpMin * Math.sin(2 * Math.PI / 360 * angle);
                 angle += angleStep;
                 node.setPosX(posx);
                 node.setPosY(posy);
@@ -114,18 +116,21 @@ public class Renderer {
 
         double middlePosX = (node2.getPosx() - node1.getPosx()) / 2;
         double middlePosY = (node2.getPosy() - node1.getPosy()) / 2;
-        int approximatedValueofWeight = (int) edge.getWeight();
+        int approximatedValueOfWeight = (int) edge.getWeight();
 
         this.graphicsContext.setStroke(Color.rgb(0, 0, 0));
 
         this.graphicsContext.strokeLine(node1.getPosx(), node1.getPosy(), node2.getPosx(), node2.getPosy());
         this.graphicsContext.setLineWidth(1);
         this.graphicsContext.setFill(Color.rgb(255, 255, 255));
-        this.graphicsContext.fillRect(node1.getPosx() + middlePosX - (String.valueOf(approximatedValueofWeight).length() + 1) * 6, node1.getPosy() + middlePosY - 10,
+        final int i = (String.valueOf(approximatedValueOfWeight).length() + 1) * 6;
+        this.graphicsContext.fillRect(node1.getPosx() + middlePosX - i, node1.getPosy() + middlePosY - 10,
                 (String.valueOf(Math.round(edge.getWeight())).length() + 2) * 6, 15);
-        this.graphicsContext.strokeRect(node1.getPosx() + middlePosX - (String.valueOf(approximatedValueofWeight).length() + 1) * 6, node1.getPosy() + middlePosY - 10,
+        this.graphicsContext.strokeRect(node1.getPosx() + middlePosX - i, node1.getPosy() + middlePosY - 10,
                 (String.valueOf(Math.round(edge.getWeight())).length() + 2) * 6, 15);
-        this.graphicsContext.strokeText(Integer.toString(approximatedValueofWeight), node1.getPosx() + middlePosX - String.valueOf(approximatedValueofWeight).length() * 6, node1.getPosy() + middlePosY + 3);
+        this.graphicsContext.strokeText(Integer.toString(approximatedValueOfWeight),
+                node1.getPosx() + middlePosX - String.valueOf(approximatedValueOfWeight).length() * 6,
+                node1.getPosy() + middlePosY + 3);
     }
 
     public Edge isEdgePosition(double posx, double posy) {
@@ -146,7 +151,7 @@ public class Renderer {
                 edgePosX = node1.getPosx() + middlePosX -
                         (String.valueOf(approximatedValueofWeight).length() + 1) * 6;
                 edgePosY = node1.getPosy() + middlePosY - 10;
-                if(posx >= edgePosX && posx < edgePosX + (String.valueOf(Math.round(edge.getWeight())).length() + 2) * 6) {
+                if (posx >= edgePosX && posx < edgePosX + (String.valueOf(Math.round(edge.getWeight())).length() + 2) * 6) {
                     if (posy >= edgePosY && posy < edgePosY + 15) {
                         return edge;
                     }
