@@ -31,6 +31,7 @@ class GraphGenerationTest {
 
 	private Set<IGraph.Node> reachableNodes(IGraph g, IGraph.Node start) {
 		Set<IGraph.Node> s = new HashSet<>();
+		s.add(start);
 		Queue<IGraph.Node> q = new ArrayDeque<>();
 		q.add(start);
 
@@ -128,7 +129,10 @@ class GraphGenerationTest {
 
 			Set<IGraph.Node> nodes = reachableNodes(g, n);
 			nodeSets.add(nodes);
-			nodes.forEach(visitedNodes::add);
+
+			for (IGraph.Node m : nodes) {
+				assertTrue(visitedNodes.add(m));
+			}
 		}
 
 		return nodeSets;
@@ -147,6 +151,7 @@ class GraphGenerationTest {
 
 		List<Set<IGraph.Node>> nodeSets = getNodeSets(g);
 		assertEquals(compsCount, nodeSets.size());
+		assertEquals(nodesCount, nodeSets.stream().mapToInt(Set::size).sum());
 	}
 
 	private Set<IGraph.Edge> nodeSetEdges(IGraph g, Set<IGraph.Node> nodes) {
