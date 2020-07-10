@@ -20,8 +20,6 @@ public class Renderer {
 
     public Renderer(Canvas canvas) {
         this.workingCanvas = canvas;
-        workingCanvas.setWidth(1000);
-        workingCanvas.setHeight(1000);
         this.graphicsContext = this.workingCanvas.getGraphicsContext2D();
     }
 
@@ -43,6 +41,7 @@ public class Renderer {
     }
 
     public void drawGraph() {
+
         NodeList nodeList = new NodeList(graph.nodesCount());
         EdgeList edgeList = new EdgeList(graph.edgesCount());
         double angle = 90.0;

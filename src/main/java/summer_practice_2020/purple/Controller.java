@@ -65,7 +65,6 @@ public class Controller {
 
     @FXML
     private void initialize() {
-        this.index = 0;
 
         next.setDisable(true);
         previous.setDisable(true);
@@ -76,6 +75,8 @@ public class Controller {
         this.nodeMoveMode = false;
         this.addEdgeMode = false;
         this.graphToWork = new Graph();
+        this.canvas.widthProperty().bind(canvas_container.widthProperty());
+        this.canvas.heightProperty().bind(canvas_container.heightProperty());
         this.renderer = new Renderer(this.canvas);
 
 
@@ -90,6 +91,7 @@ public class Controller {
             this.algorithm = new Boruvka(this.graphToWork);
             this.algorithm.boruvka();
             this.stepList = new LinkedList<>();
+            this.index = 0;
 
             stop.setDisable(false);
             if (this.algorithm.hasNext()) {
@@ -118,8 +120,9 @@ public class Controller {
             this.isGraphBlocked = false;
         });
 
+        canvas_container.setOnMouseMoved(e -> this.selectedNode = renderer.isNodePosition(e.getX(), e.getY()));
+
         canvas_container.setOnMouseDragged(e -> {
-            this.selectedNode = renderer.isNodePosition(e.getX(), e.getY());
             if (this.selectedNode != null) {
                 this.nodeMoveMode = true;
                 this.selectedNode.getNode().setPosX(e.getX());
