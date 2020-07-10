@@ -78,7 +78,7 @@ public class Controller {
         this.next.setDisable(true);
         this.previous.setDisable(true);
         this.stop.setDisable(true);
-        this.speed_control.setMin(0);
+        this.speed_control.setMin(15);
         this.speed_control.setMax(10);
         this.speed_control.setBlockIncrement(0.5);
 
