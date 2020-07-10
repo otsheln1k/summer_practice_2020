@@ -76,6 +76,25 @@ public class GraphGeneratorFacade {
 		}
 	}
 
+	public void randomlyDistributeWithUpperBound(List<Integer> ints,
+			int total, List<Integer> bounds) {
+		List<Integer> availIndexes = new ArrayList<>();
+		for (int i = 0; i < ints.size(); i++) {
+			if (ints.get(i) < bounds.get(i)) {
+				availIndexes.add(i);
+			}
+		}
+		for (int i = 0; i < total; i++) {
+			int idx = rng.nextInt(availIndexes.size());
+			int realIdx = availIndexes.get(idx);
+			Integer newVal = ints.get(realIdx) + 1;
+			ints.set(realIdx, newVal);
+			if (newVal == bounds.get(realIdx)) {
+				availIndexes.remove(idx);
+			}
+		}
+	}
+
 	private List<Integer> distributeList(int n, int total) {
 		List<Integer> res = new ArrayList<>();
 		for (int i = 0; i < n; i++) {
@@ -108,7 +127,10 @@ public class GraphGeneratorFacade {
 			total -= nc - 1;
 		}
 
-		randomlyDistribute(genCounts, total);
+		List<Integer> maxEdgeCounts = new ArrayList<>();
+		nodeCounts.forEach(nc -> maxEdgeCounts.add(nc * (nc-1) / 2));
+
+		randomlyDistributeWithUpperBound(genCounts, total, maxEdgeCounts);
 
 		List<GraphEdgeGenerator> gens = new ArrayList<>();
 		for (int i = 0; i < compsCount; i++) {
