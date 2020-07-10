@@ -1,18 +1,14 @@
 package summer_practice_2020.purple;
 
-import java.util.Optional;
 import java.util.Set;
 
 import javafx.collections.FXCollections;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -21,8 +17,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
-import javafx.util.Pair;
 import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
 import summer_practice_2020.purple.rendering.Edge;
 import summer_practice_2020.purple.rendering.Node;
@@ -93,22 +87,17 @@ public class Controller {
             this.isGraphBlocked = false;
         });
 
-        canvas_container.setOnDragEntered(e -> {
+        canvas_container.setOnMouseDragged(e -> {
             this.selectedNode = renderer.isNodePosition(e.getX(), e.getY());
             if (this.selectedNode != null) {
                 this.nodeMoveMode = true;
-            }
-        });
-
-        canvas_container.setOnDragDetected(e -> {
-            if (this.selectedNode != null && this.nodeMoveMode) {
                 this.selectedNode.getNode().setPosX(e.getX());
                 this.selectedNode.getNode().setPosY(e.getY());
                 this.renderer.drawGraph();
             }
         });
 
-        canvas_container.setOnDragDropped(e -> this.nodeMoveMode = false);
+        canvas_container.setOnMouseDragReleased(e -> this.nodeMoveMode = false);
 
         canvas_container.setOnMouseClicked(e -> {
             ContextMenu menu = new ContextMenu();
@@ -137,11 +126,16 @@ public class Controller {
             if (e.getButton() == MouseButton.PRIMARY) {
                 if (!addEdgeMode) {
                     if (this.selectedNode == null) {
-                        IGraph.Node addedNode = this.graphToWork.addNode();
-                        addedNode.setTitle("name");
-                        addedNode.setPosX(e.getX());
-                        addedNode.setPosY(e.getY());
-                        renderer.drawGraph();
+                        this.selectedEdge = this.renderer.isEdgePosition(e.getX(), e.getY());
+                        if (this.selectedEdge != null) {
+                            this.editPole(e);
+                        } else {
+                            IGraph.Node addedNode = this.graphToWork.addNode();
+                            addedNode.setTitle("name");
+                            addedNode.setPosX(e.getX());
+                            addedNode.setPosY(e.getY());
+                            renderer.drawGraph();
+                        }
                     }
                 } else if (this.selectedNode != null) {
                     if (!this.selectedNode.equals(this.nodeForEdge)) {
@@ -169,7 +163,9 @@ public class Controller {
     private void editPole(MouseEvent e) {
         Stage editStage = new Stage();
         Pane root = new Pane();
-        TextField textField = new TextField(this.selectedNode.getTitle());
+        TextField textField = this.selectedNode == null ?
+                new TextField(Long.toString(Math.round(this.selectedEdge.getWeight())))
+                : new TextField(this.selectedNode.getTitle());
         textField.selectAll();
         root.getChildren().addAll(textField);
         Scene editScene = new Scene(root);
