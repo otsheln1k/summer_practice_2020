@@ -4,8 +4,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class GraphIO {
@@ -58,9 +60,14 @@ public class GraphIO {
 					}
 					return g.addNode();
 				});
-				sc.skip("\\s*");
+				sc.skip("\\h*");
 
-				String title = sc.nextLine();
+				String title;
+				try {
+					title = sc.nextLine();
+				} catch (NoSuchElementException e) {
+					title = "";
+				}
 				n.setTitle(title);
 				break;
 			}
@@ -68,15 +75,23 @@ public class GraphIO {
 			case "edge": {
 				IGraph.Node a = getNodeChecked(nodes, sc.next());
 				IGraph.Node b = getNodeChecked(nodes, sc.next());
-				IGraph.Edge e = g.addEdge(a, b);
-				e.setWeight(sc.nextDouble());
+				IGraph.Edge edge = g.addEdge(a, b);
+				try {
+					edge.setWeight(sc.nextDouble());
+				} catch (InputMismatchException e) {
+					throw new GraphFormatException(e);
+				}
 				break;
 			}
 
 			case "pos": {
 				IGraph.Node n = getNodeChecked(nodes, sc.next());
-				n.setPosX(sc.nextDouble());
-				n.setPosY(sc.nextDouble());
+				try {
+					n.setPosX(sc.nextDouble());
+					n.setPosY(sc.nextDouble());
+				} catch (InputMismatchException e) {
+					throw new GraphFormatException(e);
+				}
 				break;
 			}
 
