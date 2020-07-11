@@ -1,18 +1,20 @@
 package summer_practice_2020.purple.boruvka;
 
 import summer_practice_2020.purple.IGraph;
+import summer_practice_2020.purple.rendering.Edge;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class BoruvkaSnapshot {
+public class BoruvkaSnapshot implements Cloneable{
 	private final List<Group> groups;
 	private final Set<IGraph.Edge> pickedEdges;
 	private final Group currentGroup;
 	private final Group nextGroup;
 	private final Set<IGraph.Edge> availEdges;
+	private final Set<IGraph.Edge> ostovEdges;
 	private final IGraph.Edge selectedEdge;
 
 	public Group getCurrentGroup() {
@@ -41,10 +43,12 @@ public class BoruvkaSnapshot {
 
 	public BoruvkaSnapshot(Iterable<Group> groups,
 						   Iterable<IGraph.Edge> edges,
+						   Set<IGraph.Edge> nowedges,
 						   Group currentGroup,
 						   Group nextGroup,
 						   Iterable<IGraph.Edge> availEdges,
 						   IGraph.Edge selectedEdge) {
+
 		List<Group> groupsCopy = new ArrayList<>();
 		Group currentGroupCopy = currentGroup.clone();
 		Group nextGroupCopy = nextGroup.clone();
@@ -65,5 +69,6 @@ public class BoruvkaSnapshot {
 		this.availEdges = availEdgesCopy;
 		this.selectedEdge = selectedEdge;
 		this.nextGroup = nextGroupCopy;
+		this.ostovEdges = nowedges;
 	}
 }
