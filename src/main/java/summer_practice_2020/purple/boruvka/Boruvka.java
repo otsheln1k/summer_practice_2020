@@ -1,4 +1,6 @@
-package summer_practice_2020.purple;
+package summer_practice_2020.purple.boruvka;
+
+import summer_practice_2020.purple.IGraph;
 
 import java.util.*;
 
@@ -98,7 +100,7 @@ public class Boruvka{
             newlist.addAll(allGroups);
             for (Group now : newlist) {
                 if (flag && now.HasEdge(minEdge)) {
-                    cloneGroupfirst = nowGroup.clone();
+                    cloneGroupfirst = nowGroup;
                     cloneGroupsecond = now.clone();
                     now.merge(nowGroup);
                     SnapShot.add(minEdge);
@@ -128,7 +130,7 @@ public class Boruvka{
                 List<IGraph.Edge> cEdges = new ArrayList<IGraph.Edge>();
                 cEdges.addAll(list);
                 IGraph.Edge cEdge = currentMinEdge;
-                blist.add(new BoruvkaSnapshot(allGroups, g.getEdges(), cloneGroupfirst.clone(), cloneGroupsecond.clone(), cEdges, cEdge));
+                blist.add(new BoruvkaSnapshot(allGroups, g.getEdges(), cloneGroupfirst, cloneGroupsecond, cEdges, cEdge));
             }
         }
 

@@ -1,4 +1,6 @@
-package summer_practice_2020.purple;
+package summer_practice_2020.purple.boruvka;
+
+import summer_practice_2020.purple.IGraph;
 
 import java.util.ArrayList;
 import java.util.HashSet;
