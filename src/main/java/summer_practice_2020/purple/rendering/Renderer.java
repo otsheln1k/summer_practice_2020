@@ -3,19 +3,19 @@ package summer_practice_2020.purple.rendering;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import summer_practice_2020.purple.BoruvkaSnapshot;
 import summer_practice_2020.purple.Graph;
 import summer_practice_2020.purple.IGraph;
-
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 
 
 public class Renderer {
     Canvas workingCanvas;
     GraphicsContext graphicsContext;
+
     Graph graph;
-    Set<IGraph.Edge> edgeSet;
+    BoruvkaSnapshot snapshot;
+
     Node[] nodes;
     Edge[] edges;
 
@@ -29,23 +29,12 @@ public class Renderer {
     }
 
     public void setGraph(Graph graph) {
-        this.setEdgeSet(new HashSet<>());
+        this.snapshot = null;
         this.graph = graph;
     }
 
-    public void setEdgeSet(Set<IGraph.Edge> edgeSet) {
-        this.edgeSet = edgeSet;
-    }
-
-    public void addToEdgeSet(IGraph.Edge edge) {
-        if (edge == null) {
-            System.out.println("edge null");
-            System.exit(-1);
-        } else if (this.edgeSet == null) {
-            System.out.println("Edgeset null");
-            System.exit(-2);
-        }
-        this.edgeSet.add(edge);
+    public void setSnapshot(BoruvkaSnapshot snapshot) {
+        this.snapshot = snapshot;
     }
 
     public void drawGraph() {
@@ -106,10 +95,8 @@ public class Renderer {
     public void drawEdge(Edge edge) {
         Node node1 = edge.getNode1();
         Node node2 = edge.getNode2();
-        if (this.edgeSet != null && this.edgeSet.contains(edge.getEdge())) {
+        if (this.snapshot != null && this.snapshot.getEdgePicked(edge.getEdge())) {
             this.graphicsContext.setLineWidth(7);
-        } else if (this.edgeSet == null) {
-            this.graphicsContext.setLineWidth(3);
         } else {
             this.graphicsContext.setLineWidth(1);
         }

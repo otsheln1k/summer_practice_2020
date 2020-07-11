@@ -24,20 +24,18 @@ import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
 import summer_practice_2020.purple.rendering.Edge;
 import summer_practice_2020.purple.rendering.Node;
 import summer_practice_2020.purple.rendering.Renderer;
-import summer_practice_2020.purple.rendering.WorkStep;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.LinkedList;
-import java.util.List;
 
 public class Controller {
     Graph graphToWork;
     Boruvka algorithm;
     Renderer renderer;
-    List<WorkStep> stepList;
+    LinkedList<BoruvkaSnapshot> snapshots;
     int index;
 
     boolean isGraphBlocked;
@@ -158,48 +156,68 @@ public class Controller {
 
         speed_control.setOnTouchReleased(e -> timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000));
 
+        this.list.setOnMouseClicked(e -> {
+            this.renderer.setSnapshot(this.snapshots.get(this.list.getSelectionModel().getSelectedIndex()));
+            this.renderer.drawGraph();
+        });
+
         play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            if (timeline.getStatus() == Animation.Status.STOPPED) {
-                this.isGraphBlocked = true;
-                this.algorithm = new Boruvka(this.graphToWork);
-                this.algorithm.boruvka();
-                this.stepList = new LinkedList<>();
-                this.index = 0;
+            if (this.graphToWork.edgesCount() > 0) {
+                if (timeline.getStatus() == Animation.Status.STOPPED) {
+                    this.isGraphBlocked = true;
+                    this.algorithm = new Boruvka(this.graphToWork);
+                    this.algorithm.boruvka();
+                    this.index = -1;
+                    this.snapshots = new LinkedList<>();
 
-                stop.setDisable(false);
+                    while (this.algorithm.hasNext()) {
+                        this.snapshots.add(this.algorithm.next());
+                    }
+                    stop.setDisable(false);
 
-                if (this.algorithm.hasNext()) {
-                    next.setDisable(false);
-                    timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000);
-                    timeline.play();
+                    if (this.index < this.snapshots.size()) {
+                        next.setDisable(false);
+                        timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000);
+                        timeline.play();
+                    }
+                } else {
+                    timeline.pause();
                 }
-            } else {
-                timeline.pause();
             }
         });
 
         next.setOnMouseClicked(e -> {
-            if (this.algorithm.hasNext()) {
-                this.stepList.add(new WorkStep(this.algorithm.next()));
-                previous.setDisable(false);
-                this.renderer.addToEdgeSet(this.stepList.get(this.index).getEdge());
-                this.list.getItems().add(this.stepList.get(this.index).getDescription());
+            if (this.index < this.snapshots.size()) {
                 this.index += 1;
+                if (this.list.getItems().size() <= this.index) {
+                    this.list.getItems().add("Выбрано ребро между " +
+                            this.snapshots.get(index).getSelectedEdge().firstNode().getTitle()
+                            + " и " + this.snapshots.get(index).getSelectedEdge().secondNode().getTitle());
+                }
+                this.list.getSelectionModel().select(index);
+                this.renderer.setSnapshot(this.snapshots.get(this.list.getSelectionModel().getSelectedIndex()));
                 this.renderer.drawGraph();
-            } else {
-                this.list.getItems().add("Конец работы алгоритма");
+            }
+            if (this.index == this.snapshots.size() - 1) {
                 next.setDisable(true);
                 timeline.stop();
-            }
+            } else previous.setDisable(this.index <= 0);
         });
 
 
         previous.setOnMouseClicked(e -> {
-
+            this.index -= 1;
+            this.next.setDisable(false);
+            this.list.getSelectionModel().select(index);
+            this.renderer.setSnapshot(this.snapshots.get(this.list.getSelectionModel().getSelectedIndex()));
+            this.renderer.drawGraph();
+            if (this.index < 1) {
+                this.previous.setDisable(true);
+            }
         });
 
         stop.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            this.renderer.setEdgeSet(null);
+            this.renderer.setSnapshot(null);
             this.renderer.clear();
             this.renderer.drawGraph();
             list.setItems(FXCollections.observableArrayList());
