@@ -1,11 +1,11 @@
 package summer_practice_2020.purple.graphgen;
 
+import summer_practice_2020.purple.IGraph;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
-import summer_practice_2020.purple.IGraph;
 
 public class ShuffleGraphEdgeGenerator implements GraphEdgeGenerator {
 
@@ -35,9 +35,9 @@ public class ShuffleGraphEdgeGenerator implements GraphEdgeGenerator {
 	}
 
 	@Override
-	public void generateEdges(IGraph g) {
+	public void generateEdgesOnNodes(IGraph g, Iterable<IGraph.Node> ns) {
 		List<IGraph.Node> nodes = new ArrayList<>();
-		g.getNodes().forEach(nodes::add);
+		ns.forEach(nodes::add);
 
 		List<EdgeCandidate> possibleEdges = new ArrayList<>();
 		for (int i = 0; i < nodes.size(); i++) {

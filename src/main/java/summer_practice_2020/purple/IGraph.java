@@ -11,6 +11,10 @@ package summer_practice_2020.purple;
         interface Node {
             void setTitle(String t);
             String getTitle();
+            void setPosX(double posX);
+            void setPosY(double posY);
+            double getPosX();
+            double getPosY();
         }
 
         Node addNode();

@@ -3,26 +3,22 @@ package summer_practice_2020.purple.rendering;
 import summer_practice_2020.purple.IGraph;
 
 public class EdgeList {
-    private Edge[] egdeList;
-    private int size = 0;
+    private Edge[] edgeList;
+    private int size;
     private int index = 0;
-
-    public EdgeList() {
-        egdeList = new Edge[this.size];
-    }
 
     public EdgeList(int size) {
         this.size = size;
-        egdeList = new Edge[this.size];
+        edgeList = new Edge[this.size];
     }
 
     private void extend() {
         this.size += 10;
         Edge[] tmp = new Edge[size];
         if (this.index >= 0) {
-            System.arraycopy(this.egdeList, 0, tmp, 0, this.index);
+            System.arraycopy(this.edgeList, 0, tmp, 0, this.index);
         }
-        this.egdeList = tmp;
+        this.edgeList = tmp;
     }
 
     public void addEdge(IGraph.Edge edge, Node[] nodeList) {
@@ -38,7 +34,7 @@ public class EdgeList {
                 node2 = nodeList[i];
             }
         }
-        this.egdeList[this.index++] = new Edge(edge, node1, node2);
+        this.edgeList[this.index++] = new Edge(edge, node1, node2);
         if (node2 != null) {
             if (node1 != null) {
                 node2.setColor(node1.getColor());
@@ -48,7 +44,7 @@ public class EdgeList {
 
     public Edge[] getEdgeArray() {
         Edge[] tmp = new Edge[this.index];
-        System.arraycopy(this.egdeList, 0, tmp, 0, this.index);
+        System.arraycopy(this.edgeList, 0, tmp, 0, this.index);
         return tmp;
     }
 }

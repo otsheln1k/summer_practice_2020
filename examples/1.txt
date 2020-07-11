@@ -1,0 +1,6 @@
+node a A
+node b B
+node c C
+edge a b 1.0
+edge b c 2.0
+edge a c 1.5

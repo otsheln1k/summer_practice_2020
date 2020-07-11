@@ -4,3 +4,5 @@ target/
 dependency-reduced-pom.xml
 /.idea/
 test-javafx-app.iml
+report.pdf
+summer-practice-2020-purple.iml

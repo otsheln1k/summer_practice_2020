@@ -1,0 +1,14 @@
+node foo "A1"
+node bar "B1"
+node baz "A2"
+node zoo "B2"
+
+edge foo bar 4.5
+edge foo baz 3.0
+edge bar zoo 3.5
+edge baz zoo 4.0
+
+pos foo 5 5
+pos bar 25 5
+pos baz 5 25
+pos zoo 25 25

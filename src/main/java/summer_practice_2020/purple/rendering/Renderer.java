@@ -5,11 +5,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import summer_practice_2020.purple.Graph;
 import summer_practice_2020.purple.IGraph;
-import javafx.scene.shape.ArcType;
 
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-import java.util.Timer;
 
 
 public class Renderer {
@@ -17,11 +16,11 @@ public class Renderer {
     GraphicsContext graphicsContext;
     Graph graph;
     Set<IGraph.Edge> edgeSet;
+    Node[] nodes;
+    Edge[] edges;
 
     public Renderer(Canvas canvas) {
         this.workingCanvas = canvas;
-        workingCanvas.setWidth(1000);
-        workingCanvas.setHeight(1000);
         this.graphicsContext = this.workingCanvas.getGraphicsContext2D();
     }
 
@@ -30,7 +29,7 @@ public class Renderer {
     }
 
     public void setGraph(Graph graph) {
-        this.setEdgeSet(null);
+        this.setEdgeSet(new HashSet<>());
         this.graph = graph;
     }
 
@@ -38,7 +37,19 @@ public class Renderer {
         this.edgeSet = edgeSet;
     }
 
+    public void addToEdgeSet(IGraph.Edge edge) {
+        if (edge == null) {
+            System.out.println("edge null");
+            System.exit(-1);
+        } else if (this.edgeSet == null) {
+            System.out.println("Edgeset null");
+            System.exit(-2);
+        }
+        this.edgeSet.add(edge);
+    }
+
     public void drawGraph() {
+
         NodeList nodeList = new NodeList(graph.nodesCount());
         EdgeList edgeList = new EdgeList(graph.edgesCount());
         double angle = 90.0;
@@ -49,25 +60,34 @@ public class Renderer {
         r.setSeed(System.currentTimeMillis());
 
         for (IGraph.Node node : this.graph.getNodes()) {
-            posx = 150 + 75 * Math.cos(2 * Math.PI / 360 * angle);
-            posy = 150 - 75 * Math.sin(2 * Math.PI / 360 * angle);
-            angle += angleStep;
-            nodeList.addNode(node, posx, posy, Color.rgb((int) (r.nextDouble() * 155) + 100, 0, (int) (r.nextDouble() * 155) + 100));
+            if (node.getPosX() == -1) {
+                double tmpMin = Math.min(this.workingCanvas.getWidth(), this.workingCanvas.getHeight());
+                tmpMin *= 0.45;
+                posx = this.workingCanvas.getWidth() / 2 + tmpMin * Math.cos(2 * Math.PI / 360 * angle);
+                posy = this.workingCanvas.getHeight() / 2 - tmpMin * Math.sin(2 * Math.PI / 360 * angle);
+                angle += angleStep;
+                node.setPosX(posx);
+                node.setPosY(posy);
+            }
+            nodeList.addNode(node, node.getPosX(), node.getPosY(), Color.rgb(255, 255, 255));
         }
 
         for (IGraph.Edge edge : this.graph.getEdges()) {
             edgeList.addEdge(edge, nodeList.getNodeArray());
         }
 
-        Edge[] edges = edgeList.getEdgeArray();
-        Node[] nodes = nodeList.getNodeArray();
+        this.edges = edgeList.getEdgeArray();
+        this.nodes = nodeList.getNodeArray();
+
+        clear();
 
         for (int i = 0; i < edgeList.getEdgeArray().length; i++) {
             drawEdge(edges[i]);
         }
 
         for (int i = 0; i < nodeList.getNodeArray().length; i++) {
-            drawNode(nodes[i]);
+            this.nodes[i].updateRadius();
+            drawNode(this.nodes[i]);
         }
     }
 
@@ -76,8 +96,11 @@ public class Renderer {
         this.graphicsContext.setFill(node.getColor());
         this.graphicsContext.setLineWidth(1);
         this.graphicsContext.setStroke(Color.rgb(0, 0, 0));
-        this.graphicsContext.fillOval(node.getPosx(), node.getPosy(), (node.getTitle().length() + 2) * 12, (node.getTitle().length() + 2) * 12);
-        this.graphicsContext.strokeText(node.getTitle(), node.getPosx() + 12, node.getPosy() + ((float) (node.getTitle().length() + 2) * 8));
+        this.graphicsContext.fillOval(node.getPosx() - node.getRadius(), node.getPosy() - node.getRadius(),
+                node.getRadius() * 2, node.getRadius() * 2);
+        this.graphicsContext.strokeOval(node.getPosx() - node.getRadius(), node.getPosy() - node.getRadius(),
+                node.getRadius() * 2, node.getRadius() * 2);
+        this.graphicsContext.strokeText(node.getTitle(), node.getPosx() - node.getRadius() / 6.0, node.getPosy() + 3);
     }
 
     public void drawEdge(Edge edge) {
@@ -91,38 +114,65 @@ public class Renderer {
             this.graphicsContext.setLineWidth(1);
         }
 
-        this.graphicsContext.setStroke(node1.getColor());
-        this.graphicsContext.strokeLine(node1.getPosx() + (node1.getTitle().
+        double middlePosX = (node2.getPosx() - node1.getPosx()) / 2;
+        double middlePosY = (node2.getPosy() - node1.getPosy()) / 2;
+        int approximatedValueOfWeight = (int) edge.getWeight();
 
-                length() + 2) * 6, node1.getPosy() + (node1.getTitle().
+        this.graphicsContext.setStroke(Color.rgb(0, 0, 0));
 
-                length() + 2) * 6, node2.getPosx() + (node2.getTitle().
-
-                length() + 2) * 6, node2.getPosy() + (node2.getTitle().
-
-                length() + 2) * 6);
+        this.graphicsContext.strokeLine(node1.getPosx(), node1.getPosy(), node2.getPosx(), node2.getPosy());
+        this.graphicsContext.setLineWidth(1);
+        this.graphicsContext.setFill(Color.rgb(255, 255, 255));
+        final int i = (String.valueOf(approximatedValueOfWeight).length() + 1) * 6;
+        this.graphicsContext.fillRect(node1.getPosx() + middlePosX - i, node1.getPosy() + middlePosY - 10,
+                (String.valueOf(Math.round(edge.getWeight())).length() + 2) * 6, 15);
+        this.graphicsContext.strokeRect(node1.getPosx() + middlePosX - i, node1.getPosy() + middlePosY - 10,
+                (String.valueOf(Math.round(edge.getWeight())).length() + 2) * 6, 15);
+        this.graphicsContext.strokeText(Integer.toString(approximatedValueOfWeight),
+                node1.getPosx() + middlePosX - String.valueOf(approximatedValueOfWeight).length() * 6,
+                node1.getPosy() + middlePosY + 3);
     }
 
-    public void testFunc() {
-        graphicsContext.setFill(Color.GREEN);
-        graphicsContext.setStroke(Color.BLUE);
-        graphicsContext.setLineWidth(5);
-        graphicsContext.strokeLine(40, 10, 10, 40);
-        graphicsContext.fillOval(10, 60, 30, 30);
-        graphicsContext.strokeOval(60, 60, 30, 30);
-        graphicsContext.fillRoundRect(110, 60, 30, 30, 10, 10);
-        graphicsContext.strokeRoundRect(160, 60, 30, 30, 10, 10);
-        graphicsContext.fillArc(10, 110, 30, 30, 45, 240, ArcType.OPEN);
-        graphicsContext.fillArc(60, 110, 30, 30, 45, 240, ArcType.CHORD);
-        graphicsContext.fillArc(110, 110, 30, 30, 45, 240, ArcType.ROUND);
-        graphicsContext.strokeArc(10, 160, 30, 30, 45, 240, ArcType.OPEN);
-        graphicsContext.strokeArc(60, 160, 30, 30, 45, 240, ArcType.CHORD);
-        graphicsContext.strokeArc(110, 160, 30, 30, 45, 240, ArcType.ROUND);
-        graphicsContext.fillPolygon(new double[]{10, 40, 10, 40},
-                new double[]{210, 210, 240, 240}, 4);
-        graphicsContext.strokePolygon(new double[]{60, 90, 60, 90},
-                new double[]{210, 210, 240, 240}, 4);
-        graphicsContext.strokePolyline(new double[]{110, 140, 110, 140},
-                new double[]{210, 210, 240, 240}, 4);
+    public Edge isEdgePosition(double posx, double posy) {
+        double edgePosX;
+        double edgePosY;
+        Node node1;
+        Node node2;
+        double middlePosX;
+        double middlePosY;
+        int approximatedValueofWeight;
+        if (graph != null && this.edges != null) {
+            for (Edge edge : this.edges) {
+                node1 = edge.getNode1();
+                node2 = edge.getNode2();
+                middlePosX = (node2.getPosx() - node1.getPosx()) / 2;
+                middlePosY = (node2.getPosy() - node1.getPosy()) / 2;
+                approximatedValueofWeight = (int) edge.getWeight();
+                edgePosX = node1.getPosx() + middlePosX -
+                        (String.valueOf(approximatedValueofWeight).length() + 1) * 6;
+                edgePosY = node1.getPosy() + middlePosY - 10;
+                if (posx >= edgePosX && posx < edgePosX + (String.valueOf(Math.round(edge.getWeight())).length() + 2) * 6) {
+                    if (posy >= edgePosY && posy < edgePosY + 15) {
+                        return edge;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public Node isNodePosition(double posx, double posy) {
+        double nodePosX;
+        double nodePosy;
+        if (graph != null && this.nodes != null) {
+            for (Node node : this.nodes) {
+                nodePosX = node.getPosx();
+                nodePosy = node.getPosy();
+                if (Math.pow(Math.abs(posx - nodePosX), 2) + Math.pow(Math.abs(posy - nodePosy), 2) <= Math.pow(node.getRadius(), 2)) {
+                    return node;
+                }
+            }
+        }
+        return null;
     }
 }

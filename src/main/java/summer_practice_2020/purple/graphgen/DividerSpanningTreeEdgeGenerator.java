@@ -1,10 +1,10 @@
 package summer_practice_2020.purple.graphgen;
 
+import summer_practice_2020.purple.IGraph;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import summer_practice_2020.purple.IGraph;
 
 public class DividerSpanningTreeEdgeGenerator implements GraphEdgeGenerator {
 	private final Random rng = new Random();
@@ -33,9 +33,9 @@ public class DividerSpanningTreeEdgeGenerator implements GraphEdgeGenerator {
 	}
 
 	@Override
-	public void generateEdges(IGraph g) {
+	public void generateEdgesOnNodes(IGraph g, Iterable<IGraph.Node> nodes) {
 		List<IGraph.Node> list = new ArrayList<>();
-		g.getNodes().forEach(list::add);
+		nodes.forEach(list::add);
 		generateList(g, list);
 	}
 
