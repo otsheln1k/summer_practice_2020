@@ -1,4 +1,4 @@
-package summer_practice_2020.purple;
+package summer_practice_2020.purple.boruvka;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -19,9 +19,10 @@ import java.util.Set;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
+import summer_practice_2020.purple.Graph;
+import summer_practice_2020.purple.IGraph;
 import summer_practice_2020.purple.IGraph.Edge;
 import summer_practice_2020.purple.IGraph.Node;
-import summer_practice_2020.purple.boruvka.Boruvka;
 import summer_practice_2020.purple.graphgen.AlphabetNodeNameGenerator;
 import summer_practice_2020.purple.graphgen.DividerSpanningTreeEdgeGenerator;
 import summer_practice_2020.purple.graphgen.GraphEdgeGenerator;
