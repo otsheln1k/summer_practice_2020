@@ -1,5 +1,6 @@
 package summer_practice_2020.purple.rendering;
 
+import javafx.scene.paint.Color;
 import summer_practice_2020.purple.IGraph;
 
 public class EdgeList {
@@ -21,7 +22,7 @@ public class EdgeList {
         this.edgeList = tmp;
     }
 
-    public void addEdge(IGraph.Edge edge, Node[] nodeList) {
+    public void addEdge(IGraph.Edge edge, Node[] nodeList, Color color) {
         if (this.index == this.size) {
             this.extend();
         }
@@ -34,7 +35,7 @@ public class EdgeList {
                 node2 = nodeList[i];
             }
         }
-        this.edgeList[this.index++] = new Edge(edge, node1, node2);
+        this.edgeList[this.index++] = new Edge(edge, node1, node2, color);
     }
 
     public Edge[] getEdgeArray() {

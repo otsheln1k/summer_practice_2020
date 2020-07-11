@@ -133,7 +133,18 @@ public class Renderer {
 		}
 
 		for (IGraph.Edge edge : this.graph.getEdges()) {
-			edgeList.addEdge(edge, nodeList.getNodeArray());
+			Color color = Color.BLACK;
+
+			if (displayingStep()) {
+				Group g1 = groupMap.get(edge.firstNode());
+				Group g2 = groupMap.get(edge.secondNode());
+
+				if (g1 == g2) {
+					color = colors.get(g1.getId());
+				}
+			}
+
+			edgeList.addEdge(edge, nodeList.getNodeArray(), color);
 		}
 
 		this.edges = edgeList.getEdgeArray();
@@ -183,11 +194,13 @@ public class Renderer {
 		double middlePosY = (node2.getPosy() - node1.getPosy()) / 2;
 		int approximatedValueOfWeight = (int) edge.getWeight();
 
-		this.graphicsContext.setStroke(Color.rgb(0, 0, 0));
+		this.graphicsContext.setStroke(edge.getColor());
 
 		this.graphicsContext.strokeLine(node1.getPosx(), node1.getPosy(), node2.getPosx(), node2.getPosy());
 		this.graphicsContext.setLineWidth(1);
-		this.graphicsContext.setFill(Color.rgb(255, 255, 255));
+		
+		this.graphicsContext.setStroke(Color.BLACK);
+		this.graphicsContext.setFill(Color.WHITE);
 		final int i = (String.valueOf(approximatedValueOfWeight).length() + 1) * 6;
 		this.graphicsContext.fillRect(node1.getPosx() + middlePosX - i, node1.getPosy() + middlePosY - 10,
 				(String.valueOf(Math.round(edge.getWeight())).length() + 2) * 6, 15);
