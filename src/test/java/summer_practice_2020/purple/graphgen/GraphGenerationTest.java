@@ -1,15 +1,21 @@
 package summer_practice_2020.purple.graphgen;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
-import summer_practice_2020.purple.Graph;
-import summer_practice_2020.purple.IGraph;
-
-import java.util.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Set;
+
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
+
+import summer_practice_2020.purple.Graph;
+import summer_practice_2020.purple.IGraph;
 
 class GraphGenerationTest {
 
@@ -25,6 +31,7 @@ class GraphGenerationTest {
 
 	private Set<IGraph.Node> reachableNodes(IGraph g, IGraph.Node start) {
 		Set<IGraph.Node> s = new HashSet<>();
+		s.add(start);
 		Queue<IGraph.Node> q = new ArrayDeque<>();
 		q.add(start);
 
@@ -122,7 +129,10 @@ class GraphGenerationTest {
 
 			Set<IGraph.Node> nodes = reachableNodes(g, n);
 			nodeSets.add(nodes);
-			visitedNodes.addAll(nodes);
+
+			for (IGraph.Node m : nodes) {
+				assertTrue(visitedNodes.add(m));
+			}
 		}
 
 		return nodeSets;
@@ -141,6 +151,7 @@ class GraphGenerationTest {
 
 		List<Set<IGraph.Node>> nodeSets = getNodeSets(g);
 		assertEquals(compsCount, nodeSets.size());
+		assertEquals(nodesCount, nodeSets.stream().mapToInt(Set::size).sum());
 	}
 
 	private Set<IGraph.Edge> nodeSetEdges(IGraph g, Set<IGraph.Node> nodes) {
@@ -153,13 +164,13 @@ class GraphGenerationTest {
 		return edges;
 	}
 
-	@Disabled  // TODO: debug
 	@RepeatedTest(10)
 	void testComponentsWithNEdges() {
 		final int nodesCount = randomInt(100, 200);
 		final int compsCount = randomInt(3, 10);
-		final int moreNodes = randomInt(1, 200);
-		final int edgesCount = nodesCount - compsCount + moreNodes;
+		final int moreEdges = randomInt(1, 200);
+
+		final int edgesCount = nodesCount - compsCount + moreEdges;
 
 		IGraph g = createEmptyGraph();
 		GraphGeneratorFacade gen = new GraphGeneratorFacade();
@@ -174,7 +185,7 @@ class GraphGenerationTest {
 		for (Set<IGraph.Node> nodes : nodeSets) {
 			Set<IGraph.Edge> edges = nodeSetEdges(g, nodes);
 			int size = edges.size();
-			assertTrue(size <= nodes.size() - 1 + moreNodes);
+			assertTrue(size <= nodes.size() - 1 + moreEdges);
 		}
 	}
 

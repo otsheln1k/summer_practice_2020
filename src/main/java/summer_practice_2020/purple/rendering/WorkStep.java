@@ -1,7 +1,7 @@
 package summer_practice_2020.purple.rendering;
 
-import summer_practice_2020.purple.BoruvkaSnapshot;
-import summer_practice_2020.purple.Group;
+import summer_practice_2020.purple.boruvka.Group;
+import summer_practice_2020.purple.boruvka.BoruvkaSnapshot;
 import summer_practice_2020.purple.IGraph;
 
 public class WorkStep {

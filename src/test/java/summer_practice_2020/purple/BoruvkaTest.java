@@ -1,15 +1,34 @@
 package summer_practice_2020.purple;
 
-import org.junit.jupiter.api.Disabled;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Set;
+
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+
 import summer_practice_2020.purple.IGraph.Edge;
 import summer_practice_2020.purple.IGraph.Node;
-import summer_practice_2020.purple.graphgen.*;
-
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
+import summer_practice_2020.purple.boruvka.Boruvka;
+import summer_practice_2020.purple.graphgen.AlphabetNodeNameGenerator;
+import summer_practice_2020.purple.graphgen.DividerSpanningTreeEdgeGenerator;
+import summer_practice_2020.purple.graphgen.GraphEdgeGenerator;
+import summer_practice_2020.purple.graphgen.GraphEdgeWeightGenerator;
+import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
+import summer_practice_2020.purple.graphgen.GraphNodeNameGenerator;
+import summer_practice_2020.purple.graphgen.SimpleGraphEdgeGenerator;
 
 class BoruvkaTest {
 
@@ -287,7 +306,6 @@ class BoruvkaTest {
 		return edges;
 	}
 
-	@Disabled  // TODO: debug
 	@RepeatedTest(10)
 	void testComponentsResultIsSpanningTree() {
 		final int nNodes = randomInt(50, 400);
