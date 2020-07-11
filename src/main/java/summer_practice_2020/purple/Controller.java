@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 public class Controller {
@@ -76,7 +77,7 @@ public class Controller {
         this.next.setDisable(true);
         this.previous.setDisable(true);
         this.stop.setDisable(true);
-        this.speed_control.setMin(15);
+        this.speed_control.setMin(0);
         this.speed_control.setMax(10);
         this.speed_control.setBlockIncrement(0.5);
 
@@ -136,6 +137,9 @@ public class Controller {
                 importError.setContentText("Ошибка при импортировании графа");
                 importError.showAndWait();
             }
+            this.renderer.setGraph(this.graphToWork);
+            this.renderer.setEdgeSet(new HashSet<>());
+            this.renderer.drawGraph();
         });
 
         exportGraph.setOnAction(e -> {
@@ -222,6 +226,9 @@ public class Controller {
             this.renderer.drawGraph();
             list.setItems(FXCollections.observableArrayList());
             this.isGraphBlocked = false;
+            this.stop.setDisable(true);
+            this.next.setDisable(true);
+            this.previous.setDisable(true);
             timeline.stop();
         });
 
