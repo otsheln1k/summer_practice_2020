@@ -43,9 +43,9 @@ class BoruvkaTest {
 		return new Graph();
 	}
 
-	private static void generateConnectedGraph(IGraph g, int nodesCount) {
+	private static void generateConnectedGraphWithWeights(
+			IGraph g, int nodesCount, GraphEdgeWeightGenerator wgen) {
 		GraphNodeNameGenerator ngen = new AlphabetNodeNameGenerator();
-		GraphEdgeWeightGenerator wgen = () -> rng.nextInt(100);
 		GraphEdgeGenerator gen1 = new DividerSpanningTreeEdgeGenerator();
 		GraphEdgeGenerator gen2 = new SimpleGraphEdgeGenerator(0.8);
 
@@ -60,6 +60,17 @@ class BoruvkaTest {
 		for (Edge e : g.getEdges()) {
 			e.setWeight(wgen.generateWeight());
 		}
+	}
+
+	private static void generateConnectedGraph(IGraph g, int nodesCount) {
+		GraphEdgeWeightGenerator wgen = () -> rng.nextInt(100);
+		generateConnectedGraphWithWeights(g, nodesCount, wgen);
+	}
+
+	private static void generateConnectedGraphNegativeWeights(
+			IGraph g, int nodesCount) {
+		GraphEdgeWeightGenerator wgen = () -> rng.nextInt(101)-50;
+		generateConnectedGraphWithWeights(g, nodesCount, wgen);
 	}
 
 	private static Node someNode(IGraph g) {
@@ -242,16 +253,9 @@ class BoruvkaTest {
 		}
 	}
 
-	@RepeatedTest(5)
-	void testResultIsOptimal() {
-		final int nNodes = randomInt(5, 8);
-		IGraph g = createEmptyGraph();
-		generateConnectedGraph(g, nNodes);
-		Node start = someNode(g);
-
-		Boruvka b = new Boruvka(g);
-		b.boruvka();
-		Set<Edge> edges = b.resultEdgeSet();
+	static void assertAnswerIsOptimal(IGraph g, Set<Edge> edges) {
+		final int nNodes = g.nodesCount();
+		final Node start = someNode(g);
 
 		assertEquals(nNodes-1, edges.size());
 
@@ -276,6 +280,31 @@ class BoruvkaTest {
 		}
 	}
 
+	@RepeatedTest(5)
+	void testResultIsOptimal() {
+		final int nNodes = randomInt(5, 8);
+		IGraph g = createEmptyGraph();
+		generateConnectedGraph(g, nNodes);
+
+		Boruvka b = new Boruvka(g);
+		b.boruvka();
+		Set<Edge> edges = b.resultEdgeSet();
+
+		assertAnswerIsOptimal(g, edges);
+	}
+
+	@RepeatedTest(5)
+	void testNegativeEdgesResultIsOptimal() {
+		final int nNodes = randomInt(5, 8);
+		IGraph g = createEmptyGraph();
+		generateConnectedGraphNegativeWeights(g, nNodes);
+
+		Boruvka b = new Boruvka(g);
+		b.boruvka();
+		Set<Edge> edges = b.resultEdgeSet();
+
+		assertAnswerIsOptimal(g, edges);
+	}
 
 	@Test
 	void testNoEdges() {
