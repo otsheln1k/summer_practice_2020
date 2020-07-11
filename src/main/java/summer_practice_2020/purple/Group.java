@@ -5,21 +5,24 @@ import java.util.Set;
 
 public class Group {
 	private final Set<IGraph.Node> nodes = new HashSet<>();
+	private final int id;
 
-	public Group() {
-	}
-
-	public Group(Iterable<IGraph.Node> nodes) {
-		nodes.forEach(this.nodes::add);
+	public Group(int id) {
+		this.id = id;
 	}
 
 	// copy ctor
 	public Group(Group grp) {
+		this.id = grp.id;
 		grp.nodes.forEach(this.nodes::add);
 	}
 
 	public Group clone() {
 		return new Group(this);
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	public boolean hasEdge(IGraph.Edge e) {

@@ -35,11 +35,6 @@ public class EdgeList {
             }
         }
         this.edgeList[this.index++] = new Edge(edge, node1, node2);
-        if (node2 != null) {
-            if (node1 != null) {
-                node2.setColor(node1.getColor());
-            }
-        }
     }
 
     public Edge[] getEdgeArray() {

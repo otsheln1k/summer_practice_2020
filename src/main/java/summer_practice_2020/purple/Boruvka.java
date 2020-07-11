@@ -12,7 +12,6 @@ public class Boruvka{
     private List<IGraph.Edge> list = new ArrayList<IGraph.Edge>();
     private Set<IGraph.Edge> SnapShot = new HashSet<IGraph.Edge>();
     private List<BoruvkaSnapshot> blist = new ArrayList<BoruvkaSnapshot>();
-    private Group nullGroup = new Group();
     private int step = 0;
     private  Group cloneGroupfirst, cloneGroupsecond;
     private IGraph.Edge currentMinEdge = null;
@@ -86,11 +85,6 @@ public class Boruvka{
         }
         currentMinEdge = minEdge;
 
-
-        if(nowNodes.size() == 1){
-            nullGroup.addNode(nowNodes.iterator().next());
-        }
-
         if(minEdge != null) {
             blockedEdges.add(minEdge);
             boolean flag = true;
@@ -115,8 +109,9 @@ public class Boruvka{
 
         amountCompanent = component();
 
+        int i = 0;
         for (IGraph.Node n : nodes) {
-            Group now = new Group();
+            Group now = new Group(i++);
             now.addNode(n);
             allGroups.add(now);
         }

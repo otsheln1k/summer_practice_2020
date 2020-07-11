@@ -140,7 +140,6 @@ public class Controller {
                 importError.showAndWait();
             }
             this.renderer.setGraph(this.graphToWork);
-            this.renderer.setEdgeSet(new HashSet<>());
             this.renderer.drawGraph();
         });
 
@@ -165,6 +164,8 @@ public class Controller {
         play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if (timeline.getStatus() == Animation.Status.STOPPED) {
                 this.isGraphBlocked = true;
+                this.renderer.beginVisualization();
+//                this.renderer.setEdgeSet(new HashSet<>());
                 this.algorithm = new Boruvka(this.graphToWork);
                 this.algorithm.boruvka();
                 this.stepList = new LinkedList<>();
@@ -184,10 +185,12 @@ public class Controller {
 
         next.setOnMouseClicked(e -> {
             if (this.algorithm.hasNext()) {
-                this.stepList.add(new WorkStep(this.algorithm.next()));
+                WorkStep ws = new WorkStep(this.algorithm.next());
+                this.stepList.add(ws);
                 previous.setDisable(false);
-                this.renderer.addToEdgeSet(this.stepList.get(this.index).getEdge());
-                this.list.getItems().add(this.stepList.get(this.index).getDescription());
+                this.renderer.addToEdgeSet(ws.getEdge());
+                this.renderer.setGroups(ws.getGroups());
+                this.list.getItems().add(ws.getDescription());
                 this.index += 1;
                 this.renderer.drawGraph();
             } else {
@@ -203,8 +206,7 @@ public class Controller {
         });
 
         stop.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            this.renderer.setEdgeSet(null);
-            this.renderer.clear();
+            this.renderer.endVisualization();
             this.renderer.drawGraph();
             list.setItems(FXCollections.observableArrayList());
             this.isGraphBlocked = false;
