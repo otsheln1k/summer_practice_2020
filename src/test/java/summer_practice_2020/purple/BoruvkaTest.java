@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import summer_practice_2020.purple.IGraph.Edge;
 import summer_practice_2020.purple.IGraph.Node;
+import summer_practice_2020.purple.boruvka.Boruvka;
 import summer_practice_2020.purple.graphgen.AlphabetNodeNameGenerator;
 import summer_practice_2020.purple.graphgen.DividerSpanningTreeEdgeGenerator;
 import summer_practice_2020.purple.graphgen.GraphEdgeGenerator;
