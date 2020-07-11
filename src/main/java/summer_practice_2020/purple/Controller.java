@@ -222,6 +222,8 @@ public class Controller {
             this.renderer.drawGraph();
             list.setItems(FXCollections.observableArrayList());
             this.isGraphBlocked = false;
+            this.next.setDisable(true);
+            this.previous.setDisable(true);
             timeline.stop();
         });
 
@@ -270,7 +272,7 @@ public class Controller {
                             this.editPole(e);
                         } else {
                             IGraph.Node addedNode = this.graphToWork.addNode();
-                            addedNode.setTitle("name");
+                            addedNode.setTitle("Имя");
                             addedNode.setPosX(e.getX());
                             addedNode.setPosY(e.getY());
                             renderer.drawGraph();

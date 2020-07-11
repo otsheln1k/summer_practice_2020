@@ -1,11 +1,16 @@
 package summer_practice_2020.purple.rendering;
 
+import javafx.geometry.Bounds;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import summer_practice_2020.purple.BoruvkaSnapshot;
 import summer_practice_2020.purple.Graph;
 import summer_practice_2020.purple.IGraph;
+
 import java.util.Random;
 
 
@@ -89,35 +94,58 @@ public class Renderer {
                 node.getRadius() * 2, node.getRadius() * 2);
         this.graphicsContext.strokeOval(node.getPosx() - node.getRadius(), node.getPosy() - node.getRadius(),
                 node.getRadius() * 2, node.getRadius() * 2);
-        this.graphicsContext.strokeText(node.getTitle(), node.getPosx() - node.getRadius() / 6.0, node.getPosy() + 3);
+        this.graphicsContext.setTextAlign(TextAlignment.CENTER);
+        this.graphicsContext.setTextBaseline(VPos.CENTER);
+        this.graphicsContext.strokeText(node.getTitle(), node.getPosx(), node.getPosy());
     }
 
     public void drawEdge(Edge edge) {
         Node node1 = edge.getNode1();
         Node node2 = edge.getNode2();
-        if (this.snapshot != null && this.snapshot.getEdgePicked(edge.getEdge())) {
+
+        if (this.snapshot != null && this.snapshot.getSelectedEdge().equals(edge.getEdge())) {
             this.graphicsContext.setLineWidth(7);
         } else {
             this.graphicsContext.setLineWidth(1);
         }
 
-        double middlePosX = (node2.getPosx() - node1.getPosx()) / 2;
-        double middlePosY = (node2.getPosy() - node1.getPosy()) / 2;
-        int approximatedValueOfWeight = (int) edge.getWeight();
+        double w = edge.getWeight();
+        final double xpadding = 3.0;
+        final double ypadding = 3.0;
 
         this.graphicsContext.setStroke(Color.rgb(0, 0, 0));
 
         this.graphicsContext.strokeLine(node1.getPosx(), node1.getPosy(), node2.getPosx(), node2.getPosy());
         this.graphicsContext.setLineWidth(1);
         this.graphicsContext.setFill(Color.rgb(255, 255, 255));
-        final int i = (String.valueOf(approximatedValueOfWeight).length() + 1) * 6;
-        this.graphicsContext.fillRect(node1.getPosx() + middlePosX - i, node1.getPosy() + middlePosY - 10,
-                (String.valueOf(Math.round(edge.getWeight())).length() + 2) * 6, 15);
-        this.graphicsContext.strokeRect(node1.getPosx() + middlePosX - i, node1.getPosy() + middlePosY - 10,
-                (String.valueOf(Math.round(edge.getWeight())).length() + 2) * 6, 15);
-        this.graphicsContext.strokeText(Integer.toString(approximatedValueOfWeight),
-                node1.getPosx() + middlePosX - String.valueOf(approximatedValueOfWeight).length() * 6,
-                node1.getPosy() + middlePosY + 3);
+
+        String label = String.format("%.3g", w);
+
+        Text t = new Text();
+        t.setFont(this.graphicsContext.getFont());
+        t.setText(label);
+        Bounds b = t.getLayoutBounds();
+
+        double width = b.getWidth() + xpadding*2;
+        double height = b.getHeight() + ypadding*2;
+
+        double hwidth = width / 2;
+        double hheight = height / 2;
+
+        double cx = (node2.getPosx() + node1.getPosx()) / 2;
+        double cy = (node2.getPosy() + node1.getPosy()) / 2;
+
+        double left = cx - hwidth;
+        double top = cy - hheight;
+
+        this.graphicsContext.fillRect(left, top, width, height);
+        this.graphicsContext.strokeRect(left, top, width, height);
+
+        this.graphicsContext.setTextAlign(TextAlignment.CENTER);
+        this.graphicsContext.setTextBaseline(VPos.CENTER);
+        this.graphicsContext.strokeText(label, cx, cy);
+        this.graphicsContext.setTextAlign(TextAlignment.LEFT);
+        this.graphicsContext.setTextBaseline(VPos.BASELINE);
     }
 
     public Edge isEdgePosition(double posx, double posy) {

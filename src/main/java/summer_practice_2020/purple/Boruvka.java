@@ -5,13 +5,13 @@ import java.util.*;
 public class Boruvka{
 
     private IGraph g;
-    private HashMap<IGraph.Node, String> visitedMap = new HashMap<IGraph.Node, String>();
+    private HashMap<IGraph.Node, String> visitedMap = new HashMap<>();
     private int amountCompanent = 1;
     private Iterable<IGraph.Node> nodes;
-    private Set<IGraph.Edge> blockedEdges = new HashSet<IGraph.Edge>();
-    private List<IGraph.Edge> list = new ArrayList<IGraph.Edge>();
-    private Set<IGraph.Edge> SnapShot = new HashSet<IGraph.Edge>();
-    private List<BoruvkaSnapshot> blist = new ArrayList<BoruvkaSnapshot>();
+    private Set<IGraph.Edge> blockedEdges = new HashSet<>();
+    private List<IGraph.Edge> list = new ArrayList<>();
+    private Set<IGraph.Edge> SnapShot = new HashSet<>();
+    private List<BoruvkaSnapshot> blist = new ArrayList<>();
     private Group nullGroup = new Group();
     private int step = 0;
     private  Group cloneGroupfirst, cloneGroupsecond;
@@ -55,11 +55,7 @@ public class Boruvka{
     }
 
     private boolean hasNext_step() {
-        if (SnapShot.size() < g.nodesCount() - amountCompanent) {
-            return true;
-        } else {
-            return false;
-        }
+        return SnapShot.size() < g.nodesCount() - amountCompanent;
     }
 
     private void next_step(){
@@ -94,10 +90,9 @@ public class Boruvka{
         if(minEdge != null) {
             blockedEdges.add(minEdge);
             boolean flag = true;
-            List<Group> newlist = new ArrayList<Group>();
-            newlist.addAll(allGroups);
+            List<Group> newlist = new ArrayList<>(allGroups);
             for (Group now : newlist) {
-                if (flag && now.HasEdge(minEdge)) {
+                if (now.HasEdge(minEdge)) {
                     cloneGroupfirst = nowGroup.clone();
                     cloneGroupsecond = now.clone();
                     now.merge(nowGroup);
@@ -125,10 +120,10 @@ public class Boruvka{
         while (hasNext_step() && !allGroups.isEmpty()) {
             next_step();
             if(list.size() > 0 && currentMinEdge != null && cloneGroupfirst != null && cloneGroupsecond != null) {
-                List<IGraph.Edge> cEdges = new ArrayList<IGraph.Edge>();
-                cEdges.addAll(list);
+                List<IGraph.Edge> cEdges = new ArrayList<>(list);
                 IGraph.Edge cEdge = currentMinEdge;
-                blist.add(new BoruvkaSnapshot(allGroups, g.getEdges(), cloneGroupfirst.clone(), cloneGroupsecond.clone(), cEdges, cEdge));
+                blist.add(new BoruvkaSnapshot(allGroups, g.getEdges(),
+                        cloneGroupfirst.clone(), cloneGroupsecond.clone(), cEdges, cEdge));
             }
         }
 
@@ -143,12 +138,7 @@ public class Boruvka{
     }
 
     public boolean hasNext() {
-        if(step < blist.size()){
-            return true;
-        }
-        else {
-            return false;
-        }
+        return step < blist.size();
     }
 
     public void setStep(int st){
