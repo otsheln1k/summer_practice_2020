@@ -74,6 +74,12 @@ class GraphTest {
 		g.removeNode(n6);
 
 		g.addEdge(n1, n2);
+		assertThrows(IllegalArgumentException.class,
+				() -> g.addEdge(n1, n2));
+		assertThrows(IllegalArgumentException.class,
+				() -> g.addEdge(n2, n1));
+		assertThrows(IllegalArgumentException.class,
+				() -> g.addEdge(n3, n3));
 		assertThrows(NoSuchElementException.class,
 				() -> g.addEdge(n3, n4));
 		assertThrows(NoSuchElementException.class,
