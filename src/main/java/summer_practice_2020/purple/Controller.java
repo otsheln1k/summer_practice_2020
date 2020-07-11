@@ -1,5 +1,12 @@
 package summer_practice_2020.purple;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.LinkedList;
+import java.util.List;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -8,7 +15,17 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -26,14 +43,6 @@ import summer_practice_2020.purple.rendering.Edge;
 import summer_practice_2020.purple.rendering.Node;
 import summer_practice_2020.purple.rendering.Renderer;
 import summer_practice_2020.purple.rendering.WorkStep;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 
 public class Controller {
     Graph graphToWork;
@@ -198,12 +207,16 @@ public class Controller {
                 this.renderer.setGroups(ws.getGroups());
                 this.renderer.setAvailEdgePredicate(
                 		ws.getAvailableEdgePredicate());
+                this.renderer.setMergedToGroup(ws.getMergedToGroup());
+                this.renderer.setMergedGroup(ws.getMergedGroup());
                 
                 this.list.getItems().add(ws.getDescription());
                 this.index += 1;
                 this.renderer.drawGraph();
             } else {
             	this.renderer.lastStep();
+                this.renderer.drawGraph();
+
                 this.list.getItems().add("Конец работы алгоритма");
                 next.setDisable(true);
                 timeline.stop();

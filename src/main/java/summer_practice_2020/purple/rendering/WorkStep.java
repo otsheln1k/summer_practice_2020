@@ -25,6 +25,14 @@ public class WorkStep {
 	public Predicate<IGraph.Edge> getAvailableEdgePredicate() {
 		return snapshot::getEdgeAvailable;
 	}
+	
+	public Group getMergedToGroup() {
+		return this.snapshot.getCurrentGroup();
+	}
+	
+	public Group getMergedGroup() {
+		return this.snapshot.getNextGroup();
+	}
 
 	public Iterable<Group> getGroups() {
 		return snapshot.getGroups();

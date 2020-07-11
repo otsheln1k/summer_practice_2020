@@ -95,7 +95,7 @@ public class Boruvka{
             newlist.addAll(allGroups);
             for (Group now : newlist) {
                 if (flag && now.HasEdge(minEdge)) {
-                    cloneGroupfirst = nowGroup;
+                    cloneGroupfirst = nowGroup.clone();
                     cloneGroupsecond = now.clone();
                     now.merge(nowGroup);
                     SnapShot.add(minEdge);

@@ -33,6 +33,8 @@ public class Renderer {
 	private final Map<IGraph.Node, Group> groupMap = new HashMap<>();
 	private Predicate<IGraph.Edge> edgeAvailPred = null;
 	private IGraph.Edge lastEdge = null;
+	private Group mergedToGroup = null;
+	private Group mergedGroup = null;
 
 	private void buildGroupMap(Iterable<Group> groups) {
 		groupMap.clear();
@@ -75,11 +77,15 @@ public class Renderer {
 		generateColors(this.graph.nodesCount());
 		setEdgeSet(new HashSet<>());
 		edgeAvailPred = x -> false;
+		mergedGroup = null;
+		mergedToGroup = null;
 	}
 
 	public void lastStep() {
 		edgeAvailPred = x -> false;
 		lastEdge = null;
+		mergedGroup = null;
+		mergedToGroup = null;
 	}
 
 	public void endVisualization() {
@@ -88,6 +94,8 @@ public class Renderer {
 		clear();
 		this.lastEdge = null;
 		this.edgeAvailPred = null;
+		mergedGroup = null;
+		mergedToGroup = null;
 	}
 
 	private boolean displayingStep() {
@@ -112,6 +120,14 @@ public class Renderer {
 
 	public void setLastEdge(IGraph.Edge edge) {
 		this.lastEdge = edge;
+	}
+
+	public void setMergedToGroup(Group grp) {
+		mergedToGroup = grp;
+	}
+
+	public void setMergedGroup(Group grp) {
+		mergedGroup = grp;
 	}
 
 	public void addToEdgeSet(IGraph.Edge edge) {
@@ -148,12 +164,19 @@ public class Renderer {
 			}
 
 			Color color = Color.WHITE;
+			Node.HighlightType hl = Node.HighlightType.NORMAL;
 			if (displayingStep()) {
 				Group g = groupMap.get(node);
 				color = colors.get(g.getId());
+				if (mergedToGroup != null && mergedToGroup.hasNode(node)) {
+					hl = Node.HighlightType.MERGED_TO;
+				} else if (mergedGroup != null && mergedGroup.hasNode(node)) {
+					hl = Node.HighlightType.MERGED;
+				}
 			}
 
-			nodeList.addNode(node, node.getPosX(), node.getPosY(), color);
+			Node n = new Node(node, node.getPosX(), node.getPosY(), color, hl);
+			nodeList.addNode(n);
 		}
 
 		List<Node> nodes = Arrays.asList(nodeList.getNodeArray());
@@ -198,13 +221,28 @@ public class Renderer {
 
 
 	public void drawNode(Node node) {
-		this.graphicsContext.setLineWidth(1);
-		this.graphicsContext.setStroke(Color.rgb(0, 0, 0));
+		this.graphicsContext.setStroke(Color.BLACK);
 		this.graphicsContext.setFill(node.getColor());
+		switch (node.getHighlightType()) {
+		case NORMAL:
+			this.graphicsContext.setLineWidth(1);
+			break;
+		case MERGED:
+			this.graphicsContext.setStroke(Color.GREY);
+			this.graphicsContext.setLineWidth(3);
+			break;
+		case MERGED_TO:
+			this.graphicsContext.setLineWidth(3);
+			break;
+		}
+
 		this.graphicsContext.fillOval(node.getPosx() - node.getRadius(), node.getPosy() - node.getRadius(),
 				node.getRadius() * 2, node.getRadius() * 2);
 		this.graphicsContext.strokeOval(node.getPosx() - node.getRadius(), node.getPosy() - node.getRadius(),
 				node.getRadius() * 2, node.getRadius() * 2);
+
+		this.graphicsContext.setLineWidth(1);
+		this.graphicsContext.setStroke(Color.BLACK);
 		this.graphicsContext.setTextAlign(TextAlignment.CENTER);
 		this.graphicsContext.setTextBaseline(VPos.CENTER);
 		this.graphicsContext.strokeText(node.getTitle(), node.getPosx(), node.getPosy());

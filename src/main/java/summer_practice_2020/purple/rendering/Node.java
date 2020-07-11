@@ -9,13 +9,26 @@ public class Node {
     private final double posy;
     private double radius;
     private Color color;
+    private HighlightType hlType;
 
-    public Node(IGraph.Node node, double posx, double posy, Color color) {
+    public enum HighlightType {
+    	NORMAL,
+    	MERGED_TO,
+    	MERGED,
+    }
+
+    public HighlightType getHighlightType() {
+    	return hlType;
+    }
+
+    public Node(IGraph.Node node, double posx, double posy,
+    		Color color, HighlightType hlType) {
         this.node = node;
         this.posx = posx;
         this.posy = posy;
         this.color = color;
         this.radius = (node.getTitle().length() + 1) * 6;
+        this.hlType = hlType;
     }
 
     public String getTitle() {

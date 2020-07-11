@@ -7,7 +7,7 @@ import summer_practice_2020.purple.IGraph;
 
 public class Group {
 	private final Set<IGraph.Node> nodes = new HashSet<>();
-	private final int id;
+	private int id;
 
 	public Group(int id) {
 		this.id = id;
@@ -48,6 +48,7 @@ public class Group {
 	public void merge(Group g) {
 		g.nodes.forEach(this.nodes::add);
 		g.nodes.clear();
+		this.id = g.id;
 	}
 
 	public boolean isEmpty() {
@@ -56,5 +57,9 @@ public class Group {
 
 	public Set<IGraph.Node> getNodesGroup(){
 		return nodes;
+	}
+	
+	public boolean hasNode(IGraph.Node node) {
+		return nodes.contains(node);
 	}
 }
