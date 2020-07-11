@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import summer_practice_2020.purple.boruvka.Boruvka;
+import summer_practice_2020.purple.boruvka.BoruvkaSnapshot;
 import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
 import summer_practice_2020.purple.rendering.Edge;
 import summer_practice_2020.purple.rendering.Node;
@@ -158,8 +159,16 @@ public class Controller {
         speed_control.setOnTouchReleased(e -> timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000));
 
         this.list.setOnMouseClicked(e -> {
-            this.renderer.setSnapshot(this.snapshots.get(this.list.getSelectionModel().getSelectedIndex()));
+            this.index = this.list.getSelectionModel().getSelectedIndex();
+            this.renderer.setSnapshot(this.snapshots.get(this.index));
             this.renderer.drawGraph();
+            if (this.index == this.snapshots.size() - 1) {
+                this.next.setDisable(true);
+                timeline.stop();
+            } else {
+                this.next.setDisable(false);
+                this.previous.setDisable(this.index <= 0);
+            }
         });
 
         play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
@@ -177,7 +186,7 @@ public class Controller {
                     stop.setDisable(false);
 
                     if (this.index < this.snapshots.size()) {
-                        next.setDisable(false);
+                        this.next.setDisable(false);
                         timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000);
                         timeline.play();
                     }
@@ -221,7 +230,7 @@ public class Controller {
             this.renderer.setSnapshot(null);
             this.renderer.clear();
             this.renderer.drawGraph();
-            list.setItems(FXCollections.observableArrayList());
+            this.list.setItems(FXCollections.observableArrayList());
             this.isGraphBlocked = false;
             this.next.setDisable(true);
             this.previous.setDisable(true);

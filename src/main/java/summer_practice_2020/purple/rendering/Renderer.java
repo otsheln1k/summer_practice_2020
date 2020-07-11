@@ -7,9 +7,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import summer_practice_2020.purple.BoruvkaSnapshot;
 import summer_practice_2020.purple.Graph;
 import summer_practice_2020.purple.IGraph;
+import summer_practice_2020.purple.boruvka.BoruvkaSnapshot;
 
 import java.util.Random;
 
@@ -103,7 +103,7 @@ public class Renderer {
         Node node1 = edge.getNode1();
         Node node2 = edge.getNode2();
 
-        if (this.snapshot != null && this.snapshot.getSelectedEdge().equals(edge.getEdge())) {
+        if (this.snapshot != null && this.snapshot.getEdgesPicked().contains(edge.getEdge())) {
             this.graphicsContext.setLineWidth(7);
         } else {
             this.graphicsContext.setLineWidth(1);
@@ -126,8 +126,8 @@ public class Renderer {
         t.setText(label);
         Bounds b = t.getLayoutBounds();
 
-        double width = b.getWidth() + xpadding*2;
-        double height = b.getHeight() + ypadding*2;
+        double width = b.getWidth() + xpadding * 2;
+        double height = b.getHeight() + ypadding * 2;
 
         double hwidth = width / 2;
         double hheight = height / 2;

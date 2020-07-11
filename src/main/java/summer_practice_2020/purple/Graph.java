@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-public class Graph implements IGraph  {
+public class Graph implements IGraph {
 
     private final Set<Node> nodes = new HashSet<>();
     private final Set<Edge> edges = new HashSet<>();
@@ -86,13 +86,12 @@ public class Graph implements IGraph  {
 
     @Override
     public void removeNode(Node node) {
-        if(nodes.contains(node)) {
+        if (nodes.contains(node)) {
             nodes.remove(node);
             for (Edge e : getEdgesFrom(node)) {
                 removeEdge(e);
             }
-        }
-        else
+        } else
             throw new NoSuchElementException();
     }
 
@@ -108,15 +107,15 @@ public class Graph implements IGraph  {
 
     @Override
     public Edge addEdge(Node a, Node b) {
-        if(a == b){
+        if (a == b) {
             throw new IllegalArgumentException();
-        }else{
-            if(getEdgeBetween(a, b) != null | getEdgeBetween(b, a) != null){
+        } else {
+            if (getEdgeBetween(a, b) != null | getEdgeBetween(b, a) != null) {
                 throw new IllegalArgumentException();
-            }else{
-                if(!nodes.contains(a) || !nodes.contains(b)){
+            } else {
+                if (!nodes.contains(a) || !nodes.contains(b)) {
                     throw new NoSuchElementException();
-                }else{
+                } else {
                     Edge e = new DEdge(a, b);
                     edges.add(e);
                     return e;
@@ -127,7 +126,7 @@ public class Graph implements IGraph  {
 
     @Override
     public void removeEdge(Edge edge) {
-        if(edges.contains(edge))
+        if (edges.contains(edge))
             edges.remove(edge);
         else
             throw new NoSuchElementException();
@@ -136,8 +135,8 @@ public class Graph implements IGraph  {
     @Override
     public Edge getEdgeBetween(Node a, Node b) {
 
-        for (Edge e: edges){
-            if( (e.firstNode() == a && e.secondNode() == b) || (e.firstNode() == b && e.secondNode() == a) ){
+        for (Edge e : edges) {
+            if ((e.firstNode() == a && e.secondNode() == b) || (e.firstNode() == b && e.secondNode() == a)) {
                 return e;
             }
         }
@@ -147,8 +146,8 @@ public class Graph implements IGraph  {
     @Override
     public Iterable<Edge> getEdgesFrom(Node node) {
         Set<Edge> fromNode = new HashSet<>();
-        for(Edge e: edges){
-            if(e.firstNode() == node || e.secondNode() == node){
+        for (Edge e : edges) {
+            if (e.firstNode() == node || e.secondNode() == node) {
                 fromNode.add(e);
             }
         }

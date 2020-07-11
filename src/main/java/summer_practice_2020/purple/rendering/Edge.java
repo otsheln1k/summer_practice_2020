@@ -13,7 +13,7 @@ public class Edge {
         this.node2 = node2;
     }
 
-    public IGraph.Edge getEdge(){
+    public IGraph.Edge getEdge() {
         return this.edge;
     }
 

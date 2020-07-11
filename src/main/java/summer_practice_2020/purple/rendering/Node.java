@@ -38,13 +38,15 @@ public class Node {
         return this.posy;
     }
 
-    public double getRadius() { return this.radius; }
+    public double getRadius() {
+        return this.radius;
+    }
 
     public Color getColor() {
         return this.color;
     }
 
-    public void updateRadius(){
-        this.radius =  (node.getTitle().length() + 1) * 6;
+    public void updateRadius() {
+        this.radius = (node.getTitle().length() + 1) * 6;
     }
 }
