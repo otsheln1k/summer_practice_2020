@@ -189,12 +189,21 @@ public class Controller {
                 WorkStep ws = new WorkStep(this.algorithm.next());
                 this.stepList.add(ws);
                 previous.setDisable(false);
+                
+                // TODO: remove and set the full edge set/predicate instead
                 this.renderer.addToEdgeSet(ws.getEdge());
+                
+                // TODO: set a whole WorkStep (or its view) or Snapshot?
+                this.renderer.setLastEdge(ws.getEdge());
                 this.renderer.setGroups(ws.getGroups());
+                this.renderer.setAvailEdgePredicate(
+                		ws.getAvailableEdgePredicate());
+                
                 this.list.getItems().add(ws.getDescription());
                 this.index += 1;
                 this.renderer.drawGraph();
             } else {
+            	this.renderer.lastStep();
                 this.list.getItems().add("Конец работы алгоритма");
                 next.setDisable(true);
                 timeline.stop();

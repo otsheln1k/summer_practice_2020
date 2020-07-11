@@ -1,8 +1,10 @@
 package summer_practice_2020.purple.rendering;
 
-import summer_practice_2020.purple.boruvka.Group;
-import summer_practice_2020.purple.boruvka.BoruvkaSnapshot;
+import java.util.function.Predicate;
+
 import summer_practice_2020.purple.IGraph;
+import summer_practice_2020.purple.boruvka.BoruvkaSnapshot;
+import summer_practice_2020.purple.boruvka.Group;
 
 public class WorkStep {
 	private final BoruvkaSnapshot snapshot;
@@ -18,6 +20,10 @@ public class WorkStep {
 
 	public IGraph.Edge getEdge() {
 		return snapshot.getSelectedEdge();
+	}
+	
+	public Predicate<IGraph.Edge> getAvailableEdgePredicate() {
+		return snapshot::getEdgeAvailable;
 	}
 
 	public Iterable<Group> getGroups() {

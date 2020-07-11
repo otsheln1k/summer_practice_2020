@@ -1,12 +1,14 @@
 package summer_practice_2020.purple.rendering;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import javafx.geometry.Bounds;
 import javafx.geometry.VPos;
@@ -29,6 +31,8 @@ public class Renderer {
 	Edge[] edges;
 	private final List<Color> colors = new ArrayList<>();
 	private final Map<IGraph.Node, Group> groupMap = new HashMap<>();
+	private Predicate<IGraph.Edge> edgeAvailPred = null;
+	private IGraph.Edge lastEdge = null;
 
 	private void buildGroupMap(Iterable<Group> groups) {
 		groupMap.clear();
@@ -70,12 +74,20 @@ public class Renderer {
 	public void beginVisualization() {
 		generateColors(this.graph.nodesCount());
 		setEdgeSet(new HashSet<>());
+		edgeAvailPred = x -> false;
+	}
+
+	public void lastStep() {
+		edgeAvailPred = x -> false;
+		lastEdge = null;
 	}
 
 	public void endVisualization() {
 		this.colors.clear();
 		setEdgeSet(null);
 		clear();
+		this.lastEdge = null;
+		this.edgeAvailPred = null;
 	}
 
 	private boolean displayingStep() {
@@ -92,6 +104,14 @@ public class Renderer {
 
 	private void setEdgeSet(Set<IGraph.Edge> edgeSet) {
 		this.edgeSet = edgeSet;
+	}
+
+	public void setAvailEdgePredicate(Predicate<IGraph.Edge> pred) {
+		this.edgeAvailPred = pred;
+	}
+
+	public void setLastEdge(IGraph.Edge edge) {
+		this.lastEdge = edge;
 	}
 
 	public void addToEdgeSet(IGraph.Edge edge) {
@@ -136,8 +156,10 @@ public class Renderer {
 			nodeList.addNode(node, node.getPosX(), node.getPosY(), color);
 		}
 
+		List<Node> nodes = Arrays.asList(nodeList.getNodeArray());
 		for (IGraph.Edge edge : this.graph.getEdges()) {
 			Color color = Color.BLACK;
+			Edge.HighlightType hl = Edge.HighlightType.NORMAL;
 
 			if (displayingStep()) {
 				Group g1 = groupMap.get(edge.firstNode());
@@ -146,9 +168,17 @@ public class Renderer {
 				if (g1 == g2) {
 					color = colors.get(g1.getId());
 				}
+
+				if (edge == lastEdge) {
+					hl = Edge.HighlightType.LAST_SELECTED;
+				} else if (edgeAvailPred.test(edge)) {
+					hl = Edge.HighlightType.AVAILABLE;
+				}
 			}
 
-			edgeList.addEdge(edge, nodeList.getNodeArray(), color);
+			edgeList.addEdge(Edge.amongNodes(edge, nodes)
+					.withColor(color)
+					.withHighlightType(hl));
 		}
 
 		this.edges = edgeList.getEdgeArray();
@@ -171,13 +201,13 @@ public class Renderer {
 		this.graphicsContext.setLineWidth(1);
 		this.graphicsContext.setStroke(Color.rgb(0, 0, 0));
 		this.graphicsContext.setFill(node.getColor());
-        this.graphicsContext.fillOval(node.getPosx() - node.getRadius(), node.getPosy() - node.getRadius(),
-                node.getRadius() * 2, node.getRadius() * 2);
-        this.graphicsContext.strokeOval(node.getPosx() - node.getRadius(), node.getPosy() - node.getRadius(),
-                node.getRadius() * 2, node.getRadius() * 2);
-        this.graphicsContext.setTextAlign(TextAlignment.CENTER);
-        this.graphicsContext.setTextBaseline(VPos.CENTER);
-        this.graphicsContext.strokeText(node.getTitle(), node.getPosx(), node.getPosy());
+		this.graphicsContext.fillOval(node.getPosx() - node.getRadius(), node.getPosy() - node.getRadius(),
+				node.getRadius() * 2, node.getRadius() * 2);
+		this.graphicsContext.strokeOval(node.getPosx() - node.getRadius(), node.getPosy() - node.getRadius(),
+				node.getRadius() * 2, node.getRadius() * 2);
+		this.graphicsContext.setTextAlign(TextAlignment.CENTER);
+		this.graphicsContext.setTextBaseline(VPos.CENTER);
+		this.graphicsContext.strokeText(node.getTitle(), node.getPosx(), node.getPosy());
 	}
 
 	private boolean pickedEdge(IGraph.Edge edge) {
@@ -187,7 +217,7 @@ public class Renderer {
 	public void drawEdge(Edge edge) {
 		final double xpadding = 3.0;
 		final double ypadding = 3.0;
-		
+
 		Node node1 = edge.getNode1();
 		Node node2 = edge.getNode2();
 		if (!displayingStep()) {
@@ -202,39 +232,49 @@ public class Renderer {
 
 		this.graphicsContext.setStroke(edge.getColor());
 
-        this.graphicsContext.strokeLine(node1.getPosx(), node1.getPosy(), node2.getPosx(), node2.getPosy());
-        this.graphicsContext.setLineWidth(1);
-        this.graphicsContext.setFill(Color.rgb(255, 255, 255));
-        
-        String label = String.format("%.3g", w);
-        
-        Text t = new Text();
-        t.setFont(this.graphicsContext.getFont());
-        t.setText(label);
-        Bounds b = t.getLayoutBounds();
-        
-        double width = b.getWidth() + xpadding*2;
-        double height = b.getHeight() + ypadding*2;
-        
-        double hwidth = width / 2;
-        double hheight = height / 2;
-        
-        double cx = (node2.getPosx() + node1.getPosx()) / 2;
-        double cy = (node2.getPosy() + node1.getPosy()) / 2;
-        
-        double left = cx - hwidth;
-        double top = cy - hheight;
+		this.graphicsContext.strokeLine(node1.getPosx(), node1.getPosy(), node2.getPosx(), node2.getPosy());
+		this.graphicsContext.setLineWidth(1);
+		this.graphicsContext.setFill(Color.WHITE);
+		this.graphicsContext.setStroke(Color.BLACK);
 
-        this.graphicsContext.setStroke(Color.BLACK);
-        
-        this.graphicsContext.fillRect(left, top, width, height);
-        this.graphicsContext.strokeRect(left, top, width, height);
+		String label = String.format("%.3g", w);
 
-        this.graphicsContext.setTextAlign(TextAlignment.CENTER);
-        this.graphicsContext.setTextBaseline(VPos.CENTER);
-        this.graphicsContext.strokeText(label, cx, cy);
-        this.graphicsContext.setTextAlign(TextAlignment.LEFT);
-        this.graphicsContext.setTextBaseline(VPos.BASELINE);
+		Text t = new Text();
+		t.setFont(this.graphicsContext.getFont());
+		t.setText(label);
+		Bounds b = t.getLayoutBounds();
+
+		double width = b.getWidth() + xpadding*2;
+		double height = b.getHeight() + ypadding*2;
+
+		double hwidth = width / 2;
+		double hheight = height / 2;
+
+		double cx = (node2.getPosx() + node1.getPosx()) / 2;
+		double cy = (node2.getPosy() + node1.getPosy()) / 2;
+
+		double left = cx - hwidth;
+		double top = cy - hheight;
+
+		this.graphicsContext.fillRect(left, top, width, height);
+		this.graphicsContext.strokeRect(left, top, width, height);
+
+		switch (edge.getHightlightType()) {
+		case NORMAL:
+			break;
+		case LAST_SELECTED:
+			this.graphicsContext.setStroke(Color.GREEN);
+			break;
+		case AVAILABLE:
+			this.graphicsContext.setStroke(Color.DARKORANGE);
+			break;
+		}
+
+		this.graphicsContext.setTextAlign(TextAlignment.CENTER);
+		this.graphicsContext.setTextBaseline(VPos.CENTER);
+		this.graphicsContext.strokeText(label, cx, cy);
+		this.graphicsContext.setTextAlign(TextAlignment.LEFT);
+		this.graphicsContext.setTextBaseline(VPos.BASELINE);
 	}
 
 	public Edge isEdgePosition(double posx, double posy) {
