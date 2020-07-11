@@ -37,6 +37,8 @@ public class BoruvkaSnapshot implements Cloneable{
 		return pickedEdges.contains(e);
 	}
 
+	public Set<IGraph.Edge> getEdgesPicked() { return ostovEdges; }
+
 	public boolean getEdgeAvailable(IGraph.Edge e) {
 		return availEdges.contains(e);
 	}
