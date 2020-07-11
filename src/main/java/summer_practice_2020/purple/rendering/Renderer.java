@@ -206,7 +206,7 @@ public class Renderer {
         this.graphicsContext.setLineWidth(1);
         this.graphicsContext.setFill(Color.rgb(255, 255, 255));
         
-        String label = String.format("%.6g", w);
+        String label = String.format("%.3g", w);
         
         Text t = new Text();
         t.setFont(this.graphicsContext.getFont());
