@@ -66,6 +66,7 @@ public class Boruvka{
 
     private void next_step(){
 
+        list.clear();
         Group nowGroup = allGroups.remove();
 
         double min = 2000000;
