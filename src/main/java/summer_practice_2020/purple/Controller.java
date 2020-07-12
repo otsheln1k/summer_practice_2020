@@ -20,6 +20,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import summer_practice_2020.purple.boruvka.Boruvka;
 import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
 import summer_practice_2020.purple.rendering.Edge;
 import summer_practice_2020.purple.rendering.Node;
@@ -30,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -78,7 +80,7 @@ public class Controller {
         this.next.setDisable(true);
         this.previous.setDisable(true);
         this.stop.setDisable(true);
-        this.speed_control.setMin(15);
+        this.speed_control.setMin(0);
         this.speed_control.setMax(10);
         this.speed_control.setBlockIncrement(0.5);
 
@@ -138,6 +140,9 @@ public class Controller {
                 importError.setContentText("Ошибка при импортировании графа");
                 importError.showAndWait();
             }
+            this.renderer.setGraph(this.graphToWork);
+            this.renderer.setEdgeSet(new HashSet<>());
+            this.renderer.drawGraph();
         });
 
         exportGraph.setOnAction(e -> {
@@ -204,6 +209,9 @@ public class Controller {
             this.renderer.drawGraph();
             list.setItems(FXCollections.observableArrayList());
             this.isGraphBlocked = false;
+            this.stop.setDisable(true);
+            this.next.setDisable(true);
+            this.previous.setDisable(true);
             timeline.stop();
         });
 
