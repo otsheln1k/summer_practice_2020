@@ -15,6 +15,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -54,7 +56,11 @@ public class Controller {
     @FXML
     private MenuItem generateGraph;
     @FXML
+    private MenuItem help;
+    @FXML
     private MenuItem importGraph;
+    @FXML
+    private MenuItem about;
     @FXML
     private MenuItem exportGraph;
     @FXML
@@ -108,6 +114,8 @@ public class Controller {
 
 
         generateGraph.setOnAction(e -> this.generateGraph());
+        help.setOnAction(e -> this.help());
+        about.setOnAction(e -> this.about());
 
         this.list.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -319,7 +327,6 @@ public class Controller {
         });
     }
 
-
     @FXML
     private void generateGraph() {
         Stage dialog = new Stage();
@@ -362,4 +369,51 @@ public class Controller {
         });
     }
 
+    @FXML
+    private void help(){
+
+        Stage dialog = new Stage();
+        dialog.setTitle("Помощь");
+        dialog.setWidth(750);
+        dialog.setHeight(600);
+        VBox root = new VBox();
+
+        Text text = new Text();
+        text.setText("\tАлгоритм Борyвки — это алгоритм нахождения минимального остовного дерева в графе. Работа алгоритма состоит из нескольких итераций, каждая из которых состоит в последовательном добавлении рёбер к остовному лесу графа, до тех пор, пока лес не превратится в дерево, то есть, лес, состоящий из одной компоненты связности. " +
+                "\n\nУправление\n" +
+                "   Для добавления вершины нажмите левой кнопкой мыши на свободном месте.\n" +
+                "   Для переместить вершину зажмите левую кнопку мыши на вершине и переместите куда требуется\n" +
+                "   Для удаления вершины или ее переименования нажмите на вершине правой кнопкой мыши и выберете соответствующий пункт в появившемся меню\n" +
+                "   Для добавления ребра нажмите правой кнопкой мыши на вершину, из которой хотите пустить ребро, и выберете соответствующий пункт меню, затем нажмите левой кнопкой мыши на вершине, в которую будет вести ребро\n" +
+                "   Для удаления ребра нажмите правой кнопкой мыши на вес ребра\n" +
+                "   Для изменения веса ребра нажмите левой кнопкой мыши на текущей вес ребра\n\n" +
+                "   Для запуска алгоритма нажмите на кнопку \"▸\"\n" +
+                "   Для отображения следующего шага алгоритма нажмите кнопку \"»\"\n" +
+                "   Для отображения предыдущего шага  алгоритма нажмите кнопку \"«\"\n" +
+                "   Для остановки алгоритма нажмите кнопку \"▪\"\n" +
+                "   Для отображения полученого каркаса нажмите кнопку \"Результат работы\"");
+        text.setWrappingWidth (740);
+        text.setFont(Font.font("Arial", 16));
+
+        root.getChildren().addAll(text);
+
+        Scene scene = new Scene(root);
+        dialog.setScene(scene);
+        dialog.show();
+    }
+
+    @FXML
+    private void about(){
+        Stage dialog = new Stage();
+        VBox root = new VBox();
+        Text text = new Text();
+        text.setText("\n Программа визуализирует работу алгоритма Борувки (алгоритма построения минимального остовного дерева)\n" +
+                " Создатели:\n\tАбибулаев Эльдар\n\tПарфентьев Леонид\n\tРудько Даниил\n\n");
+        text.setWrappingWidth (500);
+        root.getChildren().add(text);
+        Scene scene = new Scene(root);
+        dialog.setScene(scene);
+        dialog.show();
+
+    }
 }
