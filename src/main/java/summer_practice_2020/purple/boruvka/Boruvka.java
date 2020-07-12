@@ -66,6 +66,7 @@ public class Boruvka{
 
     private void next_step(){
 
+        list.clear();
         Group nowGroup = allGroups.remove();
 
         double min = 2000000;
@@ -130,7 +131,9 @@ public class Boruvka{
                 List<IGraph.Edge> cEdges = new ArrayList<IGraph.Edge>();
                 cEdges.addAll(list);
                 IGraph.Edge cEdge = currentMinEdge;
-                blist.add(new BoruvkaSnapshot(allGroups, g.getEdges(), cloneGroupfirst, cloneGroupsecond, cEdges, cEdge));
+                Set<IGraph.Edge> currentEdgesOstov = new HashSet<>();
+                currentEdgesOstov.addAll(SnapShot);
+                blist.add(new BoruvkaSnapshot(allGroups, g.getEdges(), currentEdgesOstov, cloneGroupfirst, cloneGroupsecond, cEdges, cEdge));
             }
         }
 

@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<AnchorPane id="MainWindow" xmlns="http://javafx.com/javafx/10.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="summer_practice_2020.purple.Controller">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="MainWindow" prefHeight="563.0" prefWidth="661.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="summer_practice_2020.purple.Controller">
       <MenuBar layoutY="2.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <Menu mnemonicParsing="false" text="Граф">
                   <MenuItem fx:id="generateGraph" mnemonicParsing="false" text="Сгенерировать" />
@@ -12,12 +19,12 @@
                   <MenuItem fx:id="exportGraph" mnemonicParsing="false" text="Экспортировать" />
             </Menu>
             <Menu mnemonicParsing="false" text="Помощь">
-                  <MenuItem id="help" mnemonicParsing="false" text="Как это работает?" />
-                  <MenuItem id="about" mnemonicParsing="false" text="О создателях" />
+                  <MenuItem id="help" fx:id="help" mnemonicParsing="false" text="Как это работает?" />
+                  <MenuItem id="about" fx:id="about" mnemonicParsing="false" text="О программе" />
             </Menu>
       </MenuBar>
       <AnchorPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="26.0">
-            <AnchorPane  id="canvas_container" fx:id="canvas_container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane id="canvas_container" fx:id="canvas_container" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="0.0">
                   <Canvas id="canvas" fx:id="canvas" />
             </AnchorPane>
             <AnchorPane id="control_block" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

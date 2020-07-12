@@ -1,5 +1,7 @@
 package summer_practice_2020.purple;
 
+import summer_practice_2020.purple.boruvka.Group;
+
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -54,6 +56,7 @@ public class Graph implements IGraph  {
             this.a = a;
             this.b = b;
         }
+
 
         @Override
         public void setWeight(double w) {
