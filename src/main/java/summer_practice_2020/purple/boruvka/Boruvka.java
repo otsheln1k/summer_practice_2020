@@ -14,7 +14,6 @@ public class Boruvka {
     private List<IGraph.Edge> list = new ArrayList<>();
     private Set<IGraph.Edge> SnapShot = new HashSet<>();
     private List<BoruvkaSnapshot> blist = new ArrayList<>();
-    private Group nullGroup = new Group();
     private int step = 0;
     private Group cloneGroupfirst, cloneGroupsecond;
     private IGraph.Edge currentMinEdge = null;
@@ -84,18 +83,12 @@ public class Boruvka {
         }
         currentMinEdge = minEdge;
 
-
-        if (nowNodes.size() == 1) {
-            nullGroup.addNode(nowNodes.iterator().next());
-        }
-
-        if (minEdge != null) {
+        if(minEdge != null) {
             blockedEdges.add(minEdge);
-            boolean flag = true;
             List<Group> newlist = new ArrayList<>(allGroups);
             for (Group now : newlist) {
                 if (now.HasEdge(minEdge)) {
-                    cloneGroupfirst = nowGroup;
+                    cloneGroupfirst = nowGroup.clone();
                     cloneGroupsecond = now.clone();
                     now.merge(nowGroup);
                     SnapShot.add(minEdge);
@@ -112,8 +105,9 @@ public class Boruvka {
 
         amountCompanent = component();
 
+        int i = 0;
         for (IGraph.Node n : nodes) {
-            Group now = new Group();
+            Group now = new Group(i++);
             now.addNode(n);
             allGroups.add(now);
         }
@@ -124,8 +118,7 @@ public class Boruvka {
             if (list.size() > 0 && currentMinEdge != null && cloneGroupfirst != null && cloneGroupsecond != null) {
                 List<IGraph.Edge> cEdges = new ArrayList<>(list);
                 IGraph.Edge cEdge = currentMinEdge;
-                Set<IGraph.Edge> currentEdgesOstov = new HashSet<>(SnapShot);
-                blist.add(new BoruvkaSnapshot(allGroups, g.getEdges(), currentEdgesOstov, cloneGroupfirst, cloneGroupsecond, cEdges, cEdge));
+                blist.add(new BoruvkaSnapshot(allGroups, SnapShot, cloneGroupfirst, cloneGroupsecond, cEdges, cEdge));
             }
         }
 

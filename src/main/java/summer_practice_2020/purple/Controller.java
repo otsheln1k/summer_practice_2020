@@ -1,19 +1,34 @@
 package summer_practice_2020.purple;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.LinkedList;
+
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,12 +39,6 @@ import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
 import summer_practice_2020.purple.rendering.Edge;
 import summer_practice_2020.purple.rendering.Node;
 import summer_practice_2020.purple.rendering.Renderer;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.util.LinkedList;
 
 public class Controller {
     Graph graphToWork;
@@ -130,6 +139,8 @@ public class Controller {
                 importError.setContentText("Ошибка при импортировании графа");
                 importError.showAndWait();
             }
+            this.renderer.setGraph(this.graphToWork);
+            this.renderer.drawGraph();
         });
 
         this.exportGraph.setOnAction(e -> {
@@ -210,7 +221,7 @@ public class Controller {
                 }
                 this.list.getSelectionModel().select(index);
                 this.renderer.setEdgeSet(this.algorithm.resultEdgeSet());
-                this.renderer.setSnapshot(null);
+                this.renderer.drawGraph();
                 next.setDisable(true);
             } else previous.setDisable(this.index <= 0);
         });
@@ -273,7 +284,9 @@ public class Controller {
                 this.addEdgeMode = true;
             });
 
-            rename.setOnAction(g -> this.editPole(e));
+            rename.setOnAction(g -> {
+            	this.editPole(e);
+            });
 
             if (e.getButton() == MouseButton.PRIMARY && !this.isGraphBlocked) {
                 if (!addEdgeMode) {
@@ -307,7 +320,6 @@ public class Controller {
                         this.renderer.drawGraph();
                     }
                 }
-
             }
         });
     }
@@ -316,7 +328,7 @@ public class Controller {
         Stage editStage = new Stage();
         Pane root = new Pane();
         TextField textField = this.selectedNode == null ?
-                new TextField(Long.toString(Math.round(this.selectedEdge.getWeight())))
+                new TextField(Double.toString(this.selectedEdge.getWeight()))
                 : new TextField(this.selectedNode.getTitle());
         textField.selectAll();
         root.getChildren().addAll(textField);

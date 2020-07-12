@@ -1,7 +1,5 @@
 package summer_practice_2020.purple.rendering;
 
-import summer_practice_2020.purple.IGraph;
-
 public class EdgeList {
     private Edge[] edgeList;
     private int size;
@@ -21,25 +19,11 @@ public class EdgeList {
         this.edgeList = tmp;
     }
 
-    public void addEdge(IGraph.Edge edge, Node[] nodeList) {
+    public void addEdge(Edge e) {
         if (this.index == this.size) {
             this.extend();
         }
-        Node node1 = null;
-        Node node2 = null;
-        for (int i = 0; (node1 == null || node2 == null) && i < nodeList.length; i++) {
-            if (edge.firstNode().equals(nodeList[i].getNode())) {
-                node1 = nodeList[i];
-            } else if (edge.secondNode().equals(nodeList[i].getNode())) {
-                node2 = nodeList[i];
-            }
-        }
-        this.edgeList[this.index++] = new Edge(edge, node1, node2);
-        if (node2 != null) {
-            if (node1 != null) {
-                node2.setColor(node1.getColor());
-            }
-        }
+        this.edgeList[this.index++] = e;
     }
 
     public Edge[] getEdgeArray() {
