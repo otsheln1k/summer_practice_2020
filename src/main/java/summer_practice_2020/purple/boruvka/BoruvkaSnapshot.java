@@ -13,7 +13,6 @@ public class BoruvkaSnapshot implements Cloneable {
     private final Group currentGroup;
     private final Group nextGroup;
     private final Set<IGraph.Edge> availEdges;
-    private final Set<IGraph.Edge> ostovEdges;
     private final IGraph.Edge selectedEdge;
 
     public Group getCurrentGroup() {
@@ -36,17 +35,12 @@ public class BoruvkaSnapshot implements Cloneable {
         return pickedEdges.contains(e);
     }
 
-    public Set<IGraph.Edge> getEdgesPicked() {
-        return ostovEdges;
-    }
-
     public boolean getEdgeAvailable(IGraph.Edge e) {
         return availEdges.contains(e);
     }
 
     public BoruvkaSnapshot(Iterable<Group> groups,
                            Iterable<IGraph.Edge> edges,
-                           Set<IGraph.Edge> nowedges,
                            Group currentGroup,
                            Group nextGroup,
                            Iterable<IGraph.Edge> availEdges,
@@ -72,6 +66,5 @@ public class BoruvkaSnapshot implements Cloneable {
         this.availEdges = availEdgesCopy;
         this.selectedEdge = selectedEdge;
         this.nextGroup = nextGroupCopy;
-        this.ostovEdges = nowedges;
     }
 }

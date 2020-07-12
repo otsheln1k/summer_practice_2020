@@ -118,8 +118,7 @@ public class Boruvka {
             if (list.size() > 0 && currentMinEdge != null && cloneGroupfirst != null && cloneGroupsecond != null) {
                 List<IGraph.Edge> cEdges = new ArrayList<>(list);
                 IGraph.Edge cEdge = currentMinEdge;
-                Set<IGraph.Edge> currentEdgesOstov = new HashSet<>(SnapShot);
-                blist.add(new BoruvkaSnapshot(allGroups, g.getEdges(), currentEdgesOstov, cloneGroupfirst, cloneGroupsecond, cEdges, cEdge));
+                blist.add(new BoruvkaSnapshot(allGroups, SnapShot, cloneGroupfirst, cloneGroupsecond, cEdges, cEdge));
             }
         }
 
