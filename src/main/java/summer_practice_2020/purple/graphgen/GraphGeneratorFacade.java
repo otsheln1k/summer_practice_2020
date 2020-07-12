@@ -39,6 +39,10 @@ public class GraphGeneratorFacade {
 	}
 
 	public void generateGraph(IGraph g, int nodesCount, boolean connected) {
+		if (nodesCount <= 0) {
+			throw new IllegalArgumentException("count of nodes must be > 0");
+		}
+		
 		GraphEdgeGenerator edgeGen = connected ? makeConnectedGenerator()
 				: makeUnconnectedGenerator();
 		generateGraphWithEdgeGen(g, edgeGen, nodesCount);
@@ -62,7 +66,15 @@ public class GraphGeneratorFacade {
 
 	public void generateGraphByNEdges(IGraph g,
 			int nodesCount, int edgesCount, boolean connected) {
-		// TODO: check that edgesCount >= nodesCount - 1 if connected
+		if (nodesCount <= 0) {
+			throw new IllegalArgumentException("count of nodes must be > 0");
+		}
+		if (edgesCount < 0
+				|| edgesCount > nodesCount*(nodesCount-1)/2
+				|| connected && edgesCount < nodesCount - 1) {
+			throw new IllegalArgumentException("invalid number of edges");
+		}
+		
 		GraphEdgeGenerator edgeGen = connected ? makeConnectedNEdgesGenerator(nodesCount, edgesCount)
 				: makeUnconnectedNEdgesGenerator(edgesCount);
 		generateGraphWithEdgeGen(g, edgeGen, nodesCount);
@@ -105,6 +117,14 @@ public class GraphGeneratorFacade {
 	}
 
 	public void generateComponents(IGraph g, int nodesCount, int compsCount) {
+		if (nodesCount <= 0) {
+			throw new IllegalArgumentException("count of nodes must be > 0");
+		}
+		if (compsCount < 0
+				|| compsCount > nodesCount) {
+			throw new IllegalArgumentException("invalid number of components");
+		}
+
 		GraphEdgeGenerator edgeGen = makeConnectedGenerator();
 
 		GraphGenerator gen = new GraphGenerator(
@@ -143,6 +163,16 @@ public class GraphGeneratorFacade {
 
 	public void generateComponentsWithNEdges(IGraph g,
 			int nodesCount, int edgesCount, int compsCount) {
+		if (nodesCount <= 0) {
+			throw new IllegalArgumentException("count of nodes must be > 0");
+		}
+		if (compsCount < 0
+				|| compsCount > nodesCount) {
+			throw new IllegalArgumentException("invalid number of components");
+		}
+		if (edgesCount < 0) {
+			throw new IllegalArgumentException("invalid number of edges");
+		}
 
 		GraphGenerator gen = new GraphGenerator(
 				nodesCount, null,
