@@ -31,7 +31,7 @@
             <ListView id="list" fx:id="list" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0"
                       prefWidth="124.0" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="10.0"
                       AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="20.0"/>
-            <Button id="speed_control" fx:id="speed_control" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="10.0"
+            <Button id="finish" fx:id="finish" text="Результат работы" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="10.0"
                     AnchorPane.rightAnchor="10.0"/>
             <Button id="previous" fx:id="previous" mnemonicParsing="false" text="⏴" AnchorPane.bottomAnchor="20.0"
                     AnchorPane.leftAnchor="10.0"/>

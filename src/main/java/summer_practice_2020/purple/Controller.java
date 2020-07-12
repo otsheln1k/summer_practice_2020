@@ -40,6 +40,7 @@ public class Controller {
     boolean nodeMoveMode;
     boolean autoShow;
     boolean addEdgeMode;
+    boolean isWorkFinished;
 
     Node selectedNode;
     Node nodeForEdge;
@@ -66,7 +67,7 @@ public class Controller {
     @FXML
     private Canvas canvas;
     @FXML
-    private Button speed_control;
+    private Button finish;
 
     @FXML
     private void initialize() {
@@ -74,6 +75,7 @@ public class Controller {
         this.next.setDisable(true);
         this.previous.setDisable(true);
         this.stop.setDisable(true);
+        this.finish.setDisable(true);
 
 
         this.isGraphBlocked = false;
@@ -89,7 +91,7 @@ public class Controller {
 
         this.renderer.setGraph(this.graphToWork);
 
-        generateGraph.setOnAction(e -> this.generateGraph());
+        this.generateGraph.setOnAction(e -> this.generateGraph());
 
         this.list.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -108,7 +110,7 @@ public class Controller {
             }
         });
 
-        importGraph.setOnAction(e -> {
+        this.importGraph.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Выберите файл графа");
             File file = fileChooser.showOpenDialog(new Stage());
@@ -124,7 +126,7 @@ public class Controller {
             }
         });
 
-        exportGraph.setOnAction(e -> {
+        this.exportGraph.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Выберите директорию для сохранения графа");
             fileChooser.setInitialFileName("Graph");
@@ -156,10 +158,16 @@ public class Controller {
             }
         });
 
+        this.finish.setOnMouseClicked(ae -> {
+            this.finish.setDisable(true);
+            this.resultShow();
+        });
 
-        play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+        this.play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if (this.graphToWork.edgesCount() > 0) {
                 if (!this.isGraphBlocked) {
+                    this.isWorkFinished = false;
+                    this.finish.setDisable(false);
                     this.isGraphBlocked = true;
                     this.algorithm = new Boruvka(this.graphToWork);
                     this.algorithm.boruvka();
@@ -178,7 +186,7 @@ public class Controller {
             }
         });
 
-        next.setOnMouseClicked(e -> {
+        this.next.setOnAction(e -> {
             this.index += 1;
             if (this.index < this.snapshots.size()) {
                 if (this.list.getItems().size() <= this.index) {
@@ -202,7 +210,7 @@ public class Controller {
         });
 
 
-        previous.setOnMouseClicked(e -> {
+        this.previous.setOnMouseClicked(e -> {
             this.index -= 1;
             this.next.setDisable(false);
             this.list.getSelectionModel().select(index);
@@ -213,7 +221,7 @@ public class Controller {
             }
         });
 
-        stop.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+        this.stop.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             this.renderer.setSnapshot(null);
             this.renderer.clear();
             this.renderer.drawGraph();
@@ -221,11 +229,12 @@ public class Controller {
             this.isGraphBlocked = false;
             this.next.setDisable(true);
             this.previous.setDisable(true);
+            this.finish.setDisable(true);
         });
 
-        canvas_container.setOnMouseMoved(e -> this.selectedNode = renderer.isNodePosition(e.getX(), e.getY()));
+        this.canvas_container.setOnMouseMoved(e -> this.selectedNode = renderer.isNodePosition(e.getX(), e.getY()));
 
-        canvas_container.setOnMouseDragged(e -> {
+        this.canvas_container.setOnMouseDragged(e -> {
             if (this.selectedNode != null) {
                 this.nodeMoveMode = true;
                 this.selectedNode.getNode().setPosX(e.getX());
@@ -234,9 +243,9 @@ public class Controller {
             }
         });
 
-        canvas_container.setOnMouseDragReleased(e -> this.nodeMoveMode = false);
+        this.canvas_container.setOnMouseDragReleased(e -> this.nodeMoveMode = false);
 
-        canvas_container.setOnMouseClicked(e -> {
+        this.canvas_container.setOnMouseClicked(e -> {
             ContextMenu menu = new ContextMenu();
             MenuItem deleteNode = new MenuItem("Удалить вершину");
             MenuItem addEdge = new MenuItem("Добавить ребро");
@@ -327,6 +336,12 @@ public class Controller {
         });
     }
 
+    private void resultShow() {
+        this.isWorkFinished = true;
+        while (this.index < this.snapshots.size()){
+            this.next.fire();
+        }
+    }
 
     @FXML
     private void generateGraph() {
