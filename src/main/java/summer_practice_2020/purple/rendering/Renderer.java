@@ -3,12 +3,10 @@ package summer_practice_2020.purple.rendering;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import javafx.geometry.Bounds;
 import javafx.geometry.VPos;
@@ -19,22 +17,23 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import summer_practice_2020.purple.Graph;
 import summer_practice_2020.purple.IGraph;
+import summer_practice_2020.purple.boruvka.BoruvkaSnapshot;
 import summer_practice_2020.purple.boruvka.Group;
 
 
 public class Renderer {
-	Canvas workingCanvas;
-	GraphicsContext graphicsContext;
-	Graph graph;
-	Set<IGraph.Edge> edgeSet = null;
-	Node[] nodes;
-	Edge[] edges;
-	private final List<Color> colors = new ArrayList<>();
-	private final Map<IGraph.Node, Group> groupMap = new HashMap<>();
-	private Predicate<IGraph.Edge> edgeAvailPred = null;
-	private IGraph.Edge lastEdge = null;
-	private Group mergedToGroup = null;
-	private Group mergedGroup = null;
+    Canvas workingCanvas;
+    GraphicsContext graphicsContext;
+
+    Graph graph;
+    BoruvkaSnapshot snapshot;
+    Set<IGraph.Edge> edgeSet;
+
+    Node[] nodes;
+    Edge[] edges;
+
+    private final List<Color> colors = new ArrayList<>();
+    private final Map<IGraph.Node, Group> groupMap = new HashMap<>();
 
 	private void buildGroupMap(Iterable<Group> groups) {
 		groupMap.clear();
@@ -50,8 +49,34 @@ public class Renderer {
 		this.graphicsContext = this.workingCanvas.getGraphicsContext2D();
 	}
 
-	private void clear() {
+	public void clear() {
 		graphicsContext.clearRect(0, 0, workingCanvas.getWidth(), workingCanvas.getHeight());
+	}
+
+	public void setGraph(Graph graph) {
+        this.snapshot = null;
+        this.edgeSet = null;
+        this.graph = graph;
+    }
+	
+	public void setEdgeSet(Set<IGraph.Edge> edgeSet) {
+		this.snapshot = null;
+		this.groupMap.clear();
+		this.edgeSet = edgeSet;
+	}
+	
+	public void setSnapshot(BoruvkaSnapshot snapshot) {
+		if (this.snapshot == null && this.edgeSet == null) {
+			generateColors(this.graph.nodesCount());
+		}
+		this.snapshot = snapshot;
+		if (this.snapshot != null) {
+			buildGroupMap(this.snapshot.getGroups());
+			this.edgeSet = null;
+		} else {
+			this.groupMap.clear();
+			this.edgeSet = null;
+		}
 	}
 
 	private static double doubleInRange(Random rng, double low, double high) {
@@ -65,80 +90,12 @@ public class Renderer {
 		return Color.hsb(hue, sat, val);
 	}
 
-	private void generateColors(int n) {
+	private void generateColors(int n) {//
 		Random rng = new Random();
 		colors.clear();
 		for (int i = 0; i < n; i++) {
 			colors.add(generateColor(rng));
 		}
-	}
-
-	public void beginVisualization() {
-		generateColors(this.graph.nodesCount());
-		setEdgeSet(new HashSet<>());
-		edgeAvailPred = x -> false;
-		mergedGroup = null;
-		mergedToGroup = null;
-	}
-
-	public void lastStep() {
-		edgeAvailPred = x -> false;
-		lastEdge = null;
-		mergedGroup = null;
-		mergedToGroup = null;
-	}
-
-	public void endVisualization() {
-		this.colors.clear();
-		setEdgeSet(null);
-		clear();
-		this.lastEdge = null;
-		this.edgeAvailPred = null;
-		mergedGroup = null;
-		mergedToGroup = null;
-	}
-
-	private boolean displayingStep() {
-		return this.edgeSet != null;
-	}
-
-	public void setGraph(Graph graph) {
-		this.graph = graph;
-	}
-
-	public void setGroups(Iterable<Group> groups) {
-		buildGroupMap(groups);
-	}
-
-	private void setEdgeSet(Set<IGraph.Edge> edgeSet) {
-		this.edgeSet = edgeSet;
-	}
-
-	public void setAvailEdgePredicate(Predicate<IGraph.Edge> pred) {
-		this.edgeAvailPred = pred;
-	}
-
-	public void setLastEdge(IGraph.Edge edge) {
-		this.lastEdge = edge;
-	}
-
-	public void setMergedToGroup(Group grp) {
-		mergedToGroup = grp;
-	}
-
-	public void setMergedGroup(Group grp) {
-		mergedGroup = grp;
-	}
-
-	public void addToEdgeSet(IGraph.Edge edge) {
-		if (edge == null) {
-			System.out.println("edge null");
-			System.exit(-1);
-		} else if (this.edgeSet == null) {
-			System.out.println("Edgeset null");
-			System.exit(-2);
-		}
-		this.edgeSet.add(edge);
 	}
 
 	public void drawGraph() {
@@ -165,12 +122,12 @@ public class Renderer {
 
 			Color color = Color.WHITE;
 			Node.HighlightType hl = Node.HighlightType.NORMAL;
-			if (displayingStep()) {
+			if (this.snapshot != null) {
 				Group g = groupMap.get(node);
 				color = colors.get(g.getId());
-				if (mergedToGroup != null && mergedToGroup.hasNode(node)) {
+				if (this.snapshot.getCurrentGroup().hasNode(node)) {
 					hl = Node.HighlightType.MERGED_TO;
-				} else if (mergedGroup != null && mergedGroup.hasNode(node)) {
+				} else if (this.snapshot.getNextGroup().hasNode(node)) {
 					hl = Node.HighlightType.MERGED;
 				}
 			}
@@ -184,7 +141,7 @@ public class Renderer {
 			Color color = Color.BLACK;
 			Edge.HighlightType hl = Edge.HighlightType.NORMAL;
 
-			if (displayingStep()) {
+			if (this.snapshot != null) {
 				Group g1 = groupMap.get(edge.firstNode());
 				Group g2 = groupMap.get(edge.secondNode());
 
@@ -192,9 +149,9 @@ public class Renderer {
 					color = colors.get(g1.getId());
 				}
 
-				if (edge == lastEdge) {
+				if (edge == this.snapshot.getSelectedEdge()) {
 					hl = Edge.HighlightType.LAST_SELECTED;
-				} else if (edgeAvailPred.test(edge)) {
+				} else if (this.snapshot.getEdgeAvailable(edge)) {
 					hl = Edge.HighlightType.AVAILABLE;
 				}
 			}
@@ -249,6 +206,9 @@ public class Renderer {
 	}
 
 	private boolean pickedEdge(IGraph.Edge edge) {
+		if (this.snapshot != null) {
+			return this.snapshot.getEdgePicked(edge);
+		}
 		return this.edgeSet.contains(edge);
 	}
 
@@ -258,7 +218,7 @@ public class Renderer {
 
 		Node node1 = edge.getNode1();
 		Node node2 = edge.getNode2();
-		if (!displayingStep()) {
+		if (this.snapshot == null && this.edgeSet == null) {
 			this.graphicsContext.setLineWidth(3);
 		} else if (pickedEdge(edge.getEdge())) {
 			this.graphicsContext.setLineWidth(7);

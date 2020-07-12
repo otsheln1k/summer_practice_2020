@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.LinkedList;
-import java.util.List;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -38,17 +37,17 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import summer_practice_2020.purple.boruvka.Boruvka;
+import summer_practice_2020.purple.boruvka.BoruvkaSnapshot;
 import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
 import summer_practice_2020.purple.rendering.Edge;
 import summer_practice_2020.purple.rendering.Node;
 import summer_practice_2020.purple.rendering.Renderer;
-import summer_practice_2020.purple.rendering.WorkStep;
 
 public class Controller {
     Graph graphToWork;
     Boruvka algorithm;
     Renderer renderer;
-    List<WorkStep> stepList;
+    LinkedList<BoruvkaSnapshot> snapshots;
     int index;
 
     boolean isGraphBlocked;
@@ -89,7 +88,7 @@ public class Controller {
         this.next.setDisable(true);
         this.previous.setDisable(true);
         this.stop.setDisable(true);
-        this.speed_control.setMin(0);
+        this.speed_control.setMin(15);
         this.speed_control.setMax(10);
         this.speed_control.setBlockIncrement(0.5);
 
@@ -171,75 +170,98 @@ public class Controller {
 
         speed_control.setOnTouchReleased(e -> timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000));
 
-        play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            if (timeline.getStatus() == Animation.Status.STOPPED) {
-                this.isGraphBlocked = true;
-                this.renderer.beginVisualization();
-//                this.renderer.setEdgeSet(new HashSet<>());
-                this.algorithm = new Boruvka(this.graphToWork);
-                this.algorithm.boruvka();
-                this.stepList = new LinkedList<>();
-                this.index = 0;
-
-                stop.setDisable(false);
-
-                if (this.algorithm.hasNext()) {
-                    next.setDisable(false);
-                    timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000);
-                    timeline.play();
-                }
+        this.list.setOnMouseClicked(e -> {
+            this.index = this.list.getSelectionModel().getSelectedIndex();
+            if (this.index < this.snapshots.size()) {
+                this.renderer.setSnapshot(this.snapshots.get(this.index));
             } else {
-                timeline.pause();
+                this.renderer.setEdgeSet(this.algorithm.resultEdgeSet());
+            }
+            this.renderer.drawGraph();
+            if (this.index == this.snapshots.size()) {
+                this.next.setDisable(true);
+                timeline.stop();
+            } else {
+                this.next.setDisable(false);
+                this.previous.setDisable(this.index <= 0);
+            }
+        });
+
+        play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (this.graphToWork.edgesCount() > 0) {
+                if (timeline.getStatus() == Animation.Status.STOPPED) {
+                    this.isGraphBlocked = true;
+                    this.algorithm = new Boruvka(this.graphToWork);
+                    this.algorithm.boruvka();
+                    this.index = -1;
+                    this.snapshots = new LinkedList<>();
+
+                    while (this.algorithm.hasNext()) {
+                        this.snapshots.add(this.algorithm.next());
+                    }
+                    stop.setDisable(false);
+
+                    if (this.index < this.snapshots.size()) {
+                        this.next.setDisable(false);
+                        timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000);
+                        timeline.play();
+                    }
+                } else {
+                    timeline.pause();
+                }
             }
         });
 
         next.setOnMouseClicked(e -> {
-            if (this.algorithm.hasNext()) {
-                WorkStep ws = new WorkStep(this.algorithm.next());
-                this.stepList.add(ws);
-                previous.setDisable(false);
-                
-                // TODO: remove and set the full edge set/predicate instead
-                this.renderer.addToEdgeSet(ws.getEdge());
-                
-                // TODO: set a whole WorkStep (or its view) or Snapshot?
-                this.renderer.setLastEdge(ws.getEdge());
-                this.renderer.setGroups(ws.getGroups());
-                this.renderer.setAvailEdgePredicate(
-                		ws.getAvailableEdgePredicate());
-                this.renderer.setMergedToGroup(ws.getMergedToGroup());
-                this.renderer.setMergedGroup(ws.getMergedGroup());
-                
-                this.list.getItems().add(ws.getDescription());
-                this.index += 1;
+            this.index += 1;
+            if (this.index < this.snapshots.size()) {
+                if (this.list.getItems().size() <= this.index) {
+                    this.list.getItems().add("Выбрано ребро между " +
+                            this.snapshots.get(index).getSelectedEdge().firstNode().getTitle()
+                            + " и " + this.snapshots.get(index).getSelectedEdge().secondNode().getTitle());
+                }
+                this.list.getSelectionModel().select(index);
+                this.renderer.setSnapshot(this.snapshots.get(this.list.getSelectionModel().getSelectedIndex()));
                 this.renderer.drawGraph();
-            } else {
-            	this.renderer.lastStep();
+            }
+            if (this.index == this.snapshots.size()) {
+                if (this.list.getItems().size() == this.snapshots.size()) {
+                    this.list.getItems().add("Конец работы алгоритма");
+                }
+                this.list.getSelectionModel().select(index);
+                this.renderer.setEdgeSet(this.algorithm.resultEdgeSet());
                 this.renderer.drawGraph();
-
-                this.list.getItems().add("Конец работы алгоритма");
                 next.setDisable(true);
                 timeline.stop();
-            }
+            } else previous.setDisable(this.index <= 0);
         });
 
 
         previous.setOnMouseClicked(e -> {
-
+            this.index -= 1;
+            this.next.setDisable(false);
+            this.list.getSelectionModel().select(index);
+            this.renderer.setSnapshot(this.snapshots.get(this.list.getSelectionModel().getSelectedIndex()));
+            this.renderer.drawGraph();
+            if (this.index < 1) {
+                this.previous.setDisable(true);
+            }
         });
 
         stop.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            this.renderer.endVisualization();
+            this.renderer.setSnapshot(null);
+            this.renderer.clear();
             this.renderer.drawGraph();
-            list.setItems(FXCollections.observableArrayList());
+            this.list.setItems(FXCollections.observableArrayList());
             this.isGraphBlocked = false;
-            this.stop.setDisable(true);
             this.next.setDisable(true);
             this.previous.setDisable(true);
             timeline.stop();
         });
 
-        canvas_container.setOnMouseMoved(e -> this.selectedNode = renderer.isNodePosition(e.getX(), e.getY()));
+        canvas_container.setOnMouseMoved(e -> {
+        	this.selectedNode = renderer.isNodePosition(e.getX(), e.getY());
+        });
 
         canvas_container.setOnMouseDragged(e -> {
             if (this.selectedNode != null) {
@@ -250,7 +272,9 @@ public class Controller {
             }
         });
 
-        canvas_container.setOnMouseDragReleased(e -> this.nodeMoveMode = false);
+        canvas_container.setOnMouseDragReleased(e -> {
+        	this.nodeMoveMode = false;
+        });
 
         canvas_container.setOnMouseClicked(e -> {
             ContextMenu menu = new ContextMenu();
@@ -274,7 +298,9 @@ public class Controller {
                 this.addEdgeMode = true;
             });
 
-            rename.setOnAction(g -> this.editPole(e));
+            rename.setOnAction(g -> {
+            	this.editPole(e);
+            });
 
             if (e.getButton() == MouseButton.PRIMARY && !this.isGraphBlocked) {
                 if (!addEdgeMode) {
@@ -284,7 +310,7 @@ public class Controller {
                             this.editPole(e);
                         } else {
                             IGraph.Node addedNode = this.graphToWork.addNode();
-                            addedNode.setTitle("name");
+                            addedNode.setTitle("Имя");
                             addedNode.setPosX(e.getX());
                             addedNode.setPosY(e.getY());
                             renderer.drawGraph();
@@ -308,7 +334,6 @@ public class Controller {
                         this.renderer.drawGraph();
                     }
                 }
-
             }
         });
     }

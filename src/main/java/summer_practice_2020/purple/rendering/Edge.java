@@ -54,7 +54,7 @@ public class Edge {
         return new Edge(edge, node1, node2);
 	}
 
-    public IGraph.Edge getEdge(){
+    public IGraph.Edge getEdge() {
         return this.edge;
     }
 
