@@ -186,6 +186,8 @@ public class Controller {
                     this.isWorkFinished = false;
                     this.finish.setDisable(false);
                     this.isGraphBlocked = true;
+                    this.importGraph.setDisable(true);
+                    this.generateGraph.setDisable(true);
                     this.algorithm = new Boruvka(this.graphToWork);
                     this.algorithm.boruvka();
                     this.index = -1;
@@ -244,6 +246,8 @@ public class Controller {
             this.renderer.drawGraph();
             this.list.setItems(FXCollections.observableArrayList());
             this.isGraphBlocked = false;
+            this.importGraph.setDisable(false);
+            this.generateGraph.setDisable(false);
             this.next.setDisable(true);
             this.previous.setDisable(true);
             this.finish.setDisable(true);
