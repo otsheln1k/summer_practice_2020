@@ -160,9 +160,13 @@ public class Controller {
 
         this.list.setOnMouseClicked(e -> {
             this.index = this.list.getSelectionModel().getSelectedIndex();
-            this.renderer.setSnapshot(this.snapshots.get(this.index));
+            if (this.index < this.snapshots.size()) {
+                this.renderer.setSnapshot(this.snapshots.get(this.index));
+            } else {
+                this.renderer.setEdgeSet(this.algorithm.resultEdgeSet());
+            }
             this.renderer.drawGraph();
-            if (this.index == this.snapshots.size() - 1) {
+            if (this.index == this.snapshots.size()) {
                 this.next.setDisable(true);
                 timeline.stop();
             } else {
@@ -197,8 +201,8 @@ public class Controller {
         });
 
         next.setOnMouseClicked(e -> {
+            this.index += 1;
             if (this.index < this.snapshots.size()) {
-                this.index += 1;
                 if (this.list.getItems().size() <= this.index) {
                     this.list.getItems().add("Выбрано ребро между " +
                             this.snapshots.get(index).getSelectedEdge().firstNode().getTitle()
@@ -208,7 +212,13 @@ public class Controller {
                 this.renderer.setSnapshot(this.snapshots.get(this.list.getSelectionModel().getSelectedIndex()));
                 this.renderer.drawGraph();
             }
-            if (this.index == this.snapshots.size() - 1) {
+            if (this.index == this.snapshots.size()) {
+                if (this.list.getItems().size() == this.snapshots.size()) {
+                    this.list.getItems().add("Конец работы алгоритма");
+                }
+                this.list.getSelectionModel().select(index);
+                this.renderer.setEdgeSet(this.algorithm.resultEdgeSet());
+                this.renderer.setSnapshot(null);
                 next.setDisable(true);
                 timeline.stop();
             } else previous.setDisable(this.index <= 0);

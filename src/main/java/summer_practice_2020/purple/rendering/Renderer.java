@@ -12,6 +12,7 @@ import summer_practice_2020.purple.IGraph;
 import summer_practice_2020.purple.boruvka.BoruvkaSnapshot;
 
 import java.util.Random;
+import java.util.Set;
 
 
 public class Renderer {
@@ -20,6 +21,7 @@ public class Renderer {
 
     Graph graph;
     BoruvkaSnapshot snapshot;
+    Set<IGraph.Edge> edgeSet;
 
     Node[] nodes;
     Edge[] edges;
@@ -38,8 +40,14 @@ public class Renderer {
         this.graph = graph;
     }
 
+    public void setEdgeSet(Set<IGraph.Edge> edgeSet) {
+        this.snapshot = null;
+        this.edgeSet = edgeSet;
+    }
+
     public void setSnapshot(BoruvkaSnapshot snapshot) {
         this.snapshot = snapshot;
+        this.edgeSet = null;
     }
 
     public void drawGraph() {
@@ -104,6 +112,8 @@ public class Renderer {
         Node node2 = edge.getNode2();
 
         if (this.snapshot != null && this.snapshot.getEdgesPicked().contains(edge.getEdge())) {
+            this.graphicsContext.setLineWidth(7);
+        } else if (this.snapshot == null && this.edgeSet != null && this.edgeSet.contains(edge.getEdge())) {
             this.graphicsContext.setLineWidth(7);
         } else {
             this.graphicsContext.setLineWidth(1);
