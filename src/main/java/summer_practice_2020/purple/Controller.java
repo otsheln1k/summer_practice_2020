@@ -1,8 +1,5 @@
 package summer_practice_2020.purple;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -21,33 +18,31 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Duration;
 import summer_practice_2020.purple.boruvka.Boruvka;
+import summer_practice_2020.purple.boruvka.BoruvkaSnapshot;
 import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
 import summer_practice_2020.purple.rendering.Edge;
 import summer_practice_2020.purple.rendering.Node;
 import summer_practice_2020.purple.rendering.Renderer;
-import summer_practice_2020.purple.rendering.WorkStep;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 
 public class Controller {
     Graph graphToWork;
     Boruvka algorithm;
     Renderer renderer;
-    List<WorkStep> stepList;
+    LinkedList<BoruvkaSnapshot> snapshots;
     int index;
 
     boolean isGraphBlocked;
     boolean nodeMoveMode;
     boolean autoShow;
     boolean addEdgeMode;
+    boolean isWorkFinished;
 
     Node selectedNode;
     Node nodeForEdge;
@@ -78,7 +73,7 @@ public class Controller {
     @FXML
     private Canvas canvas;
     @FXML
-    private Slider speed_control;
+    private Button finish;
 
     @FXML
     private void initialize() {
@@ -86,9 +81,7 @@ public class Controller {
         this.next.setDisable(true);
         this.previous.setDisable(true);
         this.stop.setDisable(true);
-        this.speed_control.setMin(0);
-        this.speed_control.setMax(10);
-        this.speed_control.setBlockIncrement(0.5);
+        this.finish.setDisable(true);
 
 
         this.isGraphBlocked = false;
@@ -104,18 +97,7 @@ public class Controller {
 
         this.renderer.setGraph(this.graphToWork);
 
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.millis(0), ae -> {
-                    System.out.println("TimerClock " + ((1000 * 10) - this.speed_control.getValue() * 1000));
-                    this.next.fire();
-                }));
-
-        timeline.setCycleCount(99999);
-
-
-        generateGraph.setOnAction(e -> this.generateGraph());
-        help.setOnAction(e -> this.help());
-        about.setOnAction(e -> this.about());
+        this.generateGraph.setOnAction(e -> this.generateGraph());
 
         this.list.setCellFactory(param -> new ListCell<>() {
             @Override
@@ -134,7 +116,7 @@ public class Controller {
             }
         });
 
-        importGraph.setOnAction(e -> {
+        this.importGraph.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Выберите файл графа");
             File file = fileChooser.showOpenDialog(new Stage());
@@ -148,12 +130,9 @@ public class Controller {
                 importError.setContentText("Ошибка при импортировании графа");
                 importError.showAndWait();
             }
-            this.renderer.setGraph(this.graphToWork);
-            this.renderer.setEdgeSet(new HashSet<>());
-            this.renderer.drawGraph();
         });
 
-        exportGraph.setOnAction(e -> {
+        this.exportGraph.setOnAction(e -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Выберите директорию для сохранения графа");
             fileChooser.setInitialFileName("Graph");
@@ -169,63 +148,99 @@ public class Controller {
             }
         });
 
-        speed_control.setOnTouchReleased(e -> timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000));
+        this.list.setOnMouseClicked(e -> {
+            this.index = this.list.getSelectionModel().getSelectedIndex();
+            if (this.index < this.snapshots.size()) {
+                this.renderer.setSnapshot(this.snapshots.get(this.index));
+            } else {
+                this.renderer.setEdgeSet(this.algorithm.resultEdgeSet());
+            }
+            this.renderer.drawGraph();
+            if (this.index == this.snapshots.size()) {
+                this.next.setDisable(true);
+            } else {
+                this.next.setDisable(false);
+                this.previous.setDisable(this.index <= 0);
+            }
+        });
 
-        play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            if (timeline.getStatus() == Animation.Status.STOPPED) {
-                this.isGraphBlocked = true;
-                this.algorithm = new Boruvka(this.graphToWork);
-                this.algorithm.boruvka();
-                this.stepList = new LinkedList<>();
-                this.index = 0;
+        this.finish.setOnMouseClicked(ae -> {
+            this.finish.setDisable(true);
+            this.resultShow();
+        });
 
-                stop.setDisable(false);
+        this.play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (this.graphToWork.edgesCount() > 0) {
+                if (!this.isGraphBlocked) {
+                    this.isWorkFinished = false;
+                    this.finish.setDisable(false);
+                    this.isGraphBlocked = true;
+                    this.algorithm = new Boruvka(this.graphToWork);
+                    this.algorithm.boruvka();
+                    this.index = -1;
+                    this.snapshots = new LinkedList<>();
 
-                if (this.algorithm.hasNext()) {
-                    next.setDisable(false);
-                    timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000);
-                    timeline.play();
+                    while (this.algorithm.hasNext()) {
+                        this.snapshots.add(this.algorithm.next());
+                    }
+                    stop.setDisable(false);
+
+                    if (this.index < this.snapshots.size()) {
+                        this.next.setDisable(false);
+                    }
                 }
-            } else {
-                timeline.pause();
             }
         });
 
-        next.setOnMouseClicked(e -> {
-            if (this.algorithm.hasNext()) {
-                this.stepList.add(new WorkStep(this.algorithm.next()));
-                previous.setDisable(false);
-                this.renderer.addToEdgeSet(this.stepList.get(this.index).getEdge());
-                this.list.getItems().add(this.stepList.get(this.index).getDescription());
-                this.index += 1;
+        this.next.setOnAction(e -> {
+            this.index += 1;
+            if (this.index < this.snapshots.size()) {
+                if (this.list.getItems().size() <= this.index) {
+                    this.list.getItems().add("Выбрано ребро между " +
+                            this.snapshots.get(index).getSelectedEdge().firstNode().getTitle()
+                            + " и " + this.snapshots.get(index).getSelectedEdge().secondNode().getTitle());
+                }
+                this.list.getSelectionModel().select(index);
+                this.renderer.setSnapshot(this.snapshots.get(this.list.getSelectionModel().getSelectedIndex()));
                 this.renderer.drawGraph();
-            } else {
-                this.list.getItems().add("Конец работы алгоритма");
+            }
+            if (this.index == this.snapshots.size()) {
+                if (this.list.getItems().size() == this.snapshots.size()) {
+                    this.list.getItems().add("Конец работы алгоритма");
+                }
+                this.list.getSelectionModel().select(index);
+                this.renderer.setEdgeSet(this.algorithm.resultEdgeSet());
+                this.renderer.setSnapshot(null);
                 next.setDisable(true);
-                timeline.stop();
+            } else previous.setDisable(this.index <= 0);
+        });
+
+
+        this.previous.setOnMouseClicked(e -> {
+            this.index -= 1;
+            this.next.setDisable(false);
+            this.list.getSelectionModel().select(index);
+            this.renderer.setSnapshot(this.snapshots.get(this.list.getSelectionModel().getSelectedIndex()));
+            this.renderer.drawGraph();
+            if (this.index < 1) {
+                this.previous.setDisable(true);
             }
         });
 
-
-        previous.setOnMouseClicked(e -> {
-
-        });
-
-        stop.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            this.renderer.setEdgeSet(null);
+        this.stop.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            this.renderer.setSnapshot(null);
             this.renderer.clear();
             this.renderer.drawGraph();
-            list.setItems(FXCollections.observableArrayList());
+            this.list.setItems(FXCollections.observableArrayList());
             this.isGraphBlocked = false;
-            this.stop.setDisable(true);
             this.next.setDisable(true);
             this.previous.setDisable(true);
-            timeline.stop();
+            this.finish.setDisable(true);
         });
 
-        canvas_container.setOnMouseMoved(e -> this.selectedNode = renderer.isNodePosition(e.getX(), e.getY()));
+        this.canvas_container.setOnMouseMoved(e -> this.selectedNode = renderer.isNodePosition(e.getX(), e.getY()));
 
-        canvas_container.setOnMouseDragged(e -> {
+        this.canvas_container.setOnMouseDragged(e -> {
             if (this.selectedNode != null) {
                 this.nodeMoveMode = true;
                 this.selectedNode.getNode().setPosX(e.getX());
@@ -234,9 +249,9 @@ public class Controller {
             }
         });
 
-        canvas_container.setOnMouseDragReleased(e -> this.nodeMoveMode = false);
+        this.canvas_container.setOnMouseDragReleased(e -> this.nodeMoveMode = false);
 
-        canvas_container.setOnMouseClicked(e -> {
+        this.canvas_container.setOnMouseClicked(e -> {
             ContextMenu menu = new ContextMenu();
             MenuItem deleteNode = new MenuItem("Удалить вершину");
             MenuItem addEdge = new MenuItem("Добавить ребро");
@@ -268,7 +283,7 @@ public class Controller {
                             this.editPole(e);
                         } else {
                             IGraph.Node addedNode = this.graphToWork.addNode();
-                            addedNode.setTitle("name");
+                            addedNode.setTitle("Имя");
                             addedNode.setPosX(e.getX());
                             addedNode.setPosY(e.getY());
                             renderer.drawGraph();
@@ -325,6 +340,13 @@ public class Controller {
                 editStage.close();
             }
         });
+    }
+
+    private void resultShow() {
+        this.isWorkFinished = true;
+        while (this.index < this.snapshots.size()){
+            this.next.fire();
+        }
     }
 
     @FXML

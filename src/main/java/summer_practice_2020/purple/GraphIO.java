@@ -42,7 +42,7 @@ public class GraphIO {
 	}
 
 	public static void readGraph(InputStream s, IGraph g) {
-		Map<String, IGraph.Node> nodes = new HashMap<>(); 
+		Map<String, IGraph.Node> nodes = new HashMap<>();
 
 		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(s);

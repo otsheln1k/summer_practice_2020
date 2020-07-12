@@ -94,6 +94,10 @@ class GraphIOTest {
 		assertEquals(0.75, g.getEdgeBetween(nB, nA).getWeight());
 		assertEquals(1.5, g.getEdgeBetween(nA, nC).getWeight());
 		assertNull(g.getEdgeBetween(nB, nC));
+
+		assertEquals(0.75, g.getEdgeBetween(nB, nA).getWeight());
+		assertEquals(1.5, g.getEdgeBetween(nA, nC).getWeight());
+		assertNull(g.getEdgeBetween(nB, nC));
 	}
 
 	@ParameterizedTest
@@ -110,7 +114,7 @@ class GraphIOTest {
 		assertThrows(GraphFormatException.class,
 				() -> GraphIO.readGraph(s, g));
 	}
-	
+
 	static Stream<Arguments> validInputsProvider() {
 		return Stream.of(
 				arguments("node 1 A\nnode 2 B\n", 2, 0),
@@ -122,7 +126,7 @@ class GraphIOTest {
 				arguments("node\ta\tA\rnode\tb\tB\r", 2, 0),
 				arguments("node a\npos a -100 0.0005", 1, 0),
 				arguments("node a text with spaces\nnode b\n", 2, 0)
-		);
+				);
 	}
 
 	@ParameterizedTest

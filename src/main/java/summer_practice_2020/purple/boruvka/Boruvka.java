@@ -4,19 +4,19 @@ import summer_practice_2020.purple.IGraph;
 
 import java.util.*;
 
-public class Boruvka{
+public class Boruvka {
 
     private IGraph g;
-    private HashMap<IGraph.Node, String> visitedMap = new HashMap<IGraph.Node, String>();
+    private HashMap<IGraph.Node, String> visitedMap = new HashMap<>();
     private int amountCompanent = 1;
     private Iterable<IGraph.Node> nodes;
-    private Set<IGraph.Edge> blockedEdges = new HashSet<IGraph.Edge>();
-    private List<IGraph.Edge> list = new ArrayList<IGraph.Edge>();
-    private Set<IGraph.Edge> SnapShot = new HashSet<IGraph.Edge>();
-    private List<BoruvkaSnapshot> blist = new ArrayList<BoruvkaSnapshot>();
+    private Set<IGraph.Edge> blockedEdges = new HashSet<>();
+    private List<IGraph.Edge> list = new ArrayList<>();
+    private Set<IGraph.Edge> SnapShot = new HashSet<>();
+    private List<BoruvkaSnapshot> blist = new ArrayList<>();
     private Group nullGroup = new Group();
     private int step = 0;
-    private  Group cloneGroupfirst, cloneGroupsecond;
+    private Group cloneGroupfirst, cloneGroupsecond;
     private IGraph.Edge currentMinEdge = null;
 
     private Queue<Group> allGroups = new ArrayDeque<>();
@@ -25,15 +25,14 @@ public class Boruvka{
         this.g = g;
     }
 
-    private void dfs(IGraph.Node v){
+    private void dfs(IGraph.Node v) {
         visitedMap.put(v, "visited");
-        for(IGraph.Edge now: g.getEdgesFrom(v)) {
+        for (IGraph.Edge now : g.getEdgesFrom(v)) {
             if (v.equals(now.firstNode())) {
                 if (visitedMap.get(now.secondNode()).equals("not_visited")) {
                     dfs(now.secondNode());
                 }
-            }
-            else {
+            } else {
                 if (visitedMap.get(now.firstNode()).equals("not_visited")) {
                     dfs(now.firstNode());
                 }
@@ -41,14 +40,14 @@ public class Boruvka{
         }
     }
 
-    private int component(){
+    private int component() {
         int result = 0;
-        for(IGraph.Node it: g.getNodes()){
+        for (IGraph.Node it : g.getNodes()) {
             visitedMap.put(it, "not_visited");
         }
 
-        for(IGraph.Node it:g.getNodes()){
-            if(visitedMap.get(it).equals("not_visited")){
+        for (IGraph.Node it : g.getNodes()) {
+            if (visitedMap.get(it).equals("not_visited")) {
                 dfs(it);
                 result++;
             }
@@ -57,14 +56,10 @@ public class Boruvka{
     }
 
     private boolean hasNext_step() {
-        if (SnapShot.size() < g.nodesCount() - amountCompanent) {
-            return true;
-        } else {
-            return false;
-        }
+        return SnapShot.size() < g.nodesCount() - amountCompanent;
     }
 
-    private void next_step(){
+    private void next_step() {
 
         list.clear();
         Group nowGroup = allGroups.remove();
@@ -74,12 +69,12 @@ public class Boruvka{
 
         Set<IGraph.Node> nowNodes = nowGroup.getNodesGroup();
         Iterable<IGraph.Edge> nowEdges = g.getEdges();
-        for(IGraph.Node n: nowNodes){
-            for(IGraph.Edge e: nowEdges){
-                if(nowGroup.HasEdge(e) && !blockedEdges.contains(e)){
-                    if(!nowGroup.getNodesGroup().contains(e.firstNode()) | !nowGroup.getNodesGroup().contains(e.secondNode())) {
+        for (IGraph.Node n : nowNodes) {
+            for (IGraph.Edge e : nowEdges) {
+                if (nowGroup.HasEdge(e) && !blockedEdges.contains(e)) {
+                    if (!nowGroup.getNodesGroup().contains(e.firstNode()) | !nowGroup.getNodesGroup().contains(e.secondNode())) {
                         list.add(e);
-                        if(e.getWeight() < min) {
+                        if (e.getWeight() < min) {
                             min = e.getWeight();
                             minEdge = e;
                         }
@@ -90,17 +85,16 @@ public class Boruvka{
         currentMinEdge = minEdge;
 
 
-        if(nowNodes.size() == 1){
+        if (nowNodes.size() == 1) {
             nullGroup.addNode(nowNodes.iterator().next());
         }
 
-        if(minEdge != null) {
+        if (minEdge != null) {
             blockedEdges.add(minEdge);
             boolean flag = true;
-            List<Group> newlist = new ArrayList<Group>();
-            newlist.addAll(allGroups);
+            List<Group> newlist = new ArrayList<>(allGroups);
             for (Group now : newlist) {
-                if (flag && now.HasEdge(minEdge)) {
+                if (now.HasEdge(minEdge)) {
                     cloneGroupfirst = nowGroup;
                     cloneGroupsecond = now.clone();
                     now.merge(nowGroup);
@@ -127,41 +121,34 @@ public class Boruvka{
         int mark = 1;
         while (hasNext_step() && !allGroups.isEmpty()) {
             next_step();
-            if(list.size() > 0 && currentMinEdge != null && cloneGroupfirst != null && cloneGroupsecond != null) {
-                List<IGraph.Edge> cEdges = new ArrayList<IGraph.Edge>();
-                cEdges.addAll(list);
+            if (list.size() > 0 && currentMinEdge != null && cloneGroupfirst != null && cloneGroupsecond != null) {
+                List<IGraph.Edge> cEdges = new ArrayList<>(list);
                 IGraph.Edge cEdge = currentMinEdge;
-                Set<IGraph.Edge> currentEdgesOstov = new HashSet<>();
-                currentEdgesOstov.addAll(SnapShot);
+                Set<IGraph.Edge> currentEdgesOstov = new HashSet<>(SnapShot);
                 blist.add(new BoruvkaSnapshot(allGroups, g.getEdges(), currentEdgesOstov, cloneGroupfirst, cloneGroupsecond, cEdges, cEdge));
             }
         }
 
     }
 
-    public Iterable<IGraph.Edge> getSnapShotSet(){
+    public Iterable<IGraph.Edge> getSnapShotSet() {
         return SnapShot;
     }
 
-    public Set<IGraph.Edge> resultEdgeSet(){
+    public Set<IGraph.Edge> resultEdgeSet() {
         return SnapShot;
     }
 
     public boolean hasNext() {
-        if(step < blist.size()){
-            return true;
-        }
-        else {
-            return false;
-        }
+        return step < blist.size();
     }
 
-    public void setStep(int st){
+    public void setStep(int st) {
         step = st;
     }
 
     public BoruvkaSnapshot next() {
         step++;
-        return blist.get(step-1);
+        return blist.get(step - 1);
     }
 }
