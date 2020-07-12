@@ -342,7 +342,7 @@ public class Controller {
         Stage editStage = new Stage();
         Pane root = new Pane();
         TextField textField = this.selectedNode == null ?
-                new TextField(Long.toString(Math.round(this.selectedEdge.getWeight())))
+                new TextField(Double.toString(this.selectedEdge.getWeight()))
                 : new TextField(this.selectedNode.getTitle());
         textField.selectAll();
         root.getChildren().addAll(textField);
