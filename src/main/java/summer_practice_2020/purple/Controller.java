@@ -1,8 +1,5 @@
 package summer_practice_2020.purple;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -19,7 +16,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Duration;
 import summer_practice_2020.purple.boruvka.Boruvka;
 import summer_practice_2020.purple.boruvka.BoruvkaSnapshot;
 import summer_practice_2020.purple.graphgen.GraphGeneratorFacade;
@@ -70,7 +66,7 @@ public class Controller {
     @FXML
     private Canvas canvas;
     @FXML
-    private Slider speed_control;
+    private Button speed_control;
 
     @FXML
     private void initialize() {
@@ -78,9 +74,6 @@ public class Controller {
         this.next.setDisable(true);
         this.previous.setDisable(true);
         this.stop.setDisable(true);
-        this.speed_control.setMin(15);
-        this.speed_control.setMax(10);
-        this.speed_control.setBlockIncrement(0.5);
 
 
         this.isGraphBlocked = false;
@@ -95,15 +88,6 @@ public class Controller {
 
 
         this.renderer.setGraph(this.graphToWork);
-
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.millis(0), ae -> {
-                    System.out.println("TimerClock " + ((1000 * 10) - this.speed_control.getValue() * 1000));
-                    this.next.fire();
-                }));
-
-        timeline.setCycleCount(99999);
-
 
         generateGraph.setOnAction(e -> this.generateGraph());
 
@@ -156,8 +140,6 @@ public class Controller {
             }
         });
 
-        speed_control.setOnTouchReleased(e -> timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000));
-
         this.list.setOnMouseClicked(e -> {
             this.index = this.list.getSelectionModel().getSelectedIndex();
             if (this.index < this.snapshots.size()) {
@@ -168,16 +150,16 @@ public class Controller {
             this.renderer.drawGraph();
             if (this.index == this.snapshots.size()) {
                 this.next.setDisable(true);
-                timeline.stop();
             } else {
                 this.next.setDisable(false);
                 this.previous.setDisable(this.index <= 0);
             }
         });
 
+
         play_pause.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if (this.graphToWork.edgesCount() > 0) {
-                if (timeline.getStatus() == Animation.Status.STOPPED) {
+                if (!this.isGraphBlocked) {
                     this.isGraphBlocked = true;
                     this.algorithm = new Boruvka(this.graphToWork);
                     this.algorithm.boruvka();
@@ -191,11 +173,7 @@ public class Controller {
 
                     if (this.index < this.snapshots.size()) {
                         this.next.setDisable(false);
-                        timeline.setRate((1000 * 10) - this.speed_control.getValue() * 1000);
-                        timeline.play();
                     }
-                } else {
-                    timeline.pause();
                 }
             }
         });
@@ -220,7 +198,6 @@ public class Controller {
                 this.renderer.setEdgeSet(this.algorithm.resultEdgeSet());
                 this.renderer.setSnapshot(null);
                 next.setDisable(true);
-                timeline.stop();
             } else previous.setDisable(this.index <= 0);
         });
 
@@ -244,7 +221,6 @@ public class Controller {
             this.isGraphBlocked = false;
             this.next.setDisable(true);
             this.previous.setDisable(true);
-            timeline.stop();
         });
 
         canvas_container.setOnMouseMoved(e -> this.selectedNode = renderer.isNodePosition(e.getX(), e.getY()));
